@@ -2,280 +2,700 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
+
 <title>PIXEL CAMERA HUNT 360</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
 html,body{
-  margin:0;width:100%;height:100%;overflow:hidden;background:#000;
-  touch-action:none;font-family:monospace
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  touch-action:none;
+  font-family:monospace;
 }
-#camera,#world,#game{position:fixed;inset:0;width:100%;height:100%}
-#camera{object-fit:cover;background:#000;z-index:0;display:none}
-#world{z-index:0;background:#000;image-rendering:pixelated}
-#game{z-index:2;pointer-events:none;image-rendering:pixelated}
+
+#camera,
+#world,
+#game{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+#camera{
+  object-fit:cover;
+  background:#000;
+  z-index:0;
+  display:none;
+}
+
+#world{
+  z-index:0;
+  background:#000;
+  image-rendering:pixelated;
+}
+
+#game{
+  z-index:2;
+  pointer-events:none;
+  image-rendering:pixelated;
+}
+
 #hud{
-  position:fixed;inset:0;z-index:10;
-  display:none;pointer-events:none
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:none;
+  pointer-events:none;
 }
+
+/* HP */
+
 #hp{
   position:absolute;
   top:calc(14px + env(safe-area-inset-top));
-  left:50%;transform:translateX(-50%);
-  width:min(82vw,390px)
+  left:50%;
+  transform:translateX(-50%);
+  width:min(82vw,390px);
 }
+
 #hpText{
-  color:#fff;font-size:13px;font-weight:900;
-  text-shadow:2px 2px #000
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  text-shadow:2px 2px #000;
 }
+
 #hpOuter{
-  height:17px;margin-top:5px;border:3px solid #fff;
-  background:#111;box-shadow:3px 3px #000
+  height:17px;
+  margin-top:5px;
+  border:3px solid #fff;
+  background:#111;
+  box-shadow:3px 3px #000;
 }
-#hpInner{width:100%;height:100%;background:#fff}
+
+#hpInner{
+  width:100%;
+  height:100%;
+  background:#fff;
+}
+
+/* LOCK */
 
 #lock{
-  position:absolute;top:18%;left:50%;
+  position:absolute;
+  top:18%;
+  left:50%;
   transform:translate(-50%,-50%);
-  display:none;padding:9px 15px;background:#111;
-  border:3px solid #fff;box-shadow:4px 4px #000;
-  color:#fff;font-size:22px;font-weight:900
+
+  display:none;
+
+  padding:9px 15px;
+
+  background:#111;
+  border:3px solid #fff;
+  box-shadow:4px 4px #000;
+
+  color:#fff;
+  font-size:22px;
+  font-weight:900;
 }
+
+/* TIMER */
+
 #timer{
-  position:absolute;bottom:17%;left:50%;
+  position:absolute;
+
+  bottom:17%;
+  left:50%;
+
   transform:translateX(-50%);
-  display:none;padding:6px 12px;background:#111;
-  border:3px solid #fff;box-shadow:4px 4px #000;
-  color:#fff;font-size:30px;font-weight:900
+
+  display:none;
+
+  padding:6px 12px;
+
+  background:#111;
+  border:3px solid #fff;
+  box-shadow:4px 4px #000;
+
+  color:#fff;
+
+  font-size:30px;
+  font-weight:900;
 }
+
+/* COOLDOWN */
+
 #cooldown{
-  position:absolute;top:25%;left:50%;
+  position:absolute;
+
+  top:25%;
+  left:50%;
+
   transform:translateX(-50%);
-  display:none;padding:7px 12px;
+
+  display:none;
+
+  padding:7px 12px;
+
   background:rgba(0,0,0,.72);
-  border:2px solid #fff;color:#fff;
-  font-size:13px;font-weight:900
+
+  border:2px solid #fff;
+
+  color:#fff;
+
+  font-size:13px;
+  font-weight:900;
 }
+
+/* SENSOR */
+
 #sensorWait{
-  position:absolute;top:50%;left:50%;
+  position:absolute;
+
+  top:50%;
+  left:50%;
+
   transform:translate(-50%,-50%);
-  display:none;padding:10px 17px;background:#111;
-  border:3px solid #fff;color:#fff;font-weight:900
+
+  display:none;
+
+  padding:10px 17px;
+
+  background:#111;
+
+  border:3px solid #fff;
+
+  color:#fff;
+
+  font-weight:900;
 }
+
+/* MODE */
+
 #modeSwitch{
-  position:absolute;left:50%;
+  position:absolute;
+
+  left:50%;
+
   bottom:calc(24px + env(safe-area-inset-bottom));
+
   transform:translateX(-50%);
-  display:flex;gap:5px;padding:5px;
+
+  display:flex;
+
+  gap:5px;
+
+  padding:5px;
+
   background:rgba(0,0,0,.68);
-  border:2px solid #fff;pointer-events:auto
+
+  border:2px solid #fff;
+
+  pointer-events:auto;
 }
+
 #modeSwitch button{
-  min-width:92px;padding:11px 16px;border:0;
-  background:transparent;color:#fff;
-  font:900 12px monospace
+
+  min-width:92px;
+
+  padding:11px 16px;
+
+  border:0;
+
+  background:transparent;
+
+  color:#fff;
+
+  font:900 12px monospace;
 }
-#modeSwitch button.active{background:#fff;color:#111}
+
+#modeSwitch button.active{
+
+  background:#fff;
+  color:#111;
+}
+
+/* DEBUG */
+
 #debug{
-  position:absolute;right:6px;bottom:6px;
-  padding:5px 7px;background:rgba(0,0,0,.68);
+  position:absolute;
+
+  right:6px;
+  bottom:6px;
+
+  padding:5px 7px;
+
+  background:rgba(0,0,0,.68);
+
   border:1px solid rgba(255,255,255,.7);
-  color:#fff;font-size:8px;line-height:1.45
+
+  color:#fff;
+
+  font-size:8px;
+
+  line-height:1.45;
 }
+
+/* START */
+
 #start{
-  position:fixed;inset:0;z-index:100;
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  padding:25px;background:#161925;color:#fff;text-align:center
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:100;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  padding:25px;
+
+  background:#161925;
+
+  color:#fff;
+
+  text-align:center;
 }
-#startIcon{font-size:64px}
-#start h1{margin:8px 0 10px;font-size:25px}
+
+#startIcon{
+  font-size:64px;
+}
+
+#start h1{
+  margin:8px 0 10px;
+  font-size:25px;
+}
+
 #start p{
-  max-width:430px;margin:5px 0;
-  font-size:13px;line-height:1.7;opacity:.86
+
+  max-width:430px;
+
+  margin:5px 0;
+
+  font-size:13px;
+
+  line-height:1.7;
+
+  opacity:.86;
 }
+
 #secureStatus{
-  margin-top:12px;padding:6px 10px;
+
+  margin-top:12px;
+
+  padding:6px 10px;
+
   border:1px solid rgba(255,255,255,.35);
-  font-size:11px
+
+  font-size:11px;
 }
+
 #startButton{
-  min-width:250px;margin-top:18px;padding:17px 25px;
-  border:3px solid #fff;background:#fff;color:#111;
-  box-shadow:6px 6px #000;font:900 16px monospace
+
+  min-width:250px;
+
+  margin-top:18px;
+
+  padding:17px 25px;
+
+  border:3px solid #fff;
+
+  background:#fff;
+
+  color:#111;
+
+  box-shadow:6px 6px #000;
+
+  font:900 16px monospace;
 }
+
 #startButton:active{
-  transform:translate(3px,3px);box-shadow:3px 3px #000
+
+  transform:translate(3px,3px);
+
+  box-shadow:3px 3px #000;
 }
-#startButton:disabled{opacity:.55}
+
+#startButton:disabled{
+  opacity:.55;
+}
+
 #error{
-  max-width:430px;margin-top:16px;color:#faa;
-  font-size:11px;line-height:1.55;white-space:pre-line
+
+  max-width:430px;
+
+  margin-top:16px;
+
+  color:#faa;
+
+  font-size:11px;
+
+  line-height:1.55;
+
+  white-space:pre-line;
 }
+
 </style>
 </head>
 
 <body>
 
-<video id="camera" autoplay muted playsinline></video>
+<video
+id="camera"
+autoplay
+muted
+playsinline>
+</video>
+
 <canvas id="world"></canvas>
+
 <canvas id="game"></canvas>
 
 <div id="hud">
 
   <div id="hp">
+
     <div id="hpText">
-      CREATURE HP <span id="hpNumber">100</span> / 100
+
+      CREATURE HP
+
+      <span id="hpNumber">100</span>
+
+      / 100
+
     </div>
-    <div id="hpOuter"><div id="hpInner"></div></div>
+
+    <div id="hpOuter">
+
+      <div id="hpInner"></div>
+
+    </div>
+
   </div>
 
-  <div id="lock">⚡ LOCK!</div>
-  <div id="timer">5.0</div>
-  <div id="cooldown">LOCK DISABLED 3.0</div>
-  <div id="sensorWait">SENSOR...</div>
+  <div id="lock">
+    ⚡ LOCK!
+  </div>
+
+  <div id="timer">
+    5.0
+  </div>
+
+  <div id="cooldown">
+    LOCK DISABLED 3.0
+  </div>
+
+  <div id="sensorWait">
+    SENSOR...
+  </div>
 
   <div id="modeSwitch">
-    <button id="pixelMode" class="active">PIXEL</button>
-    <button id="cameraMode">CAMERA</button>
+
+    <button
+    id="pixelMode"
+    class="active">
+      PIXEL
+    </button>
+
+    <button
+    id="cameraMode">
+      CAMERA
+    </button>
+
   </div>
 
   <div id="debug"></div>
+
 </div>
 
 <div id="start">
-  <div id="startIcon">👾</div>
-  <h1>PIXEL CAMERA HUNT 360</h1>
+
+  <div id="startIcon">
+    👾
+  </div>
+
+  <h1>
+    PIXEL CAMERA HUNT 360
+  </h1>
+
   <p>
-    STARTをタップしてください。<br><br>
-    360°スマホを動かしてキャラクターを探します。<br>
-    発見すると0.5秒後に気づき、高速で逃走します。<br><br>
-    キャラクターを捉えながらスマホを振るとロック。<br>
-    <b>振っている間だけロックが続きます。</b><br>
-    振るのをやめると即解除されます。
+
+    STARTをタップしてください。
+
+    <br><br>
+
+    360°スマホを動かして
+    キャラクターを探します。
+
+    <br>
+
+    白い点線の四角が
+    ロック可能エリアです。
+
+    <br><br>
+
+    キャラクターを四角内に入れて
+    スマホを振るとロック。
+
+    <br>
+
+    振っている間だけ
+    ロックが続きます。
+
   </p>
-  <div id="secureStatus">CHECKING...</div>
-  <button id="startButton">START</button>
+
+  <div id="secureStatus">
+    CHECKING...
+  </div>
+
+  <button id="startButton">
+    START
+  </button>
+
   <div id="error"></div>
+
 </div>
 
 <script>
+
 "use strict";
 
 /* =========================================================
    ELEMENT
 ========================================================= */
 
-const camera = document.getElementById("camera");
-const world = document.getElementById("world");
-const wctx = world.getContext("2d",{alpha:false});
+const camera =
+  document.getElementById("camera");
 
-const game = document.getElementById("game");
-const ctx = game.getContext("2d");
+const world =
+  document.getElementById("world");
 
-const start = document.getElementById("start");
-const startButton = document.getElementById("startButton");
-const errorBox = document.getElementById("error");
-const secureStatus = document.getElementById("secureStatus");
-const hud = document.getElementById("hud");
+const wctx =
+  world.getContext(
+    "2d",
+    {alpha:false}
+  );
 
-const hpNumber = document.getElementById("hpNumber");
-const hpInner = document.getElementById("hpInner");
+const game =
+  document.getElementById("game");
 
-const lockText = document.getElementById("lock");
-const timer = document.getElementById("timer");
-const cooldownText = document.getElementById("cooldown");
-const sensorWait = document.getElementById("sensorWait");
-const debug = document.getElementById("debug");
+const ctx =
+  game.getContext("2d");
 
-const pixelModeButton = document.getElementById("pixelMode");
-const cameraModeButton = document.getElementById("cameraMode");
+const start =
+  document.getElementById("start");
+
+const startButton =
+  document.getElementById("startButton");
+
+const errorBox =
+  document.getElementById("error");
+
+const secureStatus =
+  document.getElementById("secureStatus");
+
+const hud =
+  document.getElementById("hud");
+
+const hpNumber =
+  document.getElementById("hpNumber");
+
+const hpInner =
+  document.getElementById("hpInner");
+
+const lockText =
+  document.getElementById("lock");
+
+const timer =
+  document.getElementById("timer");
+
+const cooldownText =
+  document.getElementById("cooldown");
+
+const sensorWait =
+  document.getElementById("sensorWait");
+
+const debug =
+  document.getElementById("debug");
+
+const pixelModeButton =
+  document.getElementById("pixelMode");
+
+const cameraModeButton =
+  document.getElementById("cameraMode");
 
 /* =========================================================
    HTTPS
 ========================================================= */
 
 if(window.isSecureContext){
-  secureStatus.textContent = "✓ SECURE";
+
+  secureStatus.textContent =
+    "✓ SECURE";
+
 }else{
-  secureStatus.textContent = "⚠ HTTPS REQUIRED";
-  secureStatus.style.color = "#ff9999";
+
+  secureStatus.textContent =
+    "⚠ HTTPS REQUIRED";
+
+  secureStatus.style.color =
+    "#ff9999";
 }
 
 /* =========================================================
    SCREEN
 ========================================================= */
 
-let W = innerWidth;
-let H = innerHeight;
+let W =
+  innerWidth;
+
+let H =
+  innerHeight;
+
 let DPR = 1;
 
 function resize(){
 
-  W = innerWidth;
-  H = innerHeight;
+  W =
+    innerWidth;
 
-  DPR = Math.min(devicePixelRatio || 1,2);
+  H =
+    innerHeight;
 
-  game.width = Math.round(W*DPR);
-  game.height = Math.round(H*DPR);
+  DPR =
+    Math.min(
+      devicePixelRatio || 1,
+      2
+    );
 
-  game.style.width = W+"px";
-  game.style.height = H+"px";
+  game.width =
+    Math.round(
+      W*DPR
+    );
 
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  ctx.imageSmoothingEnabled = false;
+  game.height =
+    Math.round(
+      H*DPR
+    );
+
+  game.style.width =
+    W+"px";
+
+  game.style.height =
+    H+"px";
+
+  ctx.setTransform(
+    DPR,0,0,DPR,0,0
+  );
+
+  ctx.imageSmoothingEnabled =
+    false;
 }
 
-addEventListener("resize",resize);
-addEventListener("orientationchange",()=>setTimeout(resize,250));
+addEventListener(
+  "resize",
+  resize
+);
+
+addEventListener(
+  "orientationchange",
+  ()=>setTimeout(resize,250)
+);
 
 resize();
 
 /* =========================================================
-   PIXEL CAMERA
+   CAMERA PIXEL
 ========================================================= */
 
 const PIXEL_WIDTH = 70;
 
-const rawCanvas = document.createElement("canvas");
-const rawCtx = rawCanvas.getContext("2d",{alpha:false});
+const rawCanvas =
+  document.createElement("canvas");
 
-let pixelW = PIXEL_WIDTH;
-let pixelH = 100;
+const rawCtx =
+  rawCanvas.getContext(
+    "2d",
+    {alpha:false}
+  );
+
+let pixelW =
+  PIXEL_WIDTH;
+
+let pixelH =
+  100;
 
 /* =========================================================
    MODE
 ========================================================= */
 
-let displayMode = "pixel";
+let displayMode =
+  "pixel";
 
 function setDisplayMode(mode){
 
-  displayMode = mode;
+  displayMode =
+    mode;
 
   if(mode === "pixel"){
 
-    world.style.display = "block";
-    camera.style.display = "none";
+    world.style.display =
+      "block";
 
-    pixelModeButton.classList.add("active");
-    cameraModeButton.classList.remove("active");
+    camera.style.display =
+      "none";
+
+    pixelModeButton
+      .classList
+      .add("active");
+
+    cameraModeButton
+      .classList
+      .remove("active");
 
   }else{
 
-    world.style.display = "none";
-    camera.style.display = "block";
+    world.style.display =
+      "none";
 
-    pixelModeButton.classList.remove("active");
-    cameraModeButton.classList.add("active");
+    camera.style.display =
+      "block";
+
+    pixelModeButton
+      .classList
+      .remove("active");
+
+    cameraModeButton
+      .classList
+      .add("active");
   }
 }
 
-pixelModeButton.onclick = ()=>setDisplayMode("pixel");
-cameraModeButton.onclick = ()=>setDisplayMode("camera");
+pixelModeButton.onclick =
+  ()=>setDisplayMode("pixel");
+
+cameraModeButton.onclick =
+  ()=>setDisplayMode("camera");
 
 /* =========================================================
    SETTINGS
@@ -284,70 +704,119 @@ cameraModeButton.onclick = ()=>setDisplayMode("camera");
 const HFOV = 68;
 const VFOV = 55;
 
+/* HP */
+
 const MAX_HP = 100;
-const DAMAGE_PER_SECOND = 12;
 
-/*
-  SHAKE
+const DAMAGE_PER_SECOND =
+  12;
 
-  SHAKE_THRESHOLD:
-  この値以上で振っている判定。
+/* =========================================================
+   ★LOCK AREA
 
-  SHAKE_RELEASE_DELAY:
-  最後に振動を検出してから
-  180ms経ったら「振るのをやめた」とする。
-*/
+   外側15%をロック禁止
+========================================================= */
 
-const SHAKE_THRESHOLD = 9;
-const SHAKE_RELEASE_THRESHOLD = 4.0;
-const SHAKE_RELEASE_DELAY = 180;
+const LOCK_EDGE_MARGIN_X =
+  0.15;
 
-const MAX_LOCK = 5;
-const LOCK_COOLDOWN = 3000;
+const LOCK_EDGE_MARGIN_Y =
+  0.15;
 
-const NOTICE_DELAY = 500;
-const NOTICE_DURATION = 220;
+/* SHAKE */
+
+const SHAKE_THRESHOLD =
+  9;
+
+const SHAKE_RELEASE_THRESHOLD =
+  4;
+
+const SHAKE_RELEASE_DELAY =
+  180;
+
+/* LOCK */
+
+const MAX_LOCK =
+  5;
+
+const LOCK_COOLDOWN =
+  3000;
+
+/* DETECTION */
+
+const NOTICE_DELAY =
+  500;
+
+const NOTICE_DURATION =
+  220;
 
 /* WALK */
 
-const WALK_SPEED_MIN = 22;
-const WALK_SPEED_MAX = 29;
+const WALK_SPEED_MIN =
+  22;
+
+const WALK_SPEED_MAX =
+  29;
 
 /* RUN */
 
-const RUN_SPEED_MIN = 75;
-const RUN_SPEED_MAX = 100;
+const RUN_SPEED_MIN =
+  75;
+
+const RUN_SPEED_MAX =
+  100;
 
 /* RELEASE RUN */
 
-const RELEASE_RUN_MIN = 95;
-const RELEASE_RUN_MAX = 125;
+const RELEASE_RUN_MIN =
+  95;
+
+const RELEASE_RUN_MAX =
+  125;
 
 /* RUN DISTANCE */
 
-const RUN_DISTANCE_MIN = 90;
-const RUN_DISTANCE_MAX = 160;
+const RUN_DISTANCE_MIN =
+  90;
 
-/* 60% reverse */
+const RUN_DISTANCE_MAX =
+  160;
 
-const RUN_REVERSE_CHANCE = .60;
+/* RUN DIRECTION */
+
+const RUN_REVERSE_CHANCE =
+  .60;
 
 /* SLEEP */
 
-const NORMAL_SLEEP_CHANCE = .30;
-const LONG_SLEEP_CHANCE = .50;
-const LONG_UNSEEN_TIME = 30000;
+const NORMAL_SLEEP_CHANCE =
+  .30;
 
-const SLEEP_MIN = 2500;
-const SLEEP_MAX = 6000;
+const LONG_SLEEP_CHANCE =
+  .50;
 
-const SLEEP_CHECK_MIN = 3500;
-const SLEEP_CHECK_MAX = 7000;
+const LONG_UNSEEN_TIME =
+  30000;
+
+const SLEEP_MIN =
+  2500;
+
+const SLEEP_MAX =
+  6000;
+
+const SLEEP_CHECK_MIN =
+  3500;
+
+const SLEEP_CHECK_MAX =
+  7000;
 
 /* SENSOR */
 
-const YAW_SMOOTH = .24;
-const PITCH_SMOOTH = .20;
+const YAW_SMOOTH =
+  .24;
+
+const PITCH_SMOOTH =
+  .20;
 
 /* =========================================================
    ZONES
@@ -372,137 +841,192 @@ const CREATURE_ZONES = {
 };
 
 /* =========================================================
-   SENSOR STATE
+   SENSOR
 ========================================================= */
 
 let cameraYaw = 0;
+
 let cameraPitch = 0;
 
 let targetYaw = 0;
+
 let targetPitch = 0;
 
-let sensorReady = false;
+let sensorReady =
+  false;
 
 /* =========================================================
    CREATURE
 ========================================================= */
 
-let creatureZone = "FRONT";
+let creatureZone =
+  "FRONT";
 
-let creatureYaw = 0;
-let creaturePitch = 0;
-let creatureBasePitch = 0;
+let creatureYaw =
+  0;
+
+let creaturePitch =
+  0;
+
+let creatureBasePitch =
+  0;
 
 let moveDirection =
-  Math.random() < .5 ? -1 : 1;
+  1;
 
-let walkSpeed = 25;
+let walkSpeed =
+  25;
 
 /* RUN */
 
-let runningAway = false;
+let runningAway =
+  false;
 
-let runSpeed = 0;
-let runDistance = 0;
-let runTravel = 0;
+let runSpeed =
+  0;
+
+let runDistance =
+  0;
+
+let runTravel =
+  0;
 
 /* BOB */
 
-let bobAmplitude = 10;
-let bobPhase = 0;
-let bobSpeed = 1;
+let bobAmplitude =
+  10;
 
-/* VISIBLE */
+let bobPhase =
+  0;
 
-let creatureVisible = false;
-let wasCreatureVisible = false;
+let bobSpeed =
+  1;
+
+/* VISIBILITY */
+
+let creatureVisible =
+  false;
+
+let wasCreatureVisible =
+  false;
 
 /* DETECTION */
 
-let detected = false;
-let detectedAt = 0;
+let detected =
+  false;
+
+let detectedAt =
+  0;
 
 /* SLEEP */
 
-let sleeping = false;
-let sleepUntil = 0;
-let nextSleepCheck = 0;
-let lastDetectedTime = 0;
+let sleeping =
+  false;
+
+let sleepUntil =
+  0;
+
+let nextSleepCheck =
+  0;
+
+let lastDetectedTime =
+  0;
 
 /* =========================================================
    ANIMATION
 ========================================================= */
 
-let animState = "move";
-let animFrame = 1;
-let animStateStart = 0;
+let animState =
+  "move";
 
-let nextSpecialTime = 0;
-let nextAttackTime = 0;
+let animFrame =
+  1;
+
+let animStateStart =
+  0;
+
+let nextSpecialTime =
+  0;
+
+let nextAttackTime =
+  0;
 
 /* =========================================================
    LOCK STATE
 ========================================================= */
 
-let locked = false;
+let locked =
+  false;
 
-/*
-  ロックを開始した時刻
-*/
+let lockStartedAt =
+  0;
 
-let lockStartedAt = 0;
+let lockEnd =
+  0;
 
-/*
-  最大5秒の終了時刻
-*/
+let lastShakeActivity =
+  0;
 
-let lockEnd = 0;
+let currentShakePower =
+  0;
 
-/*
-  最後にSHAKEを検出した時刻
-*/
-
-let lastShakeActivity = 0;
-
-/*
-  現在のSHAKE強度
-*/
-
-let currentShakePower = 0;
-
-/*
-  再ロック禁止
-*/
-
-let lockCooldownUntil = 0;
+let lockCooldownUntil =
+  0;
 
 /* =========================================================
    GAME
 ========================================================= */
 
-let gameRunning = false;
-let hp = MAX_HP;
+let gameRunning =
+  false;
 
-let lastTime = 0;
+let hp =
+  MAX_HP;
+
+let lastTime =
+  0;
 
 /* =========================================================
    MATH
 ========================================================= */
 
 function rad(v){
-  return v*Math.PI/180;
+
+  return v*
+    Math.PI/
+    180;
 }
 
 function deg(v){
-  return v*180/Math.PI;
+
+  return v*
+    180/
+    Math.PI;
 }
 
-function clamp(v,min,max){
-  return Math.max(min,Math.min(max,v));
+function clamp(
+  v,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      v
+    )
+  );
 }
 
-function random(min,max){
-  return Math.random()*(max-min)+min;
+function random(
+  min,
+  max
+){
+
+  return Math.random()*
+    (max-min)+
+    min;
 }
 
 function normalize360(a){
@@ -516,7 +1040,10 @@ function normalize360(a){
   return a;
 }
 
-function angleDiff(target,current){
+function angleDiff(
+  target,
+  current
+){
 
   let d =
     normalize360(target)-
@@ -533,12 +1060,95 @@ function angleDiff(target,current){
   return d;
 }
 
-function smoothAngle(current,target,amount){
+function smoothAngle(
+  current,
+  target,
+  amount
+){
 
   return normalize360(
+
     current+
-    angleDiff(target,current)*
+
+    angleDiff(
+      target,
+      current
+    )*
+
     amount
+  );
+}
+
+/* =========================================================
+   ★LOCK AREA
+========================================================= */
+
+function getLockArea(){
+
+  return{
+
+    x:
+      W*
+      LOCK_EDGE_MARGIN_X,
+
+    y:
+      H*
+      LOCK_EDGE_MARGIN_Y,
+
+    w:
+      W*
+      (
+        1-
+        LOCK_EDGE_MARGIN_X*
+        2
+      ),
+
+    h:
+      H*
+      (
+        1-
+        LOCK_EDGE_MARGIN_Y*
+        2
+      )
+  };
+}
+
+/* =========================================================
+   ★CREATURE IN LOCK AREA
+========================================================= */
+
+function isCreatureInLockArea(){
+
+  if(
+    !sensorReady ||
+    !creatureVisible
+  ){
+
+    return false;
+  }
+
+  const p =
+    projectCreature(
+      creatureYaw,
+      creaturePitch
+    );
+
+  const area =
+    getLockArea();
+
+  return(
+
+    p.x >= area.x &&
+
+    p.x <=
+      area.x+
+      area.w &&
+
+    p.y >= area.y &&
+
+    p.y <=
+      area.y+
+      area.h
   );
 }
 
@@ -548,7 +1158,8 @@ function smoothAngle(current,target,amount){
 
 function spawnCreature(){
 
-  const now = performance.now();
+  const now =
+    performance.now();
 
   const types = [
     "SKY",
@@ -559,15 +1170,21 @@ function spawnCreature(){
   creatureZone =
     types[
       Math.floor(
-        Math.random()*types.length
+        Math.random()*
+        types.length
       )
     ];
 
   const zone =
-    CREATURE_ZONES[creatureZone];
+    CREATURE_ZONES[
+      creatureZone
+    ];
 
   creatureYaw =
-    random(0,360);
+    random(
+      0,
+      360
+    );
 
   creatureBasePitch =
     random(
@@ -589,32 +1206,52 @@ function spawnCreature(){
       WALK_SPEED_MAX
     );
 
-  runningAway = false;
+  runningAway =
+    false;
 
-  runSpeed = 0;
-  runDistance = 0;
-  runTravel = 0;
+  runSpeed =
+    0;
+
+  runDistance =
+    0;
+
+  runTravel =
+    0;
 
   bobAmplitude =
-    random(5,20);
+    random(
+      5,
+      20
+    );
 
   bobPhase =
-    random(0,Math.PI*2);
+    random(
+      0,
+      Math.PI*2
+    );
 
   bobSpeed =
-    random(.7,1.25);
+    random(
+      .7,
+      1.25
+    );
 
-  creatureVisible = false;
-  wasCreatureVisible = false;
+  creatureVisible =
+    false;
 
-  detected = false;
-  detectedAt = 0;
+  wasCreatureVisible =
+    false;
 
-  lastDetectedTime = now;
+  detected =
+    false;
 
-  /*
-    ★30%で初期睡眠
-  */
+  detectedAt =
+    0;
+
+  lastDetectedTime =
+    now;
+
+  /* 30% SLEEP */
 
   sleeping =
     Math.random() <
@@ -636,7 +1273,8 @@ function spawnCreature(){
 
   }else{
 
-    sleepUntil = 0;
+    sleepUntil =
+      0;
 
     setAnimation(
       "move",
@@ -653,65 +1291,105 @@ function spawnCreature(){
 
   nextSpecialTime =
     now+
-    random(3000,6500);
+    random(
+      3000,
+      6500
+    );
 
   nextAttackTime =
     now+
-    random(4500,8500);
+    random(
+      4500,
+      8500
+    );
 }
 
 /* =========================================================
    START
 ========================================================= */
 
-startButton.addEventListener("click",async()=>{
+startButton.addEventListener(
+  "click",
+  async()=>{
 
-  startButton.disabled = true;
-  startButton.textContent = "STARTING...";
-  errorBox.textContent = "";
+  startButton.disabled =
+    true;
+
+  startButton.textContent =
+    "STARTING...";
+
+  errorBox.textContent =
+    "";
 
   try{
 
-    if(!window.isSecureContext){
+    if(
+      !window.isSecureContext
+    ){
 
       throw new Error(
         "HTTPSで開いてください。"
       );
     }
 
-    let orientationPromise = null;
-    let motionPromise = null;
-
     /*
-      iOS:
-      STARTという1回のユーザー操作から
-      センサー許可を要求
+      =====================================================
+      ★重要
+
+      iPhoneのpermissionは
+      STARTタップから直接呼ぶ。
+      =====================================================
     */
 
+    let orientationPromise =
+      null;
+
+    let motionPromise =
+      null;
+
     if(
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
+      typeof DeviceOrientationEvent
+        !==
+        "undefined" &&
+
+      typeof DeviceOrientationEvent
+        .requestPermission
+        ===
+        "function"
     ){
 
       orientationPromise =
-        DeviceOrientationEvent.requestPermission();
+        DeviceOrientationEvent
+          .requestPermission();
     }
 
     if(
-      typeof DeviceMotionEvent !== "undefined" &&
-      typeof DeviceMotionEvent.requestPermission === "function"
+      typeof DeviceMotionEvent
+        !==
+        "undefined" &&
+
+      typeof DeviceMotionEvent
+        .requestPermission
+        ===
+        "function"
     ){
 
       motionPromise =
-        DeviceMotionEvent.requestPermission();
+        DeviceMotionEvent
+          .requestPermission();
     }
 
-    if(orientationPromise){
+    if(
+      orientationPromise
+    ){
 
       const result =
         await orientationPromise;
 
-      if(result !== "granted"){
+      if(
+        result !==
+        "granted"
+      ){
 
         throw new Error(
           "方向センサーが許可されませんでした。"
@@ -719,12 +1397,17 @@ startButton.addEventListener("click",async()=>{
       }
     }
 
-    if(motionPromise){
+    if(
+      motionPromise
+    ){
 
       const result =
         await motionPromise;
 
-      if(result !== "granted"){
+      if(
+        result !==
+        "granted"
+      ){
 
         throw new Error(
           "モーションセンサーが許可されませんでした。"
@@ -734,7 +1417,8 @@ startButton.addEventListener("click",async()=>{
 
     if(
       !navigator.mediaDevices ||
-      !navigator.mediaDevices.getUserMedia
+      !navigator.mediaDevices
+        .getUserMedia
     ){
 
       throw new Error(
@@ -747,35 +1431,52 @@ startButton.addEventListener("click",async()=>{
     try{
 
       stream =
-        await navigator.mediaDevices.getUserMedia({
+        await navigator
+          .mediaDevices
+          .getUserMedia({
 
-          video:{
-            facingMode:{
-              ideal:"environment"
-            },
-            width:{
-              ideal:1920
-            },
-            height:{
-              ideal:1080
-            }
-          },
+            video:{
 
-          audio:false
-        });
+              facingMode:{
+                ideal:
+                  "environment"
+              },
+
+              width:{
+                ideal:
+                  1920
+              },
+
+              height:{
+                ideal:
+                  1080
+              }
+            },
+
+            audio:false
+          });
 
     }catch(e){
 
       stream =
-        await navigator.mediaDevices.getUserMedia({
-          video:true,
-          audio:false
-        });
+        await navigator
+          .mediaDevices
+          .getUserMedia({
+
+            video:true,
+
+            audio:false
+          });
     }
 
-    camera.srcObject = stream;
-    camera.muted = true;
-    camera.playsInline = true;
+    camera.srcObject =
+      stream;
+
+    camera.muted =
+      true;
+
+    camera.playsInline =
+      true;
 
     await camera.play();
 
@@ -791,43 +1492,70 @@ startButton.addEventListener("click",async()=>{
       {passive:true}
     );
 
-    hp = MAX_HP;
+    hp =
+      MAX_HP;
 
-    locked = false;
+    locked =
+      false;
 
-    lockStartedAt = 0;
-    lockEnd = 0;
-    lastShakeActivity = 0;
-    currentShakePower = 0;
+    lockStartedAt =
+      0;
 
-    lockCooldownUntil = 0;
+    lockEnd =
+      0;
 
-    sensorReady = false;
+    lastShakeActivity =
+      0;
+
+    currentShakePower =
+      0;
+
+    lockCooldownUntil =
+      0;
+
+    sensorReady =
+      false;
 
     spawnCreature();
 
     updateHP();
 
-    setDisplayMode("pixel");
+    setDisplayMode(
+      "pixel"
+    );
 
-    start.style.display = "none";
-    hud.style.display = "block";
-    sensorWait.style.display = "block";
+    start.style.display =
+      "none";
 
-    gameRunning = true;
+    hud.style.display =
+      "block";
+
+    sensorWait.style.display =
+      "block";
+
+    gameRunning =
+      true;
 
     lastTime =
       performance.now();
 
-    requestAnimationFrame(cameraLoop);
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(
+      cameraLoop
+    );
+
+    requestAnimationFrame(
+      gameLoop
+    );
 
   }catch(e){
 
     console.error(e);
 
-    startButton.disabled = false;
-    startButton.textContent = "START";
+    startButton.disabled =
+      false;
+
+    startButton.textContent =
+      "START";
 
     errorBox.textContent =
       (e.name || "ERROR")+
@@ -842,20 +1570,29 @@ startButton.addEventListener("click",async()=>{
 
 function cameraLoop(){
 
-  if(!gameRunning){
+  if(
+    !gameRunning
+  ){
     return;
   }
 
   if(
-    displayMode === "pixel" &&
-    camera.readyState >= 2 &&
-    camera.videoWidth > 0
+    displayMode ===
+      "pixel" &&
+
+    camera.readyState >=
+      2 &&
+
+    camera.videoWidth >
+      0
   ){
 
     drawPixelCamera();
   }
 
-  requestAnimationFrame(cameraLoop);
+  requestAnimationFrame(
+    cameraLoop
+  );
 }
 
 /* =========================================================
@@ -864,15 +1601,24 @@ function cameraLoop(){
 
 function drawPixelCamera(){
 
-  const vw = camera.videoWidth;
-  const vh = camera.videoHeight;
+  const vw =
+    camera.videoWidth;
 
-  if(!vw || !vh){
+  const vh =
+    camera.videoHeight;
+
+  if(
+    !vw ||
+    !vh
+  ){
     return;
   }
 
-  const screenRatio = W/H;
-  const videoRatio = vw/vh;
+  const screenRatio =
+    W/H;
+
+  const videoRatio =
+    vw/vh;
 
   let sx = 0;
   let sy = 0;
@@ -880,18 +1626,30 @@ function drawPixelCamera(){
   let sw = vw;
   let sh = vh;
 
-  if(videoRatio > screenRatio){
+  if(
+    videoRatio >
+    screenRatio
+  ){
 
-    sw = vh*screenRatio;
-    sx = (vw-sw)/2;
+    sw =
+      vh*
+      screenRatio;
+
+    sx =
+      (vw-sw)/2;
 
   }else{
 
-    sh = vw/screenRatio;
-    sy = (vh-sh)/2;
+    sh =
+      vw/
+      screenRatio;
+
+    sy =
+      (vh-sh)/2;
   }
 
-  pixelW = PIXEL_WIDTH;
+  pixelW =
+    PIXEL_WIDTH;
 
   pixelH =
     Math.max(
@@ -903,29 +1661,51 @@ function drawPixelCamera(){
     );
 
   if(
-    rawCanvas.width !== pixelW ||
-    rawCanvas.height !== pixelH
+    rawCanvas.width !==
+      pixelW ||
+
+    rawCanvas.height !==
+      pixelH
   ){
 
-    rawCanvas.width = pixelW;
-    rawCanvas.height = pixelH;
+    rawCanvas.width =
+      pixelW;
 
-    world.width = pixelW;
-    world.height = pixelH;
+    rawCanvas.height =
+      pixelH;
 
-    rawCtx.imageSmoothingEnabled = true;
-    wctx.imageSmoothingEnabled = false;
+    world.width =
+      pixelW;
+
+    world.height =
+      pixelH;
+
+    rawCtx.imageSmoothingEnabled =
+      true;
+
+    wctx.imageSmoothingEnabled =
+      false;
   }
 
   rawCtx.drawImage(
+
     camera,
-    sx,sy,sw,sh,
-    0,0,pixelW,pixelH
+
+    sx,
+    sy,
+    sw,
+    sh,
+
+    0,
+    0,
+    pixelW,
+    pixelH
   );
 
   wctx.drawImage(
     rawCanvas,
-    0,0
+    0,
+    0
   );
 }
 
@@ -936,76 +1716,144 @@ function drawPixelCamera(){
 function orientationHandler(e){
 
   if(
-    !Number.isFinite(e.alpha) ||
-    !Number.isFinite(e.beta) ||
-    !Number.isFinite(e.gamma)
+    !Number.isFinite(
+      e.alpha
+    ) ||
+
+    !Number.isFinite(
+      e.beta
+    ) ||
+
+    !Number.isFinite(
+      e.gamma
+    )
   ){
+
     return;
   }
 
-  const alpha = rad(e.alpha);
-  const beta = rad(e.beta);
-  const gamma = rad(e.gamma);
+  const alpha =
+    rad(
+      e.alpha
+    );
 
-  const ca = Math.cos(alpha);
-  const sa = Math.sin(alpha);
+  const beta =
+    rad(
+      e.beta
+    );
 
-  const cb = Math.cos(beta);
-  const sb = Math.sin(beta);
+  const gamma =
+    rad(
+      e.gamma
+    );
 
-  const cg = Math.cos(gamma);
-  const sg = Math.sin(gamma);
+  const ca =
+    Math.cos(alpha);
+
+  const sa =
+    Math.sin(alpha);
+
+  const cb =
+    Math.cos(beta);
+
+  const sb =
+    Math.sin(beta);
+
+  const cg =
+    Math.cos(gamma);
+
+  const sg =
+    Math.sin(gamma);
 
   let x = 0;
   let y = 0;
   let z = -1;
 
-  let x1 = cg*x+sg*z;
-  let y1 = y;
-  let z1 = -sg*x+cg*z;
+  let x1 =
+    cg*x+
+    sg*z;
 
-  let x2 = x1;
-  let y2 = cb*y1-sb*z1;
-  let z2 = sb*y1+cb*z1;
+  let y1 =
+    y;
 
-  let wx = ca*x2-sa*y2;
-  let wy = sa*x2+ca*y2;
-  let wz = z2;
+  let z1 =
+    -sg*x+
+    cg*z;
 
-  let screenAngle = 0;
+  let x2 =
+    x1;
+
+  let y2 =
+    cb*y1-
+    sb*z1;
+
+  let z2 =
+    sb*y1+
+    cb*z1;
+
+  let wx =
+    ca*x2-
+    sa*y2;
+
+  let wy =
+    sa*x2+
+    ca*y2;
+
+  let wz =
+    z2;
+
+  let screenAngle =
+    0;
 
   if(
     screen.orientation &&
-    typeof screen.orientation.angle === "number"
+    typeof screen.orientation.angle
+      ===
+      "number"
   ){
 
     screenAngle =
       screen.orientation.angle;
 
   }else if(
-    typeof window.orientation === "number"
+    typeof window.orientation
+      ===
+      "number"
   ){
 
     screenAngle =
       window.orientation;
   }
 
-  if(screenAngle !== 0){
+  if(
+    screenAngle !==
+    0
+  ){
 
     const r =
-      rad(-screenAngle);
+      rad(
+        -screenAngle
+      );
 
-    const c = Math.cos(r);
-    const s = Math.sin(r);
+    const c =
+      Math.cos(r);
+
+    const s =
+      Math.sin(r);
 
     const nx =
-      c*wx-s*wy;
+      c*wx-
+      s*wy;
 
     const ny =
-      s*wx+c*wy;
+      s*wx+
+      c*wy;
 
-    wx = nx;
-    wy = ny;
+    wx =
+      nx;
+
+    wy =
+      ny;
   }
 
   const horizontal =
@@ -1016,12 +1864,14 @@ function orientationHandler(e){
 
   targetPitch =
     clamp(
+
       deg(
         Math.atan2(
           wz,
           horizontal
         )
       ),
+
       -90,
       90
     );
@@ -1035,12 +1885,21 @@ function orientationHandler(e){
     );
 
   yaw =
-    normalize360(yaw);
+    normalize360(
+      yaw
+    );
 
   if(
-    typeof e.webkitCompassHeading === "number" &&
-    Number.isFinite(e.webkitCompassHeading) &&
-    horizontal > .15
+    typeof e.webkitCompassHeading
+      ===
+      "number" &&
+
+    Number.isFinite(
+      e.webkitCompassHeading
+    ) &&
+
+    horizontal >
+      .15
   ){
 
     yaw =
@@ -1049,14 +1908,21 @@ function orientationHandler(e){
       );
   }
 
-  targetYaw = yaw;
+  targetYaw =
+    yaw;
 
-  if(!sensorReady){
+  if(
+    !sensorReady
+  ){
 
-    cameraYaw = targetYaw;
-    cameraPitch = targetPitch;
+    cameraYaw =
+      targetYaw;
 
-    sensorReady = true;
+    cameraPitch =
+      targetPitch;
+
+    sensorReady =
+      true;
 
     sensorWait.style.display =
       "none";
@@ -1069,21 +1935,30 @@ function orientationHandler(e){
 
 function gameLoop(time){
 
-  if(!gameRunning){
+  if(
+    !gameRunning
+  ){
     return;
   }
 
   let dt =
-    (time-lastTime)/1000;
+    (time-lastTime)/
+    1000;
 
-  lastTime = time;
+  lastTime =
+    time;
 
   dt =
-    Math.min(dt,.05);
+    Math.min(
+      dt,
+      .05
+    );
 
   /* SENSOR */
 
-  if(sensorReady){
+  if(
+    sensorReady
+  ){
 
     cameraYaw =
       smoothAngle(
@@ -1101,29 +1976,23 @@ function gameLoop(time){
   }
 
   /* =====================================================
-     ★LOCK
-
-     1. 振っている間だけ継続
-     2. 振るのをやめたら即解除
-     3. 最大5秒
+     LOCK
   ===================================================== */
 
-  if(locked){
+  if(
+    locked
+  ){
 
     const remaining =
-      lockEnd-time;
+      lockEnd-
+      time;
 
     const sinceLastShake =
       time-
       lastShakeActivity;
 
     /*
-      ★SHAKE停止判定
-
-      180ms以上、
-      SHAKEとして認識されていない
-      ↓
-      ロック解除
+      振るのをやめた
     */
 
     const shakeStopped =
@@ -1131,11 +2000,12 @@ function gameLoop(time){
       SHAKE_RELEASE_DELAY;
 
     /*
-      最大5秒
+      5秒
     */
 
     const maxTimeReached =
-      remaining <= 0;
+      remaining <=
+      0;
 
     if(
       shakeStopped ||
@@ -1143,17 +2013,10 @@ function gameLoop(time){
     ){
 
       releaseLock(
-        time,
-        shakeStopped
-        ? "SHAKE_STOP"
-        : "MAX_TIME"
+        time
       );
 
     }else{
-
-      /*
-        振っている間だけダメージ
-      */
 
       hp -=
         DAMAGE_PER_SECOND*
@@ -1167,14 +2030,20 @@ function gameLoop(time){
 
       updateHP();
 
-      if(hp <= 0){
+      if(
+        hp <=
+        0
+      ){
 
         hp = 0;
 
         updateHP();
 
-        locked = false;
-        gameRunning = false;
+        locked =
+          false;
+
+        gameRunning =
+          false;
 
         lockText.textContent =
           "★ CAPTURED ★";
@@ -1188,7 +2057,9 @@ function gameLoop(time){
         cooldownText.style.display =
           "none";
 
-        renderGame(time);
+        renderGame(
+          time
+        );
 
         return;
       }
@@ -1196,7 +2067,8 @@ function gameLoop(time){
       timer.textContent =
         Math.max(
           0,
-          remaining/1000
+          remaining/
+          1000
         ).toFixed(1);
     }
   }
@@ -1205,11 +2077,15 @@ function gameLoop(time){
      MOVEMENT
   ===================================================== */
 
-  if(!locked){
+  if(
+    !locked
+  ){
 
     /* RUN */
 
-    if(runningAway){
+    if(
+      runningAway
+    ){
 
       const move =
         runSpeed*
@@ -1217,22 +2093,28 @@ function gameLoop(time){
 
       creatureYaw =
         normalize360(
+
           creatureYaw+
+
           moveDirection*
           move
         );
 
       runTravel +=
-        Math.abs(move);
+        Math.abs(
+          move
+        );
 
       if(
         runTravel >=
         runDistance
       ){
 
-        runningAway = false;
+        runningAway =
+          false;
 
-        sleeping = false;
+        sleeping =
+          false;
 
         setAnimation(
           "move",
@@ -1249,21 +2131,28 @@ function gameLoop(time){
 
     }else{
 
-      /* ===============================================
-         SLEEP AI
-      =============================================== */
+      /* =================================================
+         SLEEP
+      ================================================= */
 
-      if(!creatureVisible){
+      if(
+        !creatureVisible
+      ){
 
-        if(sleeping){
+        if(
+          sleeping
+        ){
 
           if(
             time >=
             sleepUntil
           ){
 
-            sleeping = false;
-            sleepUntil = 0;
+            sleeping =
+              false;
+
+            sleepUntil =
+              0;
 
             setAnimation(
               "move",
@@ -1288,9 +2177,12 @@ function gameLoop(time){
             lastDetectedTime;
 
           const sleepChance =
+
             unseenTime >=
-            LONG_UNSEEN_TIME
+              LONG_UNSEEN_TIME
+
             ? LONG_SLEEP_CHANCE
+
             : NORMAL_SLEEP_CHANCE;
 
           if(
@@ -1298,7 +2190,8 @@ function gameLoop(time){
             sleepChance
           ){
 
-            sleeping = true;
+            sleeping =
+              true;
 
             sleepUntil =
               time+
@@ -1326,7 +2219,9 @@ function gameLoop(time){
 
       /* WALK */
 
-      if(!sleeping){
+      if(
+        !sleeping
+      ){
 
         const move =
           walkSpeed*
@@ -1334,7 +2229,9 @@ function gameLoop(time){
 
         creatureYaw =
           normalize360(
+
             creatureYaw+
+
             moveDirection*
             move
           );
@@ -1349,7 +2246,9 @@ function gameLoop(time){
      VISIBILITY
   ===================================================== */
 
-  if(sensorReady){
+  if(
+    sensorReady
+  ){
 
     const dx =
       angleDiff(
@@ -1362,36 +2261,41 @@ function gameLoop(time){
       cameraPitch;
 
     creatureVisible =
-      Math.abs(dx)<HFOV/2 &&
-      Math.abs(dy)<VFOV/2;
+
+      Math.abs(dx) <
+        HFOV/2 &&
+
+      Math.abs(dy) <
+        VFOV/2;
 
     /*
-      ★画面に入った瞬間
+      ★画面に入った
     */
 
     if(
       creatureVisible &&
+
       !wasCreatureVisible &&
+
       !locked &&
+
       !runningAway
     ){
 
       lastDetectedTime =
         time;
 
-      /*
-        SLEEP解除
-      */
+      sleeping =
+        false;
 
-      sleeping = false;
-      sleepUntil = 0;
+      sleepUntil =
+        0;
 
-      /*
-        発見開始
-      */
+      detected =
+        true;
 
-      detected = true;
-      detectedAt = time;
+      detectedAt =
+        time;
 
       setAnimation(
         "move",
@@ -1400,19 +2304,25 @@ function gameLoop(time){
     }
 
     /*
-      0.5秒以内に逃した
+      0.5秒以内に画面外へ
     */
 
     if(
       !creatureVisible &&
+
       detected &&
+
       !runningAway
     ){
 
-      detected = false;
-      detectedAt = 0;
+      detected =
+        false;
 
-      sleeping = false;
+      detectedAt =
+        0;
+
+      sleeping =
+        false;
 
       setAnimation(
         "move",
@@ -1428,22 +2338,31 @@ function gameLoop(time){
     }
 
     /*
-      ★0.5秒捉えた
+      ★0.5秒発見
     */
 
     if(
       creatureVisible &&
+
       detected &&
+
       !locked &&
+
       !runningAway &&
-      time-detectedAt >=
+
+      time-
+      detectedAt >=
       NOTICE_DELAY
     ){
 
-      detected = false;
-      detectedAt = 0;
+      detected =
+        false;
 
-      sleeping = false;
+      detectedAt =
+        0;
+
+      sleeping =
+        false;
 
       /*
         FRAME 9
@@ -1469,14 +2388,17 @@ function gameLoop(time){
       creatureVisible;
   }
 
-  /* ANIMATION */
+  updateAnimation(
+    time
+  );
 
-  updateAnimation(time);
-
-  /* COOLDOWN */
+  /* =====================================================
+     COOLDOWN
+  ===================================================== */
 
   if(
     !locked &&
+
     time <
     lockCooldownUntil
   ){
@@ -1501,9 +2423,13 @@ function gameLoop(time){
       "none";
   }
 
-  renderGame(time);
+  renderGame(
+    time
+  );
 
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(
+    gameLoop
+  );
 }
 
 /* =========================================================
@@ -1516,12 +2442,17 @@ function startRun(
   keepAnimation=false
 ){
 
-  runningAway = true;
+  runningAway =
+    true;
 
-  runTravel = 0;
+  runTravel =
+    0;
 
-  sleeping = false;
-  sleepUntil = 0;
+  sleeping =
+    false;
+
+  sleepUntil =
+    0;
 
   /*
     ★60%でWALKと逆方向
@@ -1532,11 +2463,17 @@ function startRun(
     RUN_REVERSE_CHANCE
   ){
 
-    moveDirection *= -1;
+    moveDirection *=
+      -1;
   }
 
+  /*
+    SPEED
+  */
+
   if(
-    reason === "release"
+    reason ===
+    "release"
   ){
 
     runSpeed =
@@ -1561,7 +2498,10 @@ function startRun(
     );
 
   bobAmplitude =
-    random(5,20);
+    random(
+      5,
+      20
+    );
 
   bobPhase =
     random(
@@ -1570,9 +2510,14 @@ function startRun(
     );
 
   bobSpeed =
-    random(1.1,1.8);
+    random(
+      1.1,
+      1.8
+    );
 
-  if(!keepAnimation){
+  if(
+    !keepAnimation
+  ){
 
     setAnimation(
       "move",
@@ -1599,35 +2544,61 @@ function startRun(
    ANIMATION
 ========================================================= */
 
-function setAnimation(state,time){
+function setAnimation(
+  state,
+  time
+){
 
-  animState = state;
-  animStateStart = time;
+  animState =
+    state;
 
-  switch(state){
+  animStateStart =
+    time;
+
+  switch(
+    state
+  ){
 
     case "sleep":
-      animFrame = 8;
+
+      animFrame =
+        8;
+
       break;
 
     case "notice":
-      animFrame = 9;
+
+      animFrame =
+        9;
+
       break;
 
     case "move":
-      animFrame = 1;
+
+      animFrame =
+        1;
+
       break;
 
     case "damage":
-      animFrame = 10;
+
+      animFrame =
+        10;
+
       break;
 
     case "attack":
-      animFrame = 12;
+
+      animFrame =
+        12;
+
       break;
 
     case "special":
-      animFrame = 14;
+
+      animFrame =
+        14;
+
       break;
   }
 }
@@ -1636,14 +2607,15 @@ function setAnimation(state,time){
    UPDATE ANIMATION
 ========================================================= */
 
-function updateAnimation(time){
+function updateAnimation(
+  time
+){
 
-  /*
-    ロック中
-    10-11 DAMAGE
-  */
+  /* DAMAGE */
 
-  if(locked){
+  if(
+    locked
+  ){
 
     animState =
       "damage";
@@ -1652,8 +2624,10 @@ function updateAnimation(time){
       10+
       (
         Math.floor(
-          time/140
-        )%2
+          time/
+          140
+        )%
+        2
       );
 
     return;
@@ -1663,16 +2637,15 @@ function updateAnimation(time){
     time-
     animStateStart;
 
-  /*
-    9 NOTICE
-  */
+  /* NOTICE */
 
   if(
     animState ===
     "notice"
   ){
 
-    animFrame = 9;
+    animFrame =
+      9;
 
     if(
       elapsed >=
@@ -1688,9 +2661,7 @@ function updateAnimation(time){
     return;
   }
 
-  /*
-    SPECIAL
-  */
+  /* SPECIAL */
 
   if(
     animState ===
@@ -1701,12 +2672,15 @@ function updateAnimation(time){
       14+
       (
         Math.floor(
-          elapsed/120
-        )%2
+          elapsed/
+          120
+        )%
+        2
       );
 
     if(
-      elapsed >= 360
+      elapsed >=
+      360
     ){
 
       setAnimation(
@@ -1725,9 +2699,7 @@ function updateAnimation(time){
     return;
   }
 
-  /*
-    ATTACK
-  */
+  /* ATTACK */
 
   if(
     animState ===
@@ -1738,12 +2710,15 @@ function updateAnimation(time){
       12+
       (
         Math.floor(
-          elapsed/120
-        )%2
+          elapsed/
+          120
+        )%
+        2
       );
 
     if(
-      elapsed >= 360
+      elapsed >=
+      360
     ){
 
       setAnimation(
@@ -1762,30 +2737,32 @@ function updateAnimation(time){
     return;
   }
 
-  /*
-    SLEEP
-  */
+  /* SLEEP */
 
   if(
     sleeping &&
+
     !creatureVisible &&
+
     !detected &&
+
     !runningAway
   ){
 
     animState =
       "sleep";
 
-    animFrame = 8;
+    animFrame =
+      8;
 
     return;
   }
 
-  /*
-    RUN
-  */
+  /* RUN */
 
-  if(runningAway){
+  if(
+    runningAway
+  ){
 
     animState =
       "move";
@@ -1794,14 +2771,18 @@ function updateAnimation(time){
       1+
       (
         Math.floor(
-          time/55
-        )%4
+          time/
+          55
+        )%
+        4
       );
 
     if(
       time >=
-      nextSpecialTime &&
-      Math.random() < .03
+        nextSpecialTime &&
+
+      Math.random() <
+        .03
     ){
 
       setAnimation(
@@ -1815,9 +2796,7 @@ function updateAnimation(time){
     return;
   }
 
-  /*
-    WALK
-  */
+  /* WALK */
 
   animState =
     "move";
@@ -1826,8 +2805,10 @@ function updateAnimation(time){
     1+
     (
       Math.floor(
-        time/105
-      )%4
+        time/
+        105
+      )%
+      4
     );
 }
 
@@ -1850,6 +2831,10 @@ function projectCreature(
     pitch-
     cameraPitch;
 
+  /*
+    LEFT / RIGHT
+  */
+
   const x =
     W/2+
     (
@@ -1857,6 +2842,10 @@ function projectCreature(
       (HFOV/2)
     )*
     (W/2);
+
+  /*
+    UP / DOWN
+  */
 
   const y =
     H/2-
@@ -1874,30 +2863,117 @@ function projectCreature(
     dy,
 
     visible:
-      Math.abs(dx)<HFOV/2 &&
-      Math.abs(dy)<VFOV/2
+
+      Math.abs(dx) <
+        HFOV/2 &&
+
+      Math.abs(dy) <
+        VFOV/2
   };
+}
+
+/* =========================================================
+   ★DRAW LOCK AREA
+
+   白い点線の四角
+========================================================= */
+
+function drawLockArea(
+  time
+){
+
+  const area =
+    getLockArea();
+
+  ctx.save();
+
+  /*
+    点線
+  */
+
+  ctx.strokeStyle =
+    "rgba(255,255,255,.92)";
+
+  ctx.lineWidth =
+    2;
+
+  ctx.setLineDash([
+    8,
+    7
+  ]);
+
+  /*
+    点線をほんの少し動かす
+  */
+
+  ctx.lineDashOffset =
+    -(time*.012)%15;
+
+  ctx.strokeRect(
+
+    Math.round(
+      area.x
+    ),
+
+    Math.round(
+      area.y
+    ),
+
+    Math.round(
+      area.w
+    ),
+
+    Math.round(
+      area.h
+    )
+  );
+
+  ctx.restore();
 }
 
 /* =========================================================
    RENDER
 ========================================================= */
 
-function renderGame(time){
+function renderGame(
+  time
+){
 
   ctx.clearRect(
-    0,0,W,H
+    0,
+    0,
+    W,
+    H
   );
 
-  drawCreature(time);
+  /*
+    ★白点線のロックエリア
+  */
 
-  let detectionRemaining = 0;
+  drawLockArea(
+    time
+  );
 
-  if(detected){
+  /*
+    CREATURE
+  */
+
+  drawCreature(
+    time
+  );
+
+  let detectionRemaining =
+    0;
+
+  if(
+    detected
+  ){
 
     detectionRemaining =
       Math.max(
+
         0,
+
         (
           NOTICE_DELAY-
           (
@@ -1911,7 +2987,9 @@ function renderGame(time){
 
   const unseen =
     Math.max(
+
       0,
+
       (
         time-
         lastDetectedTime
@@ -1920,25 +2998,23 @@ function renderGame(time){
     );
 
   const sleepChance =
-    unseen >= 30
+    unseen >=
+      30
     ? 50
     : 30;
 
-  const shakeAge =
-    locked
-    ? Math.max(
-        0,
-        time-lastShakeActivity
-      )
-    : 0;
+  const inLockArea =
+    isCreatureInLockArea();
 
   debug.innerHTML =
 
     "YAW "+
-    cameraYaw.toFixed(1)+"°"+
+    cameraYaw.toFixed(1)+
+    "°"+
 
     "<br>PITCH "+
-    cameraPitch.toFixed(1)+"°"+
+    cameraPitch.toFixed(1)+
+    "°"+
 
     "<br>TYPE "+
     creatureZone+
@@ -1949,56 +3025,69 @@ function renderGame(time){
     "<br>VISIBLE "+
     creatureVisible+
 
-    "<br>DETECT "+
-    detectionRemaining.toFixed(2)+
+    "<br>LOCK AREA "+
+    inLockArea+
 
     "<br>STATE "+
     (
       locked
       ? "LOCK"
+
       : runningAway
         ? "RUN"
+
         : sleeping
           ? "SLEEP"
+
           : "WALK"
     )+
 
     "<br>DIR "+
     (
-      moveDirection > 0
+      moveDirection >
+      0
+
       ? "RIGHT"
+
       : "LEFT"
     )+
 
     "<br>WALK "+
-    walkSpeed.toFixed(1)+"°/s"+
+    walkSpeed.toFixed(1)+
+    "°/s"+
 
     "<br>RUN "+
-    runSpeed.toFixed(1)+"°/s"+
+    runSpeed.toFixed(1)+
+    "°/s"+
 
     "<br>SHAKE "+
     currentShakePower.toFixed(1)+
 
-    "<br>SHAKE AGE "+
-    shakeAge.toFixed(0)+"ms"+
-
     "<br>UNSEEN "+
-    unseen.toFixed(1)+"s"+
+    unseen.toFixed(1)+
+    "s"+
 
     "<br>SLEEP "+
-    sleepChance+"%"+
+    sleepChance+
+    "%"+
 
     "<br>HP "+
-    Math.ceil(hp);
+    Math.ceil(
+      hp
+    );
 }
 
 /* =========================================================
    DRAW CREATURE
 ========================================================= */
 
-function drawCreature(time){
+function drawCreature(
+  time
+){
 
-  if(!creatureVisible){
+  if(
+    !creatureVisible
+  ){
     return;
   }
 
@@ -2008,11 +3097,14 @@ function drawCreature(time){
       creaturePitch
     );
 
-  if(!p.visible){
+  if(
+    !p.visible
+  ){
     return;
   }
 
-  let bob = 0;
+  let bob =
+    0;
 
   if(
     !sleeping &&
@@ -2021,9 +3113,13 @@ function drawCreature(time){
 
     bob =
       Math.sin(
-        time*.001*
+
+        time*
+        .001*
         bobSpeed+
+
         bobPhase
+
       )*
       bobAmplitude;
   }
@@ -2041,9 +3137,15 @@ function drawCreature(time){
 
   const S =
     clamp(
+
       Math.round(
-        Math.min(W,H)/72
+        Math.min(
+          W,
+          H
+        )/
+        72
       ),
+
       5,
       8
     );
@@ -2056,7 +3158,8 @@ function drawCreature(time){
   );
 
   if(
-    moveDirection < 0
+    moveDirection <
+    0
   ){
 
     ctx.scale(
@@ -2071,13 +3174,21 @@ function drawCreature(time){
     time
   );
 
-  if(locked){
+  /*
+    LOCK表示
+  */
+
+  if(
+    locked
+  ){
 
     ctx.strokeStyle =
       "#fff";
 
     ctx.lineWidth =
       3;
+
+    ctx.setLineDash([]);
 
     const pulse =
       12*S+
@@ -2087,9 +3198,13 @@ function drawCreature(time){
       S;
 
     ctx.strokeRect(
+
       -pulse,
+
       -pulse,
+
       pulse*2,
+
       pulse*2
     );
   }
@@ -2098,27 +3213,43 @@ function drawCreature(time){
 }
 
 /* =========================================================
-   PIXEL
+   PIXEL HELPER
 ========================================================= */
 
 function px(
-  x,y,w,h,
-  color,S
+  x,
+  y,
+  w,
+  h,
+  color,
+  S
 ){
 
   ctx.fillStyle =
     color;
 
   ctx.fillRect(
-    Math.round(x*S),
-    Math.round(y*S),
-    Math.round(w*S),
-    Math.round(h*S)
+
+    Math.round(
+      x*S
+    ),
+
+    Math.round(
+      y*S
+    ),
+
+    Math.round(
+      w*S
+    ),
+
+    Math.round(
+      h*S
+    )
   );
 }
 
 /* =========================================================
-   CHARACTER
+   CHARACTER FRAMES
 ========================================================= */
 
 function drawPixelFrame(
@@ -2127,7 +3258,8 @@ function drawPixelFrame(
   time
 ){
 
-  const OUTLINE = "#17121e";
+  const OUTLINE =
+    "#17121e";
 
   const BODY =
     locked
@@ -2144,13 +3276,20 @@ function drawPixelFrame(
     ? "#1598b0"
     : "#5a35aa";
 
-  const WHITE = "#fff";
-  const BLACK = "#151219";
-  const PINK = "#ff8ebd";
-  const YELLOW = "#ffe66d";
+  const WHITE =
+    "#fff";
+
+  const BLACK =
+    "#151219";
+
+  const PINK =
+    "#ff8ebd";
+
+  const YELLOW =
+    "#ffe66d";
 
   /*
-    shadow
+    SHADOW
   */
 
   px(
@@ -2160,12 +3299,20 @@ function drawPixelFrame(
     S
   );
 
-  /* 1 */
+  /* =====================================================
+     1 WALK
+  ===================================================== */
 
-  if(frame===1){
+  if(
+    frame === 1
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-8,0,3,2,OUTLINE,S);
@@ -2181,20 +3328,31 @@ function drawPixelFrame(
     px(3,6,3,2,BODY,S);
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
   }
 
-  /* 2 */
+  /* =====================================================
+     2 WALK
+  ===================================================== */
 
-  else if(frame===2){
+  else if(
+    frame === 2
+  ){
 
     ctx.translate(
-      0,-S
+      0,
+      -S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-8,-1,4,2,OUTLINE,S);
@@ -2210,16 +3368,26 @@ function drawPixelFrame(
     px(2,6,2,3,BODY,S);
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
   }
 
-  /* 3 */
+  /* =====================================================
+     3 WALK
+  ===================================================== */
 
-  else if(frame===3){
+  else if(
+    frame === 3
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-9,-1,4,2,OUTLINE,S);
@@ -2235,20 +3403,31 @@ function drawPixelFrame(
     px(2,6,2,3,BODY,S);
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
   }
 
-  /* 4 */
+  /* =====================================================
+     4 WALK
+  ===================================================== */
 
-  else if(frame===4){
+  else if(
+    frame === 4
+  ){
 
     ctx.translate(
-      0,-S
+      0,
+      -S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-8,0,3,2,OUTLINE,S);
@@ -2264,32 +3443,52 @@ function drawPixelFrame(
     px(3,6,3,2,BODY,S);
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
   }
 
-  /* 5 */
+  /* =====================================================
+     5 TURN
+  ===================================================== */
 
-  else if(frame===5){
+  else if(
+    frame === 5
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(1,-2,4,3,WHITE,S);
     px(3,-1,2,2,BLACK,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
   }
 
-  /* 6 */
+  /* =====================================================
+     6 TURN
+  ===================================================== */
 
-  else if(frame===6){
+  else if(
+    frame === 6
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-1,-2,3,3,WHITE,S);
@@ -2299,16 +3498,26 @@ function drawPixelFrame(
     px(4,-1,1,2,BLACK,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
   }
 
-  /* 7 */
+  /* =====================================================
+     7 TURN
+  ===================================================== */
 
-  else if(frame===7){
+  else if(
+    frame === 7
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-4,-3,3,4,WHITE,S);
@@ -2320,20 +3529,31 @@ function drawPixelFrame(
     px(-1,2,2,2,BLACK,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
   }
 
-  /* 8 SLEEP */
+  /* =====================================================
+     8 SLEEP
+  ===================================================== */
 
-  else if(frame===8){
+  else if(
+    frame === 8
+  ){
 
     ctx.translate(
-      0,S
+      0,
+      S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-4,-1,3,1,BLACK,S);
@@ -2348,7 +3568,9 @@ function drawPixelFrame(
     px(5,2,2,2,BODY,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
 
     /*
@@ -2365,16 +3587,25 @@ function drawPixelFrame(
     px(11,-8,2,1,WHITE,S);
   }
 
-  /* 9 NOTICE */
+  /* =====================================================
+     9 NOTICE
+  ===================================================== */
 
-  else if(frame===9){
+  else if(
+    frame === 9
+  ){
 
     ctx.translate(
-      0,-2*S
+      0,
+      -2*S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-5,-3,4,4,WHITE,S);
@@ -2392,33 +3623,50 @@ function drawPixelFrame(
     px(5,-3,2,3,BODY,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
 
     px(9,-10,2,5,YELLOW,S);
     px(9,-3,2,2,YELLOW,S);
   }
 
-  /* 10 DAMAGE */
+  /* =====================================================
+     10 DAMAGE
+  ===================================================== */
 
-  else if(frame===10){
+  else if(
+    frame === 10
+  ){
 
     ctx.translate(
-      -S,S
+      -S,
+      S
     );
 
-    ctx.rotate(-.08);
+    ctx.rotate(
+      -.08
+    );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     drawXEye(
-      -3,-1,S,WHITE
+      -3,-1,
+      S,
+      WHITE
     );
 
     drawXEye(
-      3,-1,S,WHITE
+      3,-1,
+      S,
+      WHITE
     );
 
     px(-2,3,4,1,BLACK,S);
@@ -2427,7 +3675,9 @@ function drawPixelFrame(
     px(5,2,4,3,OUTLINE,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
 
     px(8,-7,2,3,YELLOW,S);
@@ -2435,26 +3685,41 @@ function drawPixelFrame(
     px(9,-3,2,3,YELLOW,S);
   }
 
-  /* 11 DAMAGE */
+  /* =====================================================
+     11 DAMAGE
+  ===================================================== */
 
-  else if(frame===11){
+  else if(
+    frame === 11
+  ){
 
     ctx.translate(
-      S,-S
+      S,
+      -S
     );
 
-    ctx.rotate(.08);
+    ctx.rotate(
+      .08
+    );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     drawXEye(
-      -3,-1,S,WHITE
+      -3,-1,
+      S,
+      WHITE
     );
 
     drawXEye(
-      3,-1,S,WHITE
+      3,-1,
+      S,
+      WHITE
     );
 
     px(-1,3,3,1,BLACK,S);
@@ -2463,7 +3728,9 @@ function drawPixelFrame(
     px(5,-2,4,3,OUTLINE,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
 
     px(-10,-6,2,3,YELLOW,S);
@@ -2471,16 +3738,26 @@ function drawPixelFrame(
     px(-10,-1,2,2,YELLOW,S);
   }
 
-  /* 12 ATTACK */
+  /* =====================================================
+     12 ATTACK
+  ===================================================== */
 
-  else if(frame===12){
+  else if(
+    frame === 12
+  ){
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
 
     px(-9,0,4,3,OUTLINE,S);
@@ -2490,24 +3767,37 @@ function drawPixelFrame(
     px(5,-4,2,5,BODY,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
   }
 
-  /* 13 ATTACK */
+  /* =====================================================
+     13 ATTACK
+  ===================================================== */
 
-  else if(frame===13){
+  else if(
+    frame === 13
+  ){
 
     ctx.translate(
-      2*S,0
+      2*S,
+      0
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     faceNormal(
-      S,WHITE,BLACK
+      S,
+      WHITE,
+      BLACK
     );
 
     px(5,-1,7,4,OUTLINE,S);
@@ -2517,7 +3807,9 @@ function drawPixelFrame(
     px(11,-1,2,3,LIGHT,S);
 
     legsNeutral(
-      S,BODY,OUTLINE
+      S,
+      BODY,
+      OUTLINE
     );
 
     px(15,-3,1,3,YELLOW,S);
@@ -2525,20 +3817,31 @@ function drawPixelFrame(
     px(15,3,1,2,YELLOW,S);
   }
 
-  /* 14 SPECIAL */
+  /* =====================================================
+     14 SPECIAL
+  ===================================================== */
 
-  else if(frame===14){
+  else if(
+    frame === 14
+  ){
 
     ctx.translate(
-      0,-4*S
+      0,
+      -4*S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     faceHappy(
-      S,BLACK,PINK
+      S,
+      BLACK,
+      PINK
     );
 
     px(-8,-5,3,6,OUTLINE,S);
@@ -2551,16 +3854,25 @@ function drawPixelFrame(
     px(2,6,4,2,OUTLINE,S);
   }
 
-  /* 15 SPECIAL */
+  /* =====================================================
+     15 SPECIAL
+  ===================================================== */
 
-  else if(frame===15){
+  else if(
+    frame === 15
+  ){
 
     ctx.translate(
-      0,-2*S
+      0,
+      -2*S
     );
 
     bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
+      S,
+      BODY,
+      LIGHT,
+      DARK,
+      OUTLINE
     );
 
     px(-4,-1,3,1,BLACK,S);
@@ -2604,9 +3916,11 @@ function bodyBase(
   px(4,-7,2,4,BODY,S);
 
   px(-6,-4,13,11,OUTLINE,S);
+
   px(-5,-3,11,9,BODY,S);
 
   px(-4,-3,7,1,LIGHT,S);
+
   px(4,-1,2,6,DARK,S);
 }
 
@@ -2621,9 +3935,11 @@ function faceNormal(
 ){
 
   px(-4,-2,3,3,WHITE,S);
+
   px(-2,-1,1,2,BLACK,S);
 
   px(2,-2,3,3,WHITE,S);
+
   px(2,-1,1,2,BLACK,S);
 
   px(-1,3,2,1,BLACK,S);
@@ -2636,9 +3952,11 @@ function faceHappy(
 ){
 
   px(-4,-1,3,1,BLACK,S);
+
   px(2,-1,3,1,BLACK,S);
 
   px(-2,2,5,1,BLACK,S);
+
   px(-1,3,3,1,PINK,S);
 }
 
@@ -2653,9 +3971,11 @@ function legsNeutral(
 ){
 
   px(-4,6,3,4,OUTLINE,S);
+
   px(-3,6,2,3,BODY,S);
 
   px(2,6,3,4,OUTLINE,S);
+
   px(2,6,2,3,BODY,S);
 }
 
@@ -2664,32 +3984,71 @@ function legsNeutral(
 ========================================================= */
 
 function drawXEye(
-  x,y,S,color
+  x,
+  y,
+  S,
+  color
 ){
 
-  px(x-1,y-1,1,1,color,S);
-  px(x+1,y-1,1,1,color,S);
+  px(
+    x-1,
+    y-1,
+    1,1,
+    color,
+    S
+  );
 
-  px(x,y,1,1,color,S);
+  px(
+    x+1,
+    y-1,
+    1,1,
+    color,
+    S
+  );
 
-  px(x-1,y+1,1,1,color,S);
-  px(x+1,y+1,1,1,color,S);
+  px(
+    x,
+    y,
+    1,1,
+    color,
+    S
+  );
+
+  px(
+    x-1,
+    y+1,
+    1,1,
+    color,
+    S
+  );
+
+  px(
+    x+1,
+    y+1,
+    1,1,
+    color,
+    S
+  );
 }
 
 /* =========================================================
-   ★SHAKE SENSOR
+   SHAKE
 ========================================================= */
 
 function motionHandler(e){
 
-  if(!gameRunning){
+  if(
+    !gameRunning
+  ){
     return;
   }
 
   const a =
     e.accelerationIncludingGravity;
 
-  if(!a){
+  if(
+    !a
+  ){
     return;
   }
 
@@ -2709,10 +4068,6 @@ function motionHandler(e){
       z*z
     );
 
-  /*
-    重力分9.81を除外
-  */
-
   const shake =
     Math.abs(
       magnitude-
@@ -2726,23 +4081,17 @@ function motionHandler(e){
     performance.now();
 
   /*
-    ============================================
-    ★すでにLOCK中
+    =====================================================
+    LOCK中
 
-    振動が続いていれば
-    最終SHAKE時刻を更新
-    ============================================
+    弱めのSHAKEでも
+    「まだ振っている」とする
+    =====================================================
   */
 
-  if(locked){
-
-    /*
-      ロック開始後は少し低い閾値で
-      「まだ振っている」を判定。
-
-      開始には9必要だが、
-      維持には4でよい。
-    */
+  if(
+    locked
+  ){
 
     if(
       shake >=
@@ -2757,9 +4106,7 @@ function motionHandler(e){
   }
 
   /*
-    ============================================
-    LOCKしていない
-    ============================================
+    キャラが画面にいない
   */
 
   if(
@@ -2767,6 +4114,21 @@ function motionHandler(e){
   ){
     return;
   }
+
+  /*
+    ★白点線の四角外では
+    絶対LOCK不可
+  */
+
+  if(
+    !isCreatureInLockArea()
+  ){
+    return;
+  }
+
+  /*
+    COOL DOWN
+  */
 
   if(
     now <
@@ -2776,7 +4138,7 @@ function motionHandler(e){
   }
 
   /*
-    ★9以上でLOCK開始
+    ★SHAKEでLOCK
   */
 
   if(
@@ -2792,7 +4154,7 @@ function motionHandler(e){
 }
 
 /* =========================================================
-   ★LOCK START
+   LOCK START
 ========================================================= */
 
 function lockCreature(
@@ -2800,35 +4162,41 @@ function lockCreature(
   now
 ){
 
+  /*
+    ★二重チェック
+  */
+
   if(
     !creatureVisible ||
+
+    !isCreatureInLockArea() ||
+
     locked ||
+
     now <
     lockCooldownUntil
   ){
+
     return;
   }
 
-  locked = true;
-
-  /*
-    ★ロック開始
-  */
+  locked =
+    true;
 
   lockStartedAt =
     now;
 
   /*
-    ★最大5秒
+    最大5秒
   */
 
   lockEnd =
     now+
-    MAX_LOCK*1000;
+    MAX_LOCK*
+    1000;
 
   /*
-    ★今まさに振っているので
-    最終SHAKE時刻もnow
+    SHAKE継続判定
   */
 
   lastShakeActivity =
@@ -2838,13 +4206,20 @@ function lockCreature(
     キャラクター停止
   */
 
-  runningAway = false;
+  runningAway =
+    false;
 
-  sleeping = false;
-  sleepUntil = 0;
+  sleeping =
+    false;
 
-  detected = false;
-  detectedAt = 0;
+  sleepUntil =
+    0;
+
+  detected =
+    false;
+
+  detectedAt =
+    0;
 
   setAnimation(
     "damage",
@@ -2879,23 +4254,21 @@ function lockCreature(
 }
 
 /* =========================================================
-   ★LOCK RELEASE
-
-   SHAKE停止でも
-   5秒経過でも
-   ここを通る
+   LOCK RELEASE
 ========================================================= */
 
 function releaseLock(
-  time,
-  reason
+  time
 ){
 
-  if(!locked){
+  if(
+    !locked
+  ){
     return;
   }
 
-  locked = false;
+  locked =
+    false;
 
   lockText.style.display =
     "none";
@@ -2904,25 +4277,31 @@ function releaseLock(
     "none";
 
   /*
-    ★解除後3秒
-    再ロック不可
+    ★3秒間LOCK禁止
   */
 
   lockCooldownUntil =
     time+
     LOCK_COOLDOWN;
 
-  detected = false;
-  detectedAt = 0;
+  detected =
+    false;
 
-  sleeping = false;
-  sleepUntil = 0;
+  detectedAt =
+    0;
 
-  currentShakePower = 0;
+  sleeping =
+    false;
+
+  sleepUntil =
+    0;
+
+  currentShakePower =
+    0;
 
   /*
-    ★解除した瞬間
-    高速RUN
+    ★解除直後
+    高速逃走
   */
 
   startRun(
@@ -2938,7 +4317,9 @@ function releaseLock(
 function updateHP(){
 
   hpNumber.textContent =
-    Math.ceil(hp);
+    Math.ceil(
+      hp
+    );
 
   hpInner.style.width =
     (
@@ -2955,19 +4336,23 @@ function updateHP(){
 
 function stopCamera(){
 
-  gameRunning = false;
+  gameRunning =
+    false;
 
   const stream =
     camera.srcObject;
 
-  if(!stream){
+  if(
+    !stream
+  ){
     return;
   }
 
   stream
     .getTracks()
     .forEach(
-      track=>track.stop()
+      track=>
+        track.stop()
     );
 
   camera.srcObject =
@@ -2985,5 +4370,6 @@ addEventListener(
 );
 
 </script>
+
 </body>
 </html>
