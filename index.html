@@ -355,6 +355,142 @@ html,body{
   white-space:pre-line;
 }
 
+
+
+/* START ACTIONS / MOTION DEX */
+#startActions{
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  gap:10px;
+  margin-top:18px;
+}
+
+#startActions #startButton{
+  margin-top:0;
+}
+
+#dexButton{
+  min-width:72px;
+  padding:12px 14px;
+  border:3px solid #fff;
+  background:#111827;
+  color:#fff;
+  box-shadow:6px 6px #000;
+  font:900 12px monospace;
+  line-height:1.25;
+}
+
+#dexButton:active{
+  transform:translate(3px,3px);
+  box-shadow:3px 3px #000;
+}
+
+#dex{
+  position:fixed;
+  inset:0;
+  z-index:160;
+  display:none;
+  flex-direction:column;
+  background:#10131d;
+  color:#fff;
+  pointer-events:auto;
+}
+
+#dexHead{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:calc(12px + env(safe-area-inset-top)) 12px 10px;
+  border-bottom:2px solid #fff;
+  background:#171b28;
+}
+
+#dexTitle{
+  flex:1;
+  font-size:17px;
+  font-weight:900;
+  text-align:left;
+}
+
+#dexClose{
+  width:48px;
+  height:40px;
+  border:2px solid #fff;
+  background:#fff;
+  color:#111;
+  font:900 18px monospace;
+}
+
+#dexTabs{
+  display:flex;
+  gap:7px;
+  padding:9px 10px;
+  border-bottom:1px solid rgba(255,255,255,.3);
+}
+
+#dexTabs button{
+  flex:1;
+  padding:10px 5px;
+  border:2px solid #fff;
+  background:transparent;
+  color:#fff;
+  font:900 12px monospace;
+}
+
+#dexTabs button.active{
+  background:#fff;
+  color:#111;
+}
+
+#dexGrid{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  padding:10px 10px calc(18px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+}
+
+.dexCard{
+  min-height:150px;
+  padding:8px 5px 7px;
+  border:2px solid rgba(255,255,255,.65);
+  background:#0b0e15;
+  text-align:center;
+}
+
+.dexCard canvas{
+  display:block;
+  width:112px;
+  height:112px;
+  max-width:100%;
+  margin:0 auto 4px;
+  image-rendering:pixelated;
+}
+
+.dexNo{
+  font-size:10px;
+  opacity:.68;
+}
+
+.dexMotion{
+  margin-top:2px;
+  font-size:10px;
+  font-weight:900;
+}
+
+@media (min-width:700px){
+  #dexGrid{
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    max-width:980px;
+    width:100%;
+    margin:0 auto;
+  }
+}
+
 </style>
 </head>
 
@@ -445,7 +581,7 @@ playsinline>
     <br><br>
 
     360°スマホを動かして
-    キャラクターを探します。
+    ブルーボーイ / ハチビー / クロネーコを探します。
 
     <br>
 
@@ -468,12 +604,33 @@ playsinline>
     CHECKING...
   </div>
 
-  <button id="startButton">
-    START
-  </button>
+  <div id="startActions">
+    <button id="startButton">
+      START
+    </button>
+
+    <button id="dexButton" type="button">
+      ▦<br>図鑑
+    </button>
+  </div>
 
   <div id="error"></div>
 
+</div>
+
+<div id="dex">
+  <div id="dexHead">
+    <div id="dexTitle">MOTION 図鑑</div>
+    <button id="dexClose" type="button">×</button>
+  </div>
+
+  <div id="dexTabs">
+    <button class="active" data-creature="blueboy">ブルーボーイ</button>
+    <button data-creature="hachibee">ハチビー</button>
+    <button data-creature="kuroneko">クロネーコ</button>
+  </div>
+
+  <div id="dexGrid"></div>
 </div>
 
 <script>
@@ -507,6 +664,21 @@ const start =
 
 const startButton =
   document.getElementById("startButton");
+
+const dexButton =
+  document.getElementById("dexButton");
+
+const dex =
+  document.getElementById("dex");
+
+const dexClose =
+  document.getElementById("dexClose");
+
+const dexGrid =
+  document.getElementById("dexGrid");
+
+const dexTabs =
+  [...document.querySelectorAll("#dexTabs button")];
 
 const errorBox =
   document.getElementById("error");
@@ -859,6 +1031,15 @@ let sensorReady =
    CREATURE
 ========================================================= */
 
+const CREATURE_TYPES = [
+  { id:"blueboy", name:"ブルーボーイ" },
+  { id:"hachibee", name:"ハチビー" },
+  { id:"kuroneko", name:"クロネーコ" }
+];
+
+let creatureType =
+  CREATURE_TYPES[0];
+
 let creatureZone =
   "FRONT";
 
@@ -1160,6 +1341,14 @@ function spawnCreature(){
 
   const now =
     performance.now();
+
+  creatureType =
+    CREATURE_TYPES[
+      Math.floor(
+        Math.random() *
+        CREATURE_TYPES.length
+      )
+    ];
 
   const types = [
     "SKY",
@@ -3016,6 +3205,9 @@ function renderGame(
     cameraPitch.toFixed(1)+
     "°"+
 
+    "<br>NAME "+
+    creatureType.name+
+
     "<br>TYPE "+
     creatureZone+
 
@@ -3168,11 +3360,32 @@ function drawCreature(
     );
   }
 
-  drawPixelFrame(
-    animFrame,
-    S,
-    time
-  );
+  activeCtx = ctx;
+
+  if(
+    creatureType.id === "hachibee"
+  ){
+    drawHachibeeRaster(
+      animFrame,
+      time,
+      ctx,
+      30*Math.max(1,Math.floor(S/2))
+    );
+  }else if(
+    creatureType.id === "kuroneko"
+  ){
+    drawKuronekoFrame(
+      animFrame,
+      S,
+      time
+    );
+  }else{
+    drawPixelFrame(
+      animFrame,
+      S,
+      time
+    );
+  }
 
   /*
     LOCK表示
@@ -3212,6 +3425,221 @@ function drawCreature(
   ctx.restore();
 }
 
+let activeCtx = ctx;
+
+/* =========================================================
+   HACHIBEE TRUE 30x30 RASTER PIPELINE
+   Draw at an integer high-resolution grid first, then collapse to a
+   real 30x30 bitmap and only scale that bitmap with nearest-neighbor.
+   This prevents fractional fillRect seams in the game and motion dex.
+========================================================= */
+const hachibeeHiCanvas = document.createElement("canvas");
+hachibeeHiCanvas.width = 120;
+hachibeeHiCanvas.height = 120;
+const hachibeeHiCtx = hachibeeHiCanvas.getContext("2d");
+hachibeeHiCtx.imageSmoothingEnabled = false;
+
+const hachibee30Canvas = document.createElement("canvas");
+hachibee30Canvas.width = 30;
+hachibee30Canvas.height = 30;
+const hachibee30Ctx = hachibee30Canvas.getContext("2d");
+hachibee30Ctx.imageSmoothingEnabled = false;
+
+function rasterizeHachibee30(frame,time){
+  const c = hachibee30Ctx;
+  c.setTransform(1,0,0,1,0,0);
+  c.clearRect(0,0,30,30);
+  c.imageSmoothingEnabled = false;
+
+  /* HACHIBEE CLEAN 30x30 — unified silhouette / clean FX */
+  const P={
+    ink:"#2b211c", dark:"#493326", stripe:"#60412c",
+    yellow:"#f6c94c", shade:"#dda22d", hi:"#ffe79a",
+    eye:"#241b1a", eyeHi:"#fffdf7", cheek:"#ef8c9b", mouth:"#82434a",
+    wing:"#dff7f8", wingShade:"#a9dadd", wingHi:"#ffffff",
+    leg:"#6f4b35", sting:"#3a2923",
+    fx:"#ffe46b", fx2:"#fff5b0", heart:"#f28ca2", heartHi:"#ffd2dc",
+    sleep:"#dff7ff", lock:"#73e8ef", lockShade:"#43bcc7", lockHi:"#d9ffff"
+  };
+  if(locked){ P.yellow=P.lock; P.shade=P.lockShade; P.hi=P.lockHi; }
+
+  const r=(x,y,w,h,col)=>{ c.fillStyle=col; c.fillRect(x,y,w,h); };
+  const d=(x,y,col)=>r(x,y,1,1,col);
+
+  function wings(dx=0,dy=0,pose=0){
+    /* two separate rounded wings — no overlaps / no cut seams */
+    if(pose===1){
+      r(8+dx,5+dy,4,1,P.wingShade); r(7+dx,6+dy,6,3,P.wing); r(8+dx,9+dy,5,1,P.wingShade); d(8+dx,6+dy,P.wingHi);
+      r(12+dx,4+dy,4,1,P.wingShade); r(11+dx,5+dy,6,3,P.wing); r(12+dx,8+dy,5,1,P.wingShade); d(13+dx,5+dy,P.wingHi);
+    }else if(pose===2){
+      r(7+dx,8+dy,5,1,P.wingShade); r(6+dx,9+dy,7,3,P.wing); r(8+dx,12+dy,5,1,P.wingShade); d(7+dx,9+dy,P.wingHi);
+      r(11+dx,6+dy,5,1,P.wingShade); r(10+dx,7+dy,7,3,P.wing); r(12+dx,10+dy,5,1,P.wingShade); d(12+dx,7+dy,P.wingHi);
+    }else{
+      r(8+dx,6+dy,4,1,P.wingShade); r(7+dx,7+dy,6,3,P.wing); r(8+dx,10+dy,5,1,P.wingShade); d(8+dx,7+dy,P.wingHi);
+      r(12+dx,5+dy,4,1,P.wingShade); r(11+dx,6+dy,6,3,P.wing); r(12+dx,9+dy,5,1,P.wingShade); d(13+dx,6+dy,P.wingHi);
+    }
+  }
+
+  function body(dx=0,dy=0,squash=0){
+    /* round abdomen, VERTICAL bee bands (body runs left-right) */
+    r(6+dx,12+dy,2,5-squash,P.shade);
+    r(7+dx,10+dy,8,9-squash,P.yellow);
+    r(9+dx,9+dy,7,11-squash,P.yellow);
+    r(15+dx,10+dy,3,9-squash,P.shade);
+    r(9+dx,10+dy,5,1,P.hi); d(8+dx,11+dy,P.hi);
+    /* two clearly visible vertical bee bands on the exposed abdomen */
+    r(8+dx,11+dy,1,8-squash,P.stripe);
+    r(11+dx,10+dy,1,9-squash,P.stripe);
+    d(7+dx,12+dy,P.yellow); d(17+dx,12+dy,P.shade);
+  }
+
+  function stinger(dx=0,dy=0,len=1){
+    /* always grows from the rear, behind the abdomen */
+    if(len===1){ r(4+dx,14+dy,3,2,P.sting); d(3+dx,15+dy,P.ink); }
+    else if(len===2){ r(2+dx,14+dy,5,2,P.sting); d(1+dx,15+dy,P.ink); }
+    else { r(1+dx,14+dy,6,2,P.sting); d(0+dx,15+dy,P.ink); }
+  }
+
+  function legs(dx=0,dy=0,phase=0){
+    if(phase===0){ r(10+dx,19+dy,1,2,P.leg); d(9+dx,21+dy,P.leg); r(15+dx,19+dy,1,2,P.leg); d(16+dx,21+dy,P.leg); }
+    else { r(9+dx,19+dy,1,2,P.leg); d(8+dx,20+dy,P.leg); r(16+dx,19+dy,1,2,P.leg); d(17+dx,20+dy,P.leg); }
+  }
+
+  function antenna(dx=0,dy=0,pose=0){
+    if(pose===1){ r(17+dx,6+dy,1,3,P.dark); d(16+dx,5+dy,P.dark); d(15+dx,4+dy,P.stripe); r(22+dx,6+dy,1,3,P.dark); d(23+dx,5+dy,P.dark); d(24+dx,4+dy,P.stripe); }
+    else { r(17+dx,6+dy,1,3,P.dark); d(16+dx,5+dy,P.dark); d(16+dx,4+dy,P.stripe); r(22+dx,6+dy,1,3,P.dark); d(23+dx,5+dy,P.dark); d(23+dx,4+dy,P.stripe); }
+  }
+
+  function face(dx=0,dy=0,expr="cute",look=0){
+    /* oversized round bee head; no hat, no human white-eye face */
+    r(15+dx,8+dy,8,1,P.shade);
+    r(13+dx,9+dy,12,2,P.yellow);
+    r(12+dx,11+dy,14,7,P.yellow);
+    r(13+dx,18+dy,12,2,P.yellow);
+    r(15+dx,20+dy,8,1,P.shade);
+    d(13+dx,10+dy,P.hi); r(14+dx,9+dy,5,1,P.hi);
+
+    if(expr==="sleep"){
+      r(14+dx,14+dy,4,1,P.eye); r(21+dx,14+dy,4,1,P.eye); r(19+dx,18+dy,2,1,P.mouth); return;
+    }
+    if(expr==="hurt"){
+      /* small 3x3 X eyes */
+      d(14+dx,13+dy,P.eye); d(15+dx,14+dy,P.eye); d(16+dx,15+dy,P.eye);
+      d(16+dx,13+dy,P.eye); d(14+dx,15+dy,P.eye);
+      d(22+dx,13+dy,P.eye); d(23+dx,14+dy,P.eye); d(24+dx,15+dy,P.eye);
+      d(24+dx,13+dy,P.eye); d(22+dx,15+dy,P.eye);
+      r(19+dx,18+dy,2,1,P.mouth); return;
+    }
+    if(expr==="happy"){
+      r(14+dx,14+dy,4,1,P.eye); d(15+dx,13+dy,P.eye); r(21+dx,14+dy,4,1,P.eye); d(23+dx,13+dy,P.eye);
+      d(13+dx,17+dy,P.cheek); d(25+dx,17+dy,P.cheek); r(18+dx,17+dy,4,1,P.mouth); return;
+    }
+
+    /* NOTICE: Blueboy-style surprised eyes (white open eyes + black pupils) */
+    if(expr==="alert"){
+      r(13+dx,12+dy,5,5,P.eyeHi); r(21+dx,12+dy,5,5,P.eyeHi);
+      r(15+dx,13+dy,2,2,P.eye); r(22+dx,13+dy,2,2,P.eye);
+      r(18+dx,18+dy,4,2,P.mouth);
+      return;
+    }
+
+    /* normal large black compound eyes */
+    r(13+dx,12+dy,5,6,P.eye); r(21+dx,12+dy,5,6,P.eye);
+    if(look===1){ d(16+dx,13+dy,P.eyeHi); d(24+dx,13+dy,P.eyeHi); }
+    else { d(14+dx,13+dy,P.eyeHi); d(22+dx,13+dy,P.eyeHi); }
+    if(expr==="attack"){ r(18+dx,18+dy,4,1,P.mouth); }
+    else { d(13+dx,18+dy,P.cheek); d(25+dx,18+dy,P.cheek); r(19+dx,18+dy,2,1,P.mouth); }
+  }
+
+  function bee(o={}){
+    const dx=o.dx||0, dy=o.dy||0;
+    wings(dx,dy+(o.wingDy||0),o.wingPose||0);
+    stinger(dx,dy,o.sting||1);       // behind body
+    body(dx,dy,o.squash||0);
+    legs(dx,dy,o.phase||0);
+    antenna(dx,dy,o.ant||0);          // exactly one antenna set
+    face(dx,dy,o.expr||"cute",o.look||0);
+  }
+
+  function front(expr="cute",dy=0){
+    /* bee-like front view, still black compound eyes */
+    r(6,9+dy,5,4,P.wing); r(19,9+dy,5,4,P.wing); d(7,9+dy,P.wingHi); d(22,9+dy,P.wingHi);
+    r(10,7+dy,10,1,P.shade); r(8,8+dy,14,2,P.yellow); r(7,10+dy,16,9,P.yellow); r(8,19+dy,14,2,P.yellow); r(10,21+dy,10,1,P.shade);
+    r(10,5+dy,1,3,P.dark); d(9,4+dy,P.dark); d(8,3+dy,P.stripe); r(19,5+dy,1,3,P.dark); d(20,4+dy,P.dark); d(21,3+dy,P.stripe);
+    if(expr==="happy"){ r(9,14+dy,4,1,P.eye); r(17,14+dy,4,1,P.eye); d(8,17+dy,P.cheek); d(21,17+dy,P.cheek); r(13,17+dy,4,1,P.mouth); }
+    else { r(8,12+dy,5,6,P.eye); r(17,12+dy,5,6,P.eye); d(9,13+dy,P.eyeHi); d(18,13+dy,P.eyeHi); d(7,18+dy,P.cheek); d(22,18+dy,P.cheek); r(14,18+dy,2,1,P.mouth); }
+    r(11,22+dy,8,4,P.yellow); r(13,22+dy,1,4,P.stripe); r(16,22+dy,1,4,P.stripe);
+  }
+
+  function star(x,y,big=true){
+    /* clean symmetric star: SPECIAL pulses between small / large */
+    if(!big){
+      d(x,y-2,P.fx); d(x,y+2,P.fx); d(x-2,y,P.fx); d(x+2,y,P.fx);
+      r(x-1,y-1,3,3,P.fx); d(x,y,P.fx2);
+      return;
+    }
+    d(x,y-3,P.fx); d(x,y+3,P.fx); d(x-3,y,P.fx); d(x+3,y,P.fx);
+    d(x-2,y-2,P.fx); d(x+2,y-2,P.fx); d(x-2,y+2,P.fx); d(x+2,y+2,P.fx);
+    r(x-1,y-2,3,5,P.fx); r(x-2,y-1,5,3,P.fx); d(x,y,P.fx2);
+  }
+  function smallStar(x,y){ d(x,y-2,P.fx2); d(x,y+2,P.fx2); d(x-2,y,P.fx2); d(x+2,y,P.fx2); r(x-1,y-1,3,3,P.fx); d(x,y,P.eyeHi); }
+  function heart(x,y,big=true){
+    /* clean heart: SPECIAL pulses between small / large */
+    if(!big){
+      d(x,y,P.heart); d(x+2,y,P.heart); r(x-1,y+1,5,2,P.heart); r(x,y+3,3,1,P.heart); d(x+1,y+4,P.heart); d(x,y+1,P.heartHi);
+      return;
+    }
+    r(x,y,2,1,P.heart); r(x+3,y,2,1,P.heart); r(x-1,y+1,7,2,P.heart); r(x,y+3,5,2,P.heart); r(x+1,y+5,3,1,P.heart); d(x,y+1,P.heartHi);
+  }
+  function impact(x,y,flip=0){
+    d(x,y-3,P.fx2); d(x,y+3,P.fx2); d(x-3,y,P.fx2); d(x+3,y,P.fx2);
+    d(x-2,y-2,P.fx); d(x+2,y-2,P.fx); d(x-2,y+2,P.fx); d(x+2,y+2,P.fx); r(x-1,y-1,3,3,P.fx); d(x,y,P.eyeHi);
+  }
+  function exclamation(x,y){
+    r(x,y,2,5,P.fx);
+    r(x,y+7,2,2,P.fx);
+    d(x,y,P.fx2);
+  }
+
+  if(frame===1) bee({phase:0,wingPose:0});
+  else if(frame===2) bee({dy:-1,phase:1,wingPose:1});
+  else if(frame===3) bee({phase:1,wingPose:2});
+  else if(frame===4) bee({dy:-1,phase:0,wingPose:0,wingDy:-1,expr:"cute"});
+  else if(frame===5) bee({dx:-1,look:1,wingPose:2});
+  else if(frame===6) front("cute",0);
+  else if(frame===7){ c.save(); c.translate(30,0); c.scale(-1,1); bee({dx:-1,look:1,wingPose:1}); c.restore(); }
+  else if(frame===8){ bee({dy:2,expr:"sleep",squash:1,wingPose:2}); r(24,6,2,1,P.sleep); d(25,7,P.sleep); r(23,9,3,1,P.sleep); d(25,10,P.sleep); }
+  else if(frame===9){ bee({dy:-1,expr:"alert",wingPose:1,ant:1}); exclamation(26,3); }
+  else if(frame===10){ bee({dx:-1,dy:1,expr:"hurt",wingPose:2,squash:1}); impact(26,7); }
+  else if(frame===11){ bee({dx:1,dy:-1,expr:"hurt",wingPose:1,squash:1}); impact(4,7); }
+  else if(frame===12){ bee({dx:1,expr:"attack",wingPose:1,sting:2}); d(1,13,P.fx2); d(2,16,P.fx); d(4,12,P.fx); }
+  else if(frame===13){ bee({dx:2,expr:"attack",wingPose:0,sting:3,ant:1}); d(0,12,P.fx2); d(1,18,P.fx); d(4,11,P.fx); }
+  else if(frame===14){
+    bee({dy:-1,expr:"cute",wingPose:1});
+    const big = Math.floor(time/260)%2===0;
+    heart(big?23:24,big?2:3,big); heart(big?2:3,big?3:4,big);
+  }
+  else {
+    bee({expr:"cute",wingPose:0});
+    const big = Math.floor(time/260)%2===0;
+    star(25,5,big); star(4,6,big);
+  }
+
+  return hachibee30Canvas;
+}
+function drawHachibeeRaster(frame,time,targetCtx,displaySize){
+  const sprite = rasterizeHachibee30(frame,time);
+  const size = Math.max(30,Math.round(displaySize));
+  const scale = Math.max(1,Math.floor(size/30));
+  const drawSize = 30*scale;
+  targetCtx.imageSmoothingEnabled = false;
+  targetCtx.drawImage(
+    sprite,
+    0,0,30,30,
+    -Math.floor(drawSize/2),-Math.floor(drawSize/2),drawSize,drawSize
+  );
+}
+
 /* =========================================================
    PIXEL HELPER
 ========================================================= */
@@ -3225,10 +3653,10 @@ function px(
   S
 ){
 
-  ctx.fillStyle =
+  activeCtx.fillStyle =
     color;
 
-  ctx.fillRect(
+  activeCtx.fillRect(
 
     Math.round(
       x*S
@@ -3315,12 +3743,6 @@ function drawPixelFrame(
       OUTLINE
     );
 
-    px(-8,0,3,2,OUTLINE,S);
-    px(-7,0,2,1,BODY,S);
-
-    px(5,-1,4,2,OUTLINE,S);
-    px(5,-1,3,1,BODY,S);
-
     px(-5,6,3,4,OUTLINE,S);
     px(-4,6,2,3,BODY,S);
 
@@ -3342,7 +3764,7 @@ function drawPixelFrame(
     frame === 2
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       -S
     );
@@ -3354,12 +3776,6 @@ function drawPixelFrame(
       DARK,
       OUTLINE
     );
-
-    px(-8,-1,4,2,OUTLINE,S);
-    px(-7,-1,3,1,BODY,S);
-
-    px(5,0,3,2,OUTLINE,S);
-    px(5,0,2,1,BODY,S);
 
     px(-4,6,3,3,OUTLINE,S);
     px(-3,6,2,2,BODY,S);
@@ -3390,12 +3806,6 @@ function drawPixelFrame(
       OUTLINE
     );
 
-    px(-9,-1,4,2,OUTLINE,S);
-    px(-8,-1,3,1,BODY,S);
-
-    px(5,0,4,2,OUTLINE,S);
-    px(5,0,3,1,BODY,S);
-
     px(-6,6,4,3,OUTLINE,S);
     px(-5,6,3,2,BODY,S);
 
@@ -3417,7 +3827,7 @@ function drawPixelFrame(
     frame === 4
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       -S
     );
@@ -3429,12 +3839,6 @@ function drawPixelFrame(
       DARK,
       OUTLINE
     );
-
-    px(-8,0,3,2,OUTLINE,S);
-    px(-7,0,2,1,BODY,S);
-
-    px(5,-1,4,2,OUTLINE,S);
-    px(5,-1,3,1,BODY,S);
 
     px(-4,6,3,4,OUTLINE,S);
     px(-3,6,2,3,BODY,S);
@@ -3543,7 +3947,7 @@ function drawPixelFrame(
     frame === 8
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       S
     );
@@ -3595,7 +3999,7 @@ function drawPixelFrame(
     frame === 9
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       -2*S
     );
@@ -3640,12 +4044,12 @@ function drawPixelFrame(
     frame === 10
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       -S,
       S
     );
 
-    ctx.rotate(
+    activeCtx.rotate(
       -.08
     );
 
@@ -3693,12 +4097,12 @@ function drawPixelFrame(
     frame === 11
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       S,
       -S
     );
 
-    ctx.rotate(
+    activeCtx.rotate(
       .08
     );
 
@@ -3781,7 +4185,7 @@ function drawPixelFrame(
     frame === 13
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       2*S,
       0
     );
@@ -3825,7 +4229,7 @@ function drawPixelFrame(
     frame === 14
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       -4*S
     );
@@ -3862,7 +4266,7 @@ function drawPixelFrame(
     frame === 15
   ){
 
-    ctx.translate(
+    activeCtx.translate(
       0,
       -2*S
     );
@@ -3895,6 +4299,403 @@ function drawPixelFrame(
     px(2,6,4,4,OUTLINE,S);
     px(3,6,3,3,BODY,S);
   }
+}
+
+/* =========================================================
+   ハチビー
+   20x20前後の粗いドットで描画
+========================================================= */
+
+function drawHachibeeFrame(frame,S,time){
+  /*
+    HACHIBEE — BLUEBOY STYLE
+    30x30 / 24色以内
+    ブルーボーイ同様、共通ボディ＋必要最小限の差分で構成。
+  */
+
+  const OUT="#2d2119";
+  const Y="#f2b52b";
+  const YL="#ffd85a";
+  const YD="#d58a19";
+  const STR="#4a2f1b";
+  const EYE="#171311";
+  const W="#fffaf0";
+  const WG="#d9f3ef";
+  const WGD="#a8d9d5";
+  const PINK="#ef8d83";
+  const FX="#ffe86a";
+
+  const q=(x,y,w,h,c)=>px(x,y,w,h,c,S);
+
+  function base(){
+    /* wing behind body */
+    q(-5,-8,5,3,WGD);
+    q(-6,-7,6,5,WG);
+    q(-5,-2,5,2,WGD);
+
+    /* abdomen */
+    q(-2,-5,10,10,OUT);
+    q(-1,-4,8,8,Y);
+    q(0,-4,3,8,STR);
+    q(5,-4,2,8,STR);
+    q(-1,-4,8,1,YL);
+    q(-1,3,8,1,YD);
+
+    /* stinger */
+    q(8,-1,2,2,STR);
+    q(10,0,2,1,OUT);
+
+    /* head */
+    q(-9,-6,8,12,OUT);
+    q(-8,-5,7,10,Y);
+    q(-7,-5,5,1,YL);
+    q(-8,4,7,1,YD);
+
+    /* antennae */
+    q(-7,-9,1,3,OUT);
+    q(-8,-10,2,1,OUT);
+    q(-3,-9,1,3,OUT);
+    q(-3,-10,2,1,OUT);
+
+    /* eyes: bee-like black eyes */
+    q(-7,-2,2,3,EYE);
+    q(-3,-2,2,3,EYE);
+    q(-7,-2,1,1,W);
+    q(-3,-2,1,1,W);
+
+    /* tiny mouth */
+    q(-5,2,2,1,EYE);
+
+    /* cheek */
+    q(-8,2,1,1,PINK);
+    q(-2,2,1,1,PINK);
+  }
+
+  function legs(type=0){
+    if(type===0){
+      q(-1,5,2,3,OUT);
+      q(5,5,2,3,OUT);
+    }else if(type===1){
+      q(-2,5,2,3,OUT);
+      q(5,5,3,2,OUT);
+    }else{
+      q(-1,5,3,2,OUT);
+      q(4,5,2,3,OUT);
+    }
+  }
+
+  function faceSleep(){
+    q(-7,-1,2,1,EYE);
+    q(-3,-1,2,1,EYE);
+    q(-5,2,2,1,EYE);
+  }
+
+  function faceNotice(){
+    q(-7,-2,2,4,EYE);
+    q(-3,-2,2,4,EYE);
+    q(-5,2,2,2,EYE);
+  }
+
+  function faceHurt(){
+    /* 両目を明確な×に統一 */
+    q(-7,-2,1,1,EYE); q(-5,-2,1,1,EYE);
+    q(-6,-1,1,1,EYE);
+    q(-7,0,1,1,EYE);  q(-5,0,1,1,EYE);
+
+    q(-3,-2,1,1,EYE); q(-1,-2,1,1,EYE);
+    q(-2,-1,1,1,EYE);
+    q(-3,0,1,1,EYE);  q(-1,0,1,1,EYE);
+
+    q(-5,2,2,1,EYE);
+  }
+
+  function faceHappy(){
+    q(-7,-1,2,1,EYE);
+    q(-3,-1,2,1,EYE);
+    q(-6,2,4,1,EYE);
+    q(-5,3,2,1,PINK);
+  }
+
+  function turn1(){
+    /* side-most turn: same silhouette, one eye */
+    q(-7,-2,3,3,EYE);
+    q(-6,-2,1,1,W);
+    q(-5,2,1,1,EYE);
+  }
+
+  function turn2(){
+    /* TURN 2: 振り向き途中。目・口・顔の向きを明確にずらす */
+    q(-7,-2,3,4,EYE);
+    q(-3,-1,2,3,EYE);
+    q(-7,-2,1,1,W);
+    q(-3,-1,1,1,W);
+    q(-5,2,2,1,EYE);
+
+    /* 顔の右端を1ドットだけ前へ出し、途中角度を表現 */
+    q(-1,-2,1,5,YD);
+  }
+
+  function turn3(){
+    q(-7,-2,2,3,EYE);
+    q(-3,-2,2,3,EYE);
+    q(-6,2,3,1,EYE);
+  }
+
+  function bigFx(x,y){
+    /* ブルーボーイと同じ系統のシンプルな大粒エフェクト */
+    q(x,  y-4,1,3,FX);
+    q(x,  y+2,1,3,FX);
+    q(x-4,y,3,1,FX);
+    q(x+2,y,3,1,FX);
+
+    q(x-2,y-2,2,2,FX);
+    q(x+1,y-2,2,2,FX);
+    q(x-2,y+1,2,2,FX);
+    q(x+1,y+1,2,2,FX);
+
+    q(x-1,y-1,3,3,W);
+    q(x,y,1,1,FX);
+  }
+
+  function heart(x,y){
+    /* 大きめで左右対称のハート */
+    q(x+1,y,3,2,PINK);
+    q(x+5,y,3,2,PINK);
+    q(x,y+1,9,3,PINK);
+    q(x+1,y+4,7,2,PINK);
+    q(x+2,y+6,5,2,PINK);
+    q(x+3,y+8,3,1,PINK);
+    q(x+4,y+9,1,1,PINK);
+  }
+
+  /* WALK / FLY 1 */
+  if(frame===1){
+    base();
+    legs(0);
+  }
+
+  /* WALK / FLY 2 */
+  else if(frame===2){
+    activeCtx.translate(0,-S);
+    base();
+    legs(1);
+  }
+
+  /* WALK / FLY 3 */
+  else if(frame===3){
+    base();
+    legs(2);
+  }
+
+  /* WALK / FLY 4 */
+  else if(frame===4){
+    activeCtx.translate(0,-S);
+    base();
+    legs(0);
+  }
+
+  /* TURN 1 */
+  else if(frame===5){
+    base();
+    q(-8,-3,7,6,Y);   /* clean face repaint */
+    q(-8,-3,7,1,YL);
+    turn1();
+    legs(0);
+  }
+
+  /* TURN 2 */
+  else if(frame===6){
+    /* 共通ボディをそのまま使う。別キャラ化しない */
+    base();
+
+    /* 顔面だけ共通色で塗り直して振り向き途中の目に差し替え */
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    q(-8,2,7,1,YD);
+
+    /* TURN1とTURN3の中間になる目配置 */
+    q(-7,-2,3,3,EYE);
+    q(-3,-2,2,3,EYE);
+    q(-7,-2,1,1,W);
+    q(-3,-2,1,1,W);
+    q(-5,2,2,1,EYE);
+
+    legs(0);
+  }
+
+  /* TURN 3 */
+  else if(frame===7){
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    turn3();
+    legs(0);
+  }
+
+  /* SLEEP */
+  else if(frame===8){
+    activeCtx.translate(0,2*S);
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceSleep();
+    legs(0);
+    q(10,-8,2,1,FX);
+    q(12,-10,3,1,FX);
+  }
+
+  /* NOTICE */
+  else if(frame===9){
+    activeCtx.translate(0,-S);
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceNotice();
+    legs(0);
+    bigFx(11,-8);
+  }
+
+  /* DAMAGE 1 */
+  else if(frame===10){
+    activeCtx.translate(-S,S);
+    activeCtx.rotate(-0.05);
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceHurt();
+    legs(1);
+    q(11,-7,3,3,FX);
+  }
+
+  /* DAMAGE 2 */
+  else if(frame===11){
+    activeCtx.translate(S,0);
+    activeCtx.rotate(0.05);
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceHurt();
+    legs(2);
+    q(-12,-6,3,3,FX);
+  }
+
+  /* ATTACK 1 */
+  else if(frame===12){
+    activeCtx.translate(S,0);
+    base();
+    legs(0);
+    q(11,-1,3,2,FX);
+  }
+
+  /* ATTACK 2 */
+  else if(frame===13){
+    activeCtx.translate(2*S,0);
+    base();
+    legs(1);
+    q(10,-1,5,2,STR);
+    q(14,0,4,1,OUT);
+    q(17,-1,3,3,FX);
+  }
+
+  /* SPECIAL 1 */
+  else if(frame===14){
+    activeCtx.translate(0,-S);
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceHappy();
+    legs(0);
+    heart(10,-9);
+  }
+
+  /* SPECIAL 2 */
+  else{
+    base();
+    q(-8,-3,7,6,Y);
+    q(-8,-3,7,1,YL);
+    faceHappy();
+    legs(0);
+    bigFx(11,-8);
+    bigFx(-11,8);
+  }
+}
+
+function drawKuronekoFrame(frame,S,time){
+  /* 30x30 sprite grid / 24色以内 / 不要な線なし */
+  const C=S*(2/3);
+  const PAL={
+    black:"#101114", black2:"#24262b", hi:"#3a3d44", eye:"#f05261",
+    white:"#fffaf2", pink:"#f69aae", scarf:"#e94555", scarfD:"#a92e3b",
+    grey:"#9ba6b0", fx:"#fff07a", cyan:"#79eff4", cyand:"#2e7f88"
+  };
+  if(locked){ PAL.black="#17343a"; PAL.black2="#25575f"; PAL.hi="#357983"; PAL.eye=PAL.cyan; PAL.scarf=PAL.cyan; PAL.scarfD=PAL.cyand; }
+  const g=(x,y,w,h,c)=>{ activeCtx.fillStyle=c; activeCtx.fillRect(Math.round(x*C),Math.round(y*C),Math.round(w*C),Math.round(h*C)); };
+  const dot=(x,y,c)=>g(x,y,1,1,c);
+
+  function body(lean=0,squash=0){
+    activeCtx.save(); activeCtx.rotate(lean);
+    g(-9,-4,3,8-squash,PAL.black2); g(-6,-6,10,12-squash,PAL.black); g(4,-5,3,10-squash,PAL.black2);
+    g(-5,-5,6,2,PAL.hi); g(2,-3,2,5,PAL.scarfD); activeCtx.restore();
+  }
+  function tail(mode=0){
+    if(mode===0){g(-12,-3,3,3,PAL.black);g(-14,-6,3,4,PAL.black);g(-14,-9,2,4,PAL.black);dot(-14,-10,PAL.eye);}
+    else if(mode===1){g(-13,1,4,2,PAL.black);g(-16,0,4,2,PAL.black);g(-18,-2,3,3,PAL.black);dot(-18,-3,PAL.eye);}
+    else {g(-12,1,2,5,PAL.black);g(-14,5,4,2,PAL.black);dot(-15,5,PAL.eye);}
+  }
+  function scarf(flutter=0){
+    g(4,1,6,2,PAL.scarf); g(5,3,4,1,PAL.scarfD);
+    if(flutter){ g(9,2,2,4,PAL.scarf); g(11,5,3,1,PAL.scarf); }
+    else { g(8,3,2,4,PAL.scarf); }
+  }
+  function legs(front=0,rear=0,frontStep=0,rearStep=0){
+    g(-6,5+rear,3,6,PAL.black2); g(-7+rearStep,10+rear,5,2,PAL.black); g(-5+rearStep,11+rear,2,1,PAL.white);
+    g(3,5+front,3,6,PAL.black2); g(2+frontStep,10+front,5,2,PAL.black); g(4+frontStep,11+front,2,1,PAL.white);
+  }
+  function head(kind="cute",shift=0){
+    /* ears are surfaces, not outline lines */
+    g(6+shift,-12,4,5,PAL.black); g(12+shift,-12,4,5,PAL.black);
+    g(7+shift,-11,2,3,PAL.pink); g(13+shift,-11,2,3,PAL.pink);
+    g(5+shift,-8,12,10,PAL.black); g(7+shift,-10,8,2,PAL.black); g(7+shift,-7,5,2,PAL.hi); g(7+shift,1,8,2,PAL.black2);
+    if(kind==="sleep"){
+      g(7+shift,-3,3,1,PAL.white); g(12+shift,-3,3,1,PAL.white); g(13+shift,0,2,1,PAL.eye);
+    }else if(kind==="hurt"){
+      dot(8+shift,-4,PAL.white);dot(9+shift,-3,PAL.white);dot(9+shift,-4,PAL.white);dot(8+shift,-3,PAL.white);
+      dot(13+shift,-4,PAL.white);dot(14+shift,-3,PAL.white);dot(14+shift,-4,PAL.white);dot(13+shift,-3,PAL.white);g(12+shift,0,2,1,PAL.eye);
+    }else{
+      g(7+shift,-5,3,4,PAL.white); g(12+shift,-5,3,4,PAL.white);
+      g(8+shift,-4,1,2,PAL.eye); g(13+shift,-4,1,2,PAL.eye); dot(6+shift,-1,PAL.pink);
+      g(12+shift,0,2,1,PAL.eye); g(14+shift,0,2,1,PAL.white);
+      if(kind==="alert") g(11+shift,0,4,2,PAL.eye);
+      if(kind==="attack") g(13+shift,0,3,2,PAL.eye);
+    }
+  }
+  function frontView(){
+    g(-6,-9,4,5,PAL.black);g(2,-9,4,5,PAL.black);g(-5,-8,2,3,PAL.pink);g(3,-8,2,3,PAL.pink);
+    g(-7,-5,14,10,PAL.black);g(-5,-4,4,4,PAL.white);g(1,-4,4,4,PAL.white);
+    g(-4,-3,1,2,PAL.eye);g(2,-3,1,2,PAL.eye);dot(-6,1,PAL.pink);g(-1,1,2,1,PAL.eye);
+    g(-5,5,3,7,PAL.black2);g(2,5,3,7,PAL.black2);g(-6,11,5,2,PAL.black);g(1,11,5,2,PAL.black);
+    g(-4,12,2,1,PAL.white);g(3,12,2,1,PAL.white);
+  }
+  function pawReach(x,y,len=6){g(x,y,3,len,PAL.black2);g(x+1,y+len-1,4,2,PAL.black);g(x+2,y+len,2,1,PAL.white);}
+  function slash(x,y){g(x,y,1,5,PAL.white);g(x+2,y-1,1,5,PAL.eye);g(x+4,y-2,1,5,PAL.white);}
+  function heart(x,y){g(x,y,2,2,PAL.scarf);g(x+3,y,2,2,PAL.scarf);g(x-1,y+1,7,2,PAL.scarf);g(x,y+3,5,2,PAL.scarf);g(x+1,y+5,3,1,PAL.scarf);}
+  function sparkle(x,y){g(x,y,1,5,PAL.fx);g(x-2,y+2,5,1,PAL.fx);}
+
+  if(frame===1){tail(0);body();scarf();head("cute");legs(0,1,0,-1);}
+  else if(frame===2){activeCtx.translate(0,-C);tail(1);body(-.02);scarf(1);head("cute");legs(1,0,1,0);}
+  else if(frame===3){activeCtx.translate(C,0);tail(0);body(.02);scarf();head("cute");legs(0,1,-1,1);}
+  else if(frame===4){activeCtx.translate(0,-C);tail(2);body(-.02);scarf(1);head("cute");legs(1,0,0,-1);}
+  else if(frame===5){tail(1);body(-.04);scarf();head("cute",-2);legs(1,0,0,0);}
+  else if(frame===6){frontView();}
+  else if(frame===7){activeCtx.scale(-1,1);tail(0);body();scarf();head("cute");legs(0,1,0,-1);}
+  else if(frame===8){activeCtx.translate(0,3*C);tail(2);g(-8,-1,14,6,PAL.black);g(-6,4,10,2,PAL.black2);head("sleep");}
+  else if(frame===9){activeCtx.translate(0,-2*C);tail(0);body();scarf();head("alert");legs(0,0,0,0);sparkle(18,-9);}
+  else if(frame===10){activeCtx.translate(-2*C,C);activeCtx.rotate(-.08);tail(1);body();scarf();head("hurt");legs(1,2,1,-1);sparkle(17,-8);}
+  else if(frame===11){activeCtx.translate(2*C,-C);activeCtx.rotate(.08);tail(2);body();scarf();head("hurt");legs(2,0,-1,1);sparkle(-15,-8);}
+  else if(frame===12){activeCtx.translate(C,0);tail(0);body();scarf(1);head("attack");g(-6,5,3,6,PAL.black2);g(-7,10,5,2,PAL.black);pawReach(3,2,6);}
+  else if(frame===13){activeCtx.translate(2*C,-C);tail(1);body(-.02);scarf(1);head("attack");g(-6,5,3,6,PAL.black2);g(-7,10,5,2,PAL.black);pawReach(4,1,7);slash(14,-3);}
+  else if(frame===14){activeCtx.translate(0,-2*C);tail(0);body();scarf();head("cute");legs(0,0,0,0);heart(-14,-8);heart(18,-8);}
+  else {activeCtx.translate(0,C);tail(0);body(0,1);scarf();head("attack");g(-7,5,4,6,PAL.black2);g(3,5,4,6,PAL.black2);g(-8,10,6,2,PAL.black);g(2,10,6,2,PAL.black);sparkle(-14,-7);sparkle(18,-7);}
 }
 
 /* =========================================================
@@ -4029,6 +4830,115 @@ function drawXEye(
     color,
     S
   );
+}
+
+
+/* =========================================================
+   MOTION 図鑑
+========================================================= */
+
+const DEX_MOTIONS = {
+  1:"WALK 1",
+  2:"WALK 2",
+  3:"WALK 3",
+  4:"WALK 4",
+  5:"TURN 1",
+  6:"TURN 2",
+  7:"TURN 3",
+  8:"SLEEP",
+  9:"NOTICE",
+  10:"DAMAGE 1",
+  11:"DAMAGE 2",
+  12:"ATTACK 1",
+  13:"ATTACK 2",
+  14:"SPECIAL 1",
+  15:"SPECIAL 2"
+};
+
+let dexCreature = "blueboy";
+let dexAnimationId = 0;
+
+function openDex(){
+  dex.style.display = "flex";
+  renderDex();
+}
+
+function closeDex(){
+  dex.style.display = "none";
+  cancelAnimationFrame(dexAnimationId);
+  activeCtx = ctx;
+}
+
+dexButton.addEventListener("click", openDex);
+dexClose.addEventListener("click", closeDex);
+
+dexTabs.forEach(button=>{
+  button.addEventListener("click",()=>{
+    dexCreature = button.dataset.creature;
+    dexTabs.forEach(b=>b.classList.toggle(
+      "active",
+      b === button
+    ));
+    renderDex();
+  });
+});
+
+function renderDex(){
+  cancelAnimationFrame(dexAnimationId);
+  dexGrid.innerHTML = "";
+
+  for(let frame=1; frame<=15; frame++){
+    const card = document.createElement("div");
+    card.className = "dexCard";
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+
+    const motion = document.createElement("div");
+    motion.className = "dexMotion";
+    motion.textContent = DEX_MOTIONS[frame];
+
+    card.append(canvas,motion);
+    dexGrid.appendChild(card);
+  }
+
+  animateDex(performance.now());
+}
+
+function animateDex(time){
+  if(dex.style.display !== "flex"){
+    activeCtx = ctx;
+    return;
+  }
+
+  const canvases = dexGrid.querySelectorAll("canvas");
+  canvases.forEach((canvas,index)=>{
+    const c = canvas.getContext("2d");
+    c.imageSmoothingEnabled = false;
+    c.clearRect(0,0,canvas.width,canvas.height);
+    c.save();
+    c.translate(canvas.width/2,canvas.height/2);
+
+    activeCtx = c;
+    const frame = index + 1;
+    const oldLocked = locked;
+    locked = false;
+
+    if(dexCreature === "hachibee"){
+      drawHachibeeRaster(frame,time,c,108);
+    }else if(dexCreature === "kuroneko"){
+      drawKuronekoFrame(frame,4,time);
+    }else{
+      drawPixelFrame(frame,4,time);
+    }
+
+    locked = oldLocked;
+    c.restore();
+  });
+
+  activeCtx = ctx;
+  dexAnimationId = requestAnimationFrame(animateDex);
 }
 
 /* =========================================================
