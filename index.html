@@ -2165,7 +2165,16 @@ function spawnCreature(){
 
 /* ===== HUB SYSTEM ===== */
 const SAVEKEY="PCH360_HUB_V1";
-let hubData=(()=>{try{return Object.assign({money:0,caught:{},boxed:{},items:{}},JSON.parse(localStorage.getItem(SAVEKEY)||"{}"))}catch(e){return {money:0,caught:{},boxed:{},items:{}}}})();
+const DEFAULT_HUB_DATA={money:5000,caught:{blueboy:5},boxed:{},items:{}};
+let hubData=(()=>{
+ try{
+  const saved=JSON.parse(localStorage.getItem(SAVEKEY)||"null");
+  if(!saved)return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
+  return Object.assign({},DEFAULT_HUB_DATA,saved,{caught:Object.assign({},DEFAULT_HUB_DATA.caught,saved.caught||{}),boxed:saved.boxed||{},items:saved.items||{}});
+ }catch(e){
+  return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
+ }
+})();
 const FEEDS=[
 ["blueboy","ブルプル缶","can","缶詰"]
 ];
@@ -2231,7 +2240,7 @@ function renderRoom(){
 function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。"}
 function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
 function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="block";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHunt(){setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>showHub(b.dataset.page)));
 document.getElementById("huntNav").addEventListener("click",showHunt);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
