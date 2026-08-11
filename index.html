@@ -12,20 +12,10 @@ html,body{
   margin:0;width:100%;height:100%;overflow:hidden;background:#000;
   touch-action:none;font-family:monospace
 }
-#camera,#world,#game{
-  position:fixed;inset:0;width:100%;height:100%
-}
-#camera{
-  object-fit:cover;background:#000;z-index:0;display:none
-}
-#world{
-  z-index:0;background:#000;
-  image-rendering:pixelated
-}
-#game{
-  z-index:2;pointer-events:none;
-  image-rendering:pixelated
-}
+#camera,#world,#game{position:fixed;inset:0;width:100%;height:100%}
+#camera{object-fit:cover;background:#000;z-index:0;display:none}
+#world{z-index:0;background:#000;image-rendering:pixelated}
+#game{z-index:2;pointer-events:none;image-rendering:pixelated}
 #hud{
   position:fixed;inset:0;z-index:10;
   display:none;pointer-events:none
@@ -88,20 +78,17 @@ html,body{
   font:900 12px monospace
 }
 #modeSwitch button.active{background:#fff;color:#111}
-
 #debug{
   position:absolute;right:6px;bottom:6px;
   padding:5px 7px;background:rgba(0,0,0,.68);
   border:1px solid rgba(255,255,255,.7);
   color:#fff;font-size:8px;line-height:1.45
 }
-
 #start{
   position:fixed;inset:0;z-index:100;
   display:flex;flex-direction:column;
   justify-content:center;align-items:center;
-  padding:25px;background:#161925;
-  color:#fff;text-align:center
+  padding:25px;background:#161925;color:#fff;text-align:center
 }
 #startIcon{font-size:64px}
 #start h1{margin:8px 0 10px;font-size:25px}
@@ -117,8 +104,7 @@ html,body{
 #startButton{
   min-width:250px;margin-top:18px;padding:17px 25px;
   border:3px solid #fff;background:#fff;color:#111;
-  box-shadow:6px 6px #000;
-  font:900 16px monospace
+  box-shadow:6px 6px #000;font:900 16px monospace
 }
 #startButton:active{
   transform:translate(3px,3px);box-shadow:3px 3px #000
@@ -138,6 +124,7 @@ html,body{
 <canvas id="game"></canvas>
 
 <div id="hud">
+
   <div id="hp">
     <div id="hpText">
       CREATURE HP <span id="hpNumber">100</span> / 100
@@ -165,7 +152,9 @@ html,body{
     STARTをタップしてください。<br><br>
     360°スマホを動かしてキャラクターを探します。<br>
     発見すると0.5秒後に気づき、高速で逃走します。<br><br>
-    スマホを振るとロックできます。
+    キャラクターを捉えながらスマホを振るとロック。<br>
+    <b>振っている間だけロックが続きます。</b><br>
+    振るのをやめると即解除されます。
   </p>
   <div id="secureStatus">CHECKING...</div>
   <button id="startButton">START</button>
@@ -176,12 +165,13 @@ html,body{
 "use strict";
 
 /* =========================================================
-   ELEMENTS
+   ELEMENT
 ========================================================= */
 
 const camera = document.getElementById("camera");
 const world = document.getElementById("world");
 const wctx = world.getContext("2d",{alpha:false});
+
 const game = document.getElementById("game");
 const ctx = game.getContext("2d");
 
@@ -223,6 +213,7 @@ let H = innerHeight;
 let DPR = 1;
 
 function resize(){
+
   W = innerWidth;
   H = innerHeight;
 
@@ -244,7 +235,7 @@ addEventListener("orientationchange",()=>setTimeout(resize,250));
 resize();
 
 /* =========================================================
-   CAMERA PIXEL
+   PIXEL CAMERA
 ========================================================= */
 
 const PIXEL_WIDTH = 70;
@@ -262,16 +253,22 @@ let pixelH = 100;
 let displayMode = "pixel";
 
 function setDisplayMode(mode){
+
   displayMode = mode;
 
   if(mode === "pixel"){
+
     world.style.display = "block";
     camera.style.display = "none";
+
     pixelModeButton.classList.add("active");
     cameraModeButton.classList.remove("active");
+
   }else{
+
     world.style.display = "none";
     camera.style.display = "block";
+
     pixelModeButton.classList.remove("active");
     cameraModeButton.classList.add("active");
   }
@@ -290,12 +287,23 @@ const VFOV = 55;
 const MAX_HP = 100;
 const DAMAGE_PER_SECOND = 12;
 
+/*
+  SHAKE
+
+  SHAKE_THRESHOLD:
+  この値以上で振っている判定。
+
+  SHAKE_RELEASE_DELAY:
+  最後に振動を検出してから
+  180ms経ったら「振るのをやめた」とする。
+*/
+
 const SHAKE_THRESHOLD = 9;
-const MIN_LOCK = 1.5;
+const SHAKE_RELEASE_THRESHOLD = 4.0;
+const SHAKE_RELEASE_DELAY = 180;
+
 const MAX_LOCK = 5;
 const LOCK_COOLDOWN = 3000;
-
-/* detection */
 
 const NOTICE_DELAY = 500;
 const NOTICE_DURATION = 220;
@@ -320,45 +328,18 @@ const RELEASE_RUN_MAX = 125;
 const RUN_DISTANCE_MIN = 90;
 const RUN_DISTANCE_MAX = 160;
 
-/* =========================================================
-   RUN DIRECTION
+/* 60% reverse */
 
-   60% = WALKと反対
-   40% = WALKと同じ
-========================================================= */
+const RUN_REVERSE_CHANCE = .60;
 
-const RUN_REVERSE_CHANCE = 0.60;
+/* SLEEP */
 
-/* =========================================================
-   SLEEP
-========================================================= */
-
-/*
-  発見されてから30秒未満
-  → 30%
-*/
-
-const NORMAL_SLEEP_CHANCE = 0.30;
-
-/*
-  30秒以上見つからない
-  → 50%
-*/
-
-const LONG_SLEEP_CHANCE = 0.50;
-
+const NORMAL_SLEEP_CHANCE = .30;
+const LONG_SLEEP_CHANCE = .50;
 const LONG_UNSEEN_TIME = 30000;
-
-/*
-  一回の睡眠時間
-*/
 
 const SLEEP_MIN = 2500;
 const SLEEP_MAX = 6000;
-
-/*
-  睡眠判定間隔
-*/
 
 const SLEEP_CHECK_MIN = 3500;
 const SLEEP_CHECK_MAX = 7000;
@@ -373,14 +354,17 @@ const PITCH_SMOOTH = .20;
 ========================================================= */
 
 const CREATURE_ZONES = {
+
   SKY:{
     minPitch:20,
     maxPitch:34
   },
+
   FRONT:{
     minPitch:-6,
     maxPitch:6
   },
+
   EARTH:{
     minPitch:-34,
     maxPitch:-20
@@ -388,7 +372,7 @@ const CREATURE_ZONES = {
 };
 
 /* =========================================================
-   SENSOR
+   SENSOR STATE
 ========================================================= */
 
 let cameraYaw = 0;
@@ -409,11 +393,8 @@ let creatureYaw = 0;
 let creaturePitch = 0;
 let creatureBasePitch = 0;
 
-/* WALK direction */
-
-let moveDirection = 1;
-
-/* WALK speed */
+let moveDirection =
+  Math.random() < .5 ? -1 : 1;
 
 let walkSpeed = 25;
 
@@ -431,29 +412,21 @@ let bobAmplitude = 10;
 let bobPhase = 0;
 let bobSpeed = 1;
 
-/* visible */
+/* VISIBLE */
 
 let creatureVisible = false;
 let wasCreatureVisible = false;
 
-/* detection */
+/* DETECTION */
 
 let detected = false;
 let detectedAt = 0;
 
-/* =========================================================
-   SLEEP STATE
-========================================================= */
+/* SLEEP */
 
 let sleeping = false;
-
 let sleepUntil = 0;
 let nextSleepCheck = 0;
-
-/*
-  最後に画面に捉えられた時刻
-*/
-
 let lastDetectedTime = 0;
 
 /* =========================================================
@@ -468,18 +441,48 @@ let nextSpecialTime = 0;
 let nextAttackTime = 0;
 
 /* =========================================================
+   LOCK STATE
+========================================================= */
+
+let locked = false;
+
+/*
+  ロックを開始した時刻
+*/
+
+let lockStartedAt = 0;
+
+/*
+  最大5秒の終了時刻
+*/
+
+let lockEnd = 0;
+
+/*
+  最後にSHAKEを検出した時刻
+*/
+
+let lastShakeActivity = 0;
+
+/*
+  現在のSHAKE強度
+*/
+
+let currentShakePower = 0;
+
+/*
+  再ロック禁止
+*/
+
+let lockCooldownUntil = 0;
+
+/* =========================================================
    GAME
 ========================================================= */
 
 let gameRunning = false;
-
 let hp = MAX_HP;
 
-let locked = false;
-let lockEnd = 0;
-let lockCooldownUntil = 0;
-
-let lastShake = 0;
 let lastTime = 0;
 
 /* =========================================================
@@ -503,24 +506,39 @@ function random(min,max){
 }
 
 function normalize360(a){
+
   a %= 360;
-  if(a < 0) a += 360;
+
+  if(a < 0){
+    a += 360;
+  }
+
   return a;
 }
 
 function angleDiff(target,current){
-  let d = normalize360(target)-normalize360(current);
 
-  if(d > 180) d -= 360;
-  if(d < -180) d += 360;
+  let d =
+    normalize360(target)-
+    normalize360(current);
+
+  if(d > 180){
+    d -= 360;
+  }
+
+  if(d < -180){
+    d += 360;
+  }
 
   return d;
 }
 
 function smoothAngle(current,target,amount){
+
   return normalize360(
     current+
-    angleDiff(target,current)*amount
+    angleDiff(target,current)*
+    amount
   );
 }
 
@@ -539,21 +557,31 @@ function spawnCreature(){
   ];
 
   creatureZone =
-    types[Math.floor(Math.random()*types.length)];
+    types[
+      Math.floor(
+        Math.random()*types.length
+      )
+    ];
 
   const zone =
     CREATURE_ZONES[creatureZone];
 
-  creatureYaw = random(0,360);
+  creatureYaw =
+    random(0,360);
 
   creatureBasePitch =
-    random(zone.minPitch,zone.maxPitch);
+    random(
+      zone.minPitch,
+      zone.maxPitch
+    );
 
   creaturePitch =
     creatureBasePitch;
 
   moveDirection =
-    Math.random() < .5 ? -1 : 1;
+    Math.random() < .5
+    ? -1
+    : 1;
 
   walkSpeed =
     random(
@@ -567,9 +595,14 @@ function spawnCreature(){
   runDistance = 0;
   runTravel = 0;
 
-  bobAmplitude = random(5,20);
-  bobPhase = random(0,Math.PI*2);
-  bobSpeed = random(.7,1.25);
+  bobAmplitude =
+    random(5,20);
+
+  bobPhase =
+    random(0,Math.PI*2);
+
+  bobSpeed =
+    random(.7,1.25);
 
   creatureVisible = false;
   wasCreatureVisible = false;
@@ -577,14 +610,10 @@ function spawnCreature(){
   detected = false;
   detectedAt = 0;
 
-  /*
-    発見タイマー開始
-  */
-
   lastDetectedTime = now;
 
   /*
-    ★最初から30%で睡眠
+    ★30%で初期睡眠
   */
 
   sleeping =
@@ -644,16 +673,26 @@ startButton.addEventListener("click",async()=>{
   try{
 
     if(!window.isSecureContext){
-      throw new Error("HTTPSで開いてください。");
+
+      throw new Error(
+        "HTTPSで開いてください。"
+      );
     }
 
     let orientationPromise = null;
     let motionPromise = null;
 
+    /*
+      iOS:
+      STARTという1回のユーザー操作から
+      センサー許可を要求
+    */
+
     if(
       typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function"
     ){
+
       orientationPromise =
         DeviceOrientationEvent.requestPermission();
     }
@@ -662,6 +701,7 @@ startButton.addEventListener("click",async()=>{
       typeof DeviceMotionEvent !== "undefined" &&
       typeof DeviceMotionEvent.requestPermission === "function"
     ){
+
       motionPromise =
         DeviceMotionEvent.requestPermission();
     }
@@ -672,6 +712,7 @@ startButton.addEventListener("click",async()=>{
         await orientationPromise;
 
       if(result !== "granted"){
+
         throw new Error(
           "方向センサーが許可されませんでした。"
         );
@@ -684,6 +725,7 @@ startButton.addEventListener("click",async()=>{
         await motionPromise;
 
       if(result !== "granted"){
+
         throw new Error(
           "モーションセンサーが許可されませんでした。"
         );
@@ -694,6 +736,7 @@ startButton.addEventListener("click",async()=>{
       !navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia
     ){
+
       throw new Error(
         "カメラを使用できません。"
       );
@@ -705,11 +748,19 @@ startButton.addEventListener("click",async()=>{
 
       stream =
         await navigator.mediaDevices.getUserMedia({
+
           video:{
-            facingMode:{ideal:"environment"},
-            width:{ideal:1920},
-            height:{ideal:1080}
+            facingMode:{
+              ideal:"environment"
+            },
+            width:{
+              ideal:1920
+            },
+            height:{
+              ideal:1080
+            }
           },
+
           audio:false
         });
 
@@ -743,7 +794,12 @@ startButton.addEventListener("click",async()=>{
     hp = MAX_HP;
 
     locked = false;
+
+    lockStartedAt = 0;
     lockEnd = 0;
+    lastShakeActivity = 0;
+    currentShakePower = 0;
+
     lockCooldownUntil = 0;
 
     sensorReady = false;
@@ -786,13 +842,16 @@ startButton.addEventListener("click",async()=>{
 
 function cameraLoop(){
 
-  if(!gameRunning) return;
+  if(!gameRunning){
+    return;
+  }
 
   if(
     displayMode === "pixel" &&
     camera.readyState >= 2 &&
     camera.videoWidth > 0
   ){
+
     drawPixelCamera();
   }
 
@@ -808,7 +867,9 @@ function drawPixelCamera(){
   const vw = camera.videoWidth;
   const vh = camera.videoHeight;
 
-  if(!vw || !vh) return;
+  if(!vw || !vh){
+    return;
+  }
 
   const screenRatio = W/H;
   const videoRatio = vw/vh;
@@ -836,7 +897,8 @@ function drawPixelCamera(){
     Math.max(
       1,
       Math.round(
-        PIXEL_WIDTH*H/W
+        PIXEL_WIDTH*
+        H/W
       )
     );
 
@@ -916,25 +978,31 @@ function orientationHandler(e){
     screen.orientation &&
     typeof screen.orientation.angle === "number"
   ){
+
     screenAngle =
       screen.orientation.angle;
 
   }else if(
     typeof window.orientation === "number"
   ){
+
     screenAngle =
       window.orientation;
   }
 
   if(screenAngle !== 0){
 
-    const r = rad(-screenAngle);
+    const r =
+      rad(-screenAngle);
 
     const c = Math.cos(r);
     const s = Math.sin(r);
 
-    const nx = c*wx-s*wy;
-    const ny = s*wx+c*wy;
+    const nx =
+      c*wx-s*wy;
+
+    const ny =
+      s*wx+c*wy;
 
     wx = nx;
     wy = ny;
@@ -974,6 +1042,7 @@ function orientationHandler(e){
     Number.isFinite(e.webkitCompassHeading) &&
     horizontal > .15
   ){
+
     yaw =
       normalize360(
         e.webkitCompassHeading
@@ -1000,7 +1069,9 @@ function orientationHandler(e){
 
 function gameLoop(time){
 
-  if(!gameRunning) return;
+  if(!gameRunning){
+    return;
+  }
 
   let dt =
     (time-lastTime)/1000;
@@ -1030,7 +1101,11 @@ function gameLoop(time){
   }
 
   /* =====================================================
-     LOCK
+     ★LOCK
+
+     1. 振っている間だけ継続
+     2. 振るのをやめたら即解除
+     3. 最大5秒
   ===================================================== */
 
   if(locked){
@@ -1038,71 +1113,85 @@ function gameLoop(time){
     const remaining =
       lockEnd-time;
 
-    hp -=
-      DAMAGE_PER_SECOND*
-      dt;
+    const sinceLastShake =
+      time-
+      lastShakeActivity;
 
-    hp =
-      Math.max(0,hp);
+    /*
+      ★SHAKE停止判定
 
-    updateHP();
+      180ms以上、
+      SHAKEとして認識されていない
+      ↓
+      ロック解除
+    */
 
-    if(hp <= 0){
+    const shakeStopped =
+      sinceLastShake >
+      SHAKE_RELEASE_DELAY;
 
-      hp = 0;
-      updateHP();
+    /*
+      最大5秒
+    */
 
-      locked = false;
-      gameRunning = false;
+    const maxTimeReached =
+      remaining <= 0;
 
-      lockText.textContent =
-        "★ CAPTURED ★";
+    if(
+      shakeStopped ||
+      maxTimeReached
+    ){
 
-      lockText.style.display =
-        "block";
-
-      timer.style.display =
-        "none";
-
-      cooldownText.style.display =
-        "none";
-
-      renderGame(time);
-
-      return;
-    }
-
-    if(remaining <= 0){
-
-      locked = false;
-
-      lockText.style.display =
-        "none";
-
-      timer.style.display =
-        "none";
-
-      lockCooldownUntil =
-        time+
-        LOCK_COOLDOWN;
-
-      detected = false;
-      detectedAt = 0;
-
-      sleeping = false;
-      sleepUntil = 0;
-
-      /*
-        ★ロック解除
-        即RUN
-      */
-
-      startRun(
-        "release",
-        time
+      releaseLock(
+        time,
+        shakeStopped
+        ? "SHAKE_STOP"
+        : "MAX_TIME"
       );
 
     }else{
+
+      /*
+        振っている間だけダメージ
+      */
+
+      hp -=
+        DAMAGE_PER_SECOND*
+        dt;
+
+      hp =
+        Math.max(
+          0,
+          hp
+        );
+
+      updateHP();
+
+      if(hp <= 0){
+
+        hp = 0;
+
+        updateHP();
+
+        locked = false;
+        gameRunning = false;
+
+        lockText.textContent =
+          "★ CAPTURED ★";
+
+        lockText.style.display =
+          "block";
+
+        timer.style.display =
+          "none";
+
+        cooldownText.style.display =
+          "none";
+
+        renderGame(time);
+
+        return;
+      }
 
       timer.textContent =
         Math.max(
@@ -1118,9 +1207,7 @@ function gameLoop(time){
 
   if(!locked){
 
-    /* =========================
-       RUN
-    ========================= */
+    /* RUN */
 
     if(runningAway){
 
@@ -1143,14 +1230,7 @@ function gameLoop(time){
         runDistance
       ){
 
-        runningAway =
-          false;
-
-        /*
-          RUN終了
-          ↓
-          WALK
-        */
+        runningAway = false;
 
         sleeping = false;
 
@@ -1167,24 +1247,13 @@ function gameLoop(time){
           );
       }
 
-    }
+    }else{
 
-    /* =========================
-       WALK / SLEEP
-    ========================= */
-
-    else{
-
-      /*
-        ★画面に捉えられている間は
-        SLEEP判定を一切しない
-      */
+      /* ===============================================
+         SLEEP AI
+      =============================================== */
 
       if(!creatureVisible){
-
-        /* =====================
-           現在睡眠中
-        ===================== */
 
         if(sleeping){
 
@@ -1194,7 +1263,6 @@ function gameLoop(time){
           ){
 
             sleeping = false;
-
             sleepUntil = 0;
 
             setAnimation(
@@ -1210,13 +1278,7 @@ function gameLoop(time){
               );
           }
 
-        }
-
-        /* =====================
-           起きている
-        ===================== */
-
-        else if(
+        }else if(
           time >=
           nextSleepCheck
         ){
@@ -1225,21 +1287,10 @@ function gameLoop(time){
             time-
             lastDetectedTime;
 
-          /*
-            30秒未満
-            →30%
-
-            30秒以上
-            →50%
-          */
-
           const sleepChance =
-
             unseenTime >=
             LONG_UNSEEN_TIME
-
             ? LONG_SLEEP_CHANCE
-
             : NORMAL_SLEEP_CHANCE;
 
           if(
@@ -1273,9 +1324,7 @@ function gameLoop(time){
         }
       }
 
-      /*
-        ★起きている時だけWALK
-      */
+      /* WALK */
 
       if(!sleeping){
 
@@ -1313,12 +1362,12 @@ function gameLoop(time){
       cameraPitch;
 
     creatureVisible =
-      Math.abs(dx) < HFOV/2 &&
-      Math.abs(dy) < VFOV/2;
+      Math.abs(dx)<HFOV/2 &&
+      Math.abs(dy)<VFOV/2;
 
-    /* ===================================================
-       ★画面に入った
-    =================================================== */
+    /*
+      ★画面に入った瞬間
+    */
 
     if(
       creatureVisible &&
@@ -1327,30 +1376,22 @@ function gameLoop(time){
       !runningAway
     ){
 
-      /*
-        最後に発見された時間
-      */
-
       lastDetectedTime =
         time;
 
       /*
-        ★SLEEP中なら即起床
+        SLEEP解除
       */
 
       sleeping = false;
       sleepUntil = 0;
 
       /*
-        ★発見カウント開始
+        発見開始
       */
 
       detected = true;
       detectedAt = time;
-
-      /*
-        ★捉え中はWALK
-      */
 
       setAnimation(
         "move",
@@ -1358,11 +1399,9 @@ function gameLoop(time){
       );
     }
 
-    /* ===================================================
-       ★0.5秒前に画面外へ
-
-       発見キャンセル
-    =================================================== */
+    /*
+      0.5秒以内に逃した
+    */
 
     if(
       !creatureVisible &&
@@ -1372,11 +1411,6 @@ function gameLoop(time){
 
       detected = false;
       detectedAt = 0;
-
-      /*
-        即SLEEPにはしない
-        WALKへ戻る
-      */
 
       sleeping = false;
 
@@ -1393,16 +1427,17 @@ function gameLoop(time){
         );
     }
 
-    /* ===================================================
-       ★0.5秒捉え続けた
-    =================================================== */
+    /*
+      ★0.5秒捉えた
+    */
 
     if(
       creatureVisible &&
       detected &&
       !locked &&
       !runningAway &&
-      time-detectedAt >= NOTICE_DELAY
+      time-detectedAt >=
+      NOTICE_DELAY
     ){
 
       detected = false;
@@ -1411,7 +1446,7 @@ function gameLoop(time){
       sleeping = false;
 
       /*
-        ★9 気づき
+        FRAME 9
       */
 
       setAnimation(
@@ -1420,7 +1455,7 @@ function gameLoop(time){
       );
 
       /*
-        ★RUN
+        RUN
       */
 
       startRun(
@@ -1434,15 +1469,11 @@ function gameLoop(time){
       creatureVisible;
   }
 
-  /* =====================================================
-     ANIMATION
-  ===================================================== */
+  /* ANIMATION */
 
   updateAnimation(time);
 
-  /* =====================================================
-     COOLDOWN
-  ===================================================== */
+  /* COOLDOWN */
 
   if(
     !locked &&
@@ -1493,29 +1524,20 @@ function startRun(
   sleepUntil = 0;
 
   /*
-    =====================================================
-    ★RUN方向
-
-    60%:
-    WALKと反対方向
-
-    40%:
-    WALKと同じ方向
-    =====================================================
+    ★60%でWALKと逆方向
   */
 
   if(
     Math.random() <
     RUN_REVERSE_CHANCE
   ){
+
     moveDirection *= -1;
   }
 
-  /*
-    SPEED
-  */
-
-  if(reason === "release"){
+  if(
+    reason === "release"
+  ){
 
     runSpeed =
       random(
@@ -1592,10 +1614,6 @@ function setAnimation(state,time){
       animFrame = 9;
       break;
 
-    case "turn":
-      animFrame = 5;
-      break;
-
     case "move":
       animFrame = 1;
       break;
@@ -1621,7 +1639,8 @@ function setAnimation(state,time){
 function updateAnimation(time){
 
   /*
-    LOCK
+    ロック中
+    10-11 DAMAGE
   */
 
   if(locked){
@@ -1645,7 +1664,7 @@ function updateAnimation(time){
     animStateStart;
 
   /*
-    NOTICE 9
+    9 NOTICE
   */
 
   if(
@@ -1659,6 +1678,7 @@ function updateAnimation(time){
       elapsed >=
       NOTICE_DURATION
     ){
+
       setAnimation(
         "move",
         time
@@ -1685,7 +1705,9 @@ function updateAnimation(time){
         )%2
       );
 
-    if(elapsed >= 360){
+    if(
+      elapsed >= 360
+    ){
 
       setAnimation(
         "move",
@@ -1720,7 +1742,9 @@ function updateAnimation(time){
         )%2
       );
 
-    if(elapsed >= 360){
+    if(
+      elapsed >= 360
+    ){
 
       setAnimation(
         "move",
@@ -1738,11 +1762,9 @@ function updateAnimation(time){
     return;
   }
 
-  /* =====================================================
-     SLEEP
-
-     画面内では絶対禁止
-  ===================================================== */
+  /*
+    SLEEP
+  */
 
   if(
     sleeping &&
@@ -1754,24 +1776,19 @@ function updateAnimation(time){
     animState =
       "sleep";
 
-    animFrame =
-      8;
+    animFrame = 8;
 
     return;
   }
 
-  /* =====================================================
-     RUN
-  ===================================================== */
+  /*
+    RUN
+  */
 
   if(runningAway){
 
     animState =
       "move";
-
-    /*
-      高速RUNアニメ
-    */
 
     animFrame =
       1+
@@ -1780,10 +1797,6 @@ function updateAnimation(time){
           time/55
         )%4
       );
-
-    /*
-      特殊エモート
-    */
 
     if(
       time >=
@@ -1802,11 +1815,9 @@ function updateAnimation(time){
     return;
   }
 
-  /* =====================================================
-     WALK
-
-     捉え中もここ
-  ===================================================== */
+  /*
+    WALK
+  */
 
   animState =
     "move";
@@ -1821,10 +1832,13 @@ function updateAnimation(time){
 }
 
 /* =========================================================
-   PROJECTION
+   PROJECT
 ========================================================= */
 
-function projectCreature(yaw,pitch){
+function projectCreature(
+  yaw,
+  pitch
+){
 
   const dx =
     angleDiff(
@@ -1836,14 +1850,6 @@ function projectCreature(yaw,pitch){
     pitch-
     cameraPitch;
 
-  /*
-    ★左右方向
-
-    世界の右
-    →
-    画面の右
-  */
-
   const x =
     W/2+
     (
@@ -1851,12 +1857,6 @@ function projectCreature(yaw,pitch){
       (HFOV/2)
     )*
     (W/2);
-
-  /*
-    ★上方向
-    →
-    画面上
-  */
 
   const y =
     H/2-
@@ -1867,6 +1867,7 @@ function projectCreature(yaw,pitch){
     (H/2);
 
   return{
+
     x,
     y,
     dx,
@@ -1885,10 +1886,7 @@ function projectCreature(yaw,pitch){
 function renderGame(time){
 
   ctx.clearRect(
-    0,
-    0,
-    W,
-    H
+    0,0,W,H
   );
 
   drawCreature(time);
@@ -1926,34 +1924,72 @@ function renderGame(time){
     ? 50
     : 30;
 
+  const shakeAge =
+    locked
+    ? Math.max(
+        0,
+        time-lastShakeActivity
+      )
+    : 0;
+
   debug.innerHTML =
-    "YAW "+cameraYaw.toFixed(1)+"°"+
-    "<br>PITCH "+cameraPitch.toFixed(1)+"°"+
-    "<br>TYPE "+creatureZone+
-    "<br>FRAME "+animFrame+
-    "<br>VISIBLE "+creatureVisible+
-    "<br>DETECT "+detectionRemaining.toFixed(2)+
+
+    "YAW "+
+    cameraYaw.toFixed(1)+"°"+
+
+    "<br>PITCH "+
+    cameraPitch.toFixed(1)+"°"+
+
+    "<br>TYPE "+
+    creatureZone+
+
+    "<br>FRAME "+
+    animFrame+
+
+    "<br>VISIBLE "+
+    creatureVisible+
+
+    "<br>DETECT "+
+    detectionRemaining.toFixed(2)+
+
     "<br>STATE "+
-      (
-        locked
-        ? "LOCK"
-        : runningAway
-          ? "RUN"
-          : sleeping
-            ? "SLEEP"
-            : "WALK"
-      )+
+    (
+      locked
+      ? "LOCK"
+      : runningAway
+        ? "RUN"
+        : sleeping
+          ? "SLEEP"
+          : "WALK"
+    )+
+
     "<br>DIR "+
-      (
-        moveDirection > 0
-        ? "RIGHT"
-        : "LEFT"
-      )+
-    "<br>WALK "+walkSpeed.toFixed(1)+"°/s"+
-    "<br>RUN "+runSpeed.toFixed(1)+"°/s"+
-    "<br>UNSEEN "+unseen.toFixed(1)+"s"+
-    "<br>SLEEP "+sleepChance+"%"+
-    "<br>HP "+Math.ceil(hp);
+    (
+      moveDirection > 0
+      ? "RIGHT"
+      : "LEFT"
+    )+
+
+    "<br>WALK "+
+    walkSpeed.toFixed(1)+"°/s"+
+
+    "<br>RUN "+
+    runSpeed.toFixed(1)+"°/s"+
+
+    "<br>SHAKE "+
+    currentShakePower.toFixed(1)+
+
+    "<br>SHAKE AGE "+
+    shakeAge.toFixed(0)+"ms"+
+
+    "<br>UNSEEN "+
+    unseen.toFixed(1)+"s"+
+
+    "<br>SLEEP "+
+    sleepChance+"%"+
+
+    "<br>HP "+
+    Math.ceil(hp);
 }
 
 /* =========================================================
@@ -1962,7 +1998,9 @@ function renderGame(time){
 
 function drawCreature(time){
 
-  if(!creatureVisible) return;
+  if(!creatureVisible){
+    return;
+  }
 
   const p =
     projectCreature(
@@ -1970,15 +2008,16 @@ function drawCreature(time){
       creaturePitch
     );
 
-  if(!p.visible) return;
+  if(!p.visible){
+    return;
+  }
 
   let bob = 0;
 
-  /*
-    SLEEP時は揺れない
-  */
-
-  if(!sleeping && !locked){
+  if(
+    !sleeping &&
+    !locked
+  ){
 
     bob =
       Math.sin(
@@ -1990,7 +2029,9 @@ function drawCreature(time){
   }
 
   const x =
-    Math.round(p.x);
+    Math.round(
+      p.x
+    );
 
   const y =
     Math.round(
@@ -2009,14 +2050,19 @@ function drawCreature(time){
 
   ctx.save();
 
-  ctx.translate(x,y);
+  ctx.translate(
+    x,
+    y
+  );
 
-  /*
-    移動方向に向ける
-  */
+  if(
+    moveDirection < 0
+  ){
 
-  if(moveDirection < 0){
-    ctx.scale(-1,1);
+    ctx.scale(
+      -1,
+      1
+    );
   }
 
   drawPixelFrame(
@@ -2052,14 +2098,16 @@ function drawCreature(time){
 }
 
 /* =========================================================
-   PIXEL HELPER
+   PIXEL
 ========================================================= */
 
 function px(
   x,y,w,h,
   color,S
 ){
-  ctx.fillStyle = color;
+
+  ctx.fillStyle =
+    color;
 
   ctx.fillRect(
     Math.round(x*S),
@@ -2070,10 +2118,14 @@ function px(
 }
 
 /* =========================================================
-   CHARACTER FRAMES 1-15
+   CHARACTER
 ========================================================= */
 
-function drawPixelFrame(frame,S,time){
+function drawPixelFrame(
+  frame,
+  S,
+  time
+){
 
   const OUTLINE = "#17121e";
 
@@ -2097,6 +2149,10 @@ function drawPixelFrame(frame,S,time){
   const PINK = "#ff8ebd";
   const YELLOW = "#ffe66d";
 
+  /*
+    shadow
+  */
+
   px(
     -6,8,
     12,2,
@@ -2104,11 +2160,13 @@ function drawPixelFrame(frame,S,time){
     S
   );
 
-  /* 1 WALK */
+  /* 1 */
 
   if(frame===1){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-8,0,3,2,OUTLINE,S);
     px(-7,0,2,1,BODY,S);
@@ -2122,16 +2180,22 @@ function drawPixelFrame(frame,S,time){
     px(2,6,4,3,OUTLINE,S);
     px(3,6,3,2,BODY,S);
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
   }
 
-  /* 2 WALK */
+  /* 2 */
 
   else if(frame===2){
 
-    ctx.translate(0,-S);
+    ctx.translate(
+      0,-S
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-8,-1,4,2,OUTLINE,S);
     px(-7,-1,3,1,BODY,S);
@@ -2145,14 +2209,18 @@ function drawPixelFrame(frame,S,time){
     px(2,6,3,4,OUTLINE,S);
     px(2,6,2,3,BODY,S);
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
   }
 
-  /* 3 WALK */
+  /* 3 */
 
   else if(frame===3){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-9,-1,4,2,OUTLINE,S);
     px(-8,-1,3,1,BODY,S);
@@ -2166,16 +2234,22 @@ function drawPixelFrame(frame,S,time){
     px(2,6,3,4,OUTLINE,S);
     px(2,6,2,3,BODY,S);
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
   }
 
-  /* 4 WALK */
+  /* 4 */
 
   else if(frame===4){
 
-    ctx.translate(0,-S);
+    ctx.translate(
+      0,-S
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-8,0,3,2,OUTLINE,S);
     px(-7,0,2,1,BODY,S);
@@ -2189,26 +2263,34 @@ function drawPixelFrame(frame,S,time){
     px(2,6,4,3,OUTLINE,S);
     px(3,6,3,2,BODY,S);
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
   }
 
   /* 5 */
 
   else if(frame===5){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(1,-2,4,3,WHITE,S);
     px(3,-1,2,2,BLACK,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
   }
 
   /* 6 */
 
   else if(frame===6){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-1,-2,3,3,WHITE,S);
     px(1,-1,1,2,BLACK,S);
@@ -2216,14 +2298,18 @@ function drawPixelFrame(frame,S,time){
     px(3,-2,3,3,WHITE,S);
     px(4,-1,1,2,BLACK,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
   }
 
   /* 7 */
 
   else if(frame===7){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-4,-3,3,4,WHITE,S);
     px(-3,-2,1,2,BLACK,S);
@@ -2233,31 +2319,27 @@ function drawPixelFrame(frame,S,time){
 
     px(-1,2,2,2,BLACK,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
   }
 
-  /* =====================================================
-     8 SLEEP
-  ===================================================== */
+  /* 8 SLEEP */
 
   else if(frame===8){
 
-    ctx.translate(0,S);
+    ctx.translate(
+      0,S
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
-
-    /*
-      閉じた目
-    */
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-4,-1,3,1,BLACK,S);
     px(2,-1,3,1,BLACK,S);
 
     px(-1,2,2,1,BLACK,S);
-
-    /*
-      腕
-    */
 
     px(-7,2,3,3,OUTLINE,S);
     px(-6,2,2,2,BODY,S);
@@ -2265,7 +2347,9 @@ function drawPixelFrame(frame,S,time){
     px(5,2,3,3,OUTLINE,S);
     px(5,2,2,2,BODY,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
 
     /*
       Z
@@ -2281,22 +2365,17 @@ function drawPixelFrame(frame,S,time){
     px(11,-8,2,1,WHITE,S);
   }
 
-  /* =====================================================
-     9 NOTICE
-  ===================================================== */
+  /* 9 NOTICE */
 
   else if(frame===9){
 
     ctx.translate(
-      0,
-      -2*S
+      0,-2*S
     );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
-
-    /*
-      大きい目
-    */
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-5,-3,4,4,WHITE,S);
     px(-3,-2,2,2,BLACK,S);
@@ -2304,15 +2383,7 @@ function drawPixelFrame(frame,S,time){
     px(2,-3,4,4,WHITE,S);
     px(3,-2,2,2,BLACK,S);
 
-    /*
-      口
-    */
-
     px(-1,2,2,2,BLACK,S);
-
-    /*
-      腕
-    */
 
     px(-8,-3,3,4,OUTLINE,S);
     px(-7,-3,2,3,BODY,S);
@@ -2320,77 +2391,97 @@ function drawPixelFrame(frame,S,time){
     px(5,-3,3,4,OUTLINE,S);
     px(5,-3,2,3,BODY,S);
 
-    legsNeutral(S,BODY,OUTLINE);
-
-    /*
-      !
-    */
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
 
     px(9,-10,2,5,YELLOW,S);
     px(9,-3,2,2,YELLOW,S);
   }
 
-  /* =====================================================
-     10 DAMAGE
-  ===================================================== */
+  /* 10 DAMAGE */
 
   else if(frame===10){
 
-    ctx.translate(-S,S);
+    ctx.translate(
+      -S,S
+    );
+
     ctx.rotate(-.08);
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
-    drawXEye(-3,-1,S,WHITE);
-    drawXEye(3,-1,S,WHITE);
+    drawXEye(
+      -3,-1,S,WHITE
+    );
+
+    drawXEye(
+      3,-1,S,WHITE
+    );
 
     px(-2,3,4,1,BLACK,S);
 
     px(-9,-2,4,3,OUTLINE,S);
     px(5,2,4,3,OUTLINE,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
 
     px(8,-7,2,3,YELLOW,S);
     px(6,-5,3,2,YELLOW,S);
     px(9,-3,2,3,YELLOW,S);
   }
 
-  /* =====================================================
-     11 DAMAGE
-  ===================================================== */
+  /* 11 DAMAGE */
 
   else if(frame===11){
 
-    ctx.translate(S,-S);
+    ctx.translate(
+      S,-S
+    );
+
     ctx.rotate(.08);
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
-    drawXEye(-3,-1,S,WHITE);
-    drawXEye(3,-1,S,WHITE);
+    drawXEye(
+      -3,-1,S,WHITE
+    );
+
+    drawXEye(
+      3,-1,S,WHITE
+    );
 
     px(-1,3,3,1,BLACK,S);
 
     px(-8,2,3,3,OUTLINE,S);
     px(5,-2,4,3,OUTLINE,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
 
     px(-10,-6,2,3,YELLOW,S);
     px(-11,-4,3,2,YELLOW,S);
     px(-10,-1,2,2,YELLOW,S);
   }
 
-  /* =====================================================
-     12 ATTACK
-  ===================================================== */
+  /* 12 ATTACK */
 
   else if(frame===12){
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
 
     px(-9,0,4,3,OUTLINE,S);
     px(-8,0,3,2,BODY,S);
@@ -2398,20 +2489,26 @@ function drawPixelFrame(frame,S,time){
     px(5,-5,3,6,OUTLINE,S);
     px(5,-4,2,5,BODY,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
   }
 
-  /* =====================================================
-     13 ATTACK
-  ===================================================== */
+  /* 13 ATTACK */
 
   else if(frame===13){
 
-    ctx.translate(2*S,0);
+    ctx.translate(
+      2*S,0
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
-    faceNormal(S,WHITE,BLACK);
+    faceNormal(
+      S,WHITE,BLACK
+    );
 
     px(5,-1,7,4,OUTLINE,S);
     px(5,0,6,2,BODY,S);
@@ -2419,24 +2516,30 @@ function drawPixelFrame(frame,S,time){
     px(11,-2,3,5,OUTLINE,S);
     px(11,-1,2,3,LIGHT,S);
 
-    legsNeutral(S,BODY,OUTLINE);
+    legsNeutral(
+      S,BODY,OUTLINE
+    );
 
     px(15,-3,1,3,YELLOW,S);
     px(14,1,3,1,YELLOW,S);
     px(15,3,1,2,YELLOW,S);
   }
 
-  /* =====================================================
-     14 SPECIAL
-  ===================================================== */
+  /* 14 SPECIAL */
 
   else if(frame===14){
 
-    ctx.translate(0,-4*S);
+    ctx.translate(
+      0,-4*S
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
-    faceHappy(S,BLACK,PINK);
+    faceHappy(
+      S,BLACK,PINK
+    );
 
     px(-8,-5,3,6,OUTLINE,S);
     px(-7,-4,2,5,BODY,S);
@@ -2448,15 +2551,17 @@ function drawPixelFrame(frame,S,time){
     px(2,6,4,2,OUTLINE,S);
   }
 
-  /* =====================================================
-     15 SPECIAL
-  ===================================================== */
+  /* 15 SPECIAL */
 
   else if(frame===15){
 
-    ctx.translate(0,-2*S);
+    ctx.translate(
+      0,-2*S
+    );
 
-    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+    bodyBase(
+      S,BODY,LIGHT,DARK,OUTLINE
+    );
 
     px(-4,-1,3,1,BLACK,S);
 
@@ -2499,11 +2604,9 @@ function bodyBase(
   px(4,-7,2,4,BODY,S);
 
   px(-6,-4,13,11,OUTLINE,S);
-
   px(-5,-3,11,9,BODY,S);
 
   px(-4,-3,7,1,LIGHT,S);
-
   px(4,-1,2,6,DARK,S);
 }
 
@@ -2574,37 +2677,30 @@ function drawXEye(
 }
 
 /* =========================================================
-   SHAKE
+   ★SHAKE SENSOR
 ========================================================= */
 
 function motionHandler(e){
 
-  if(
-    !gameRunning ||
-    !creatureVisible ||
-    locked
-  ){
-    return;
-  }
-
-  const now =
-    performance.now();
-
-  if(
-    now <
-    lockCooldownUntil
-  ){
+  if(!gameRunning){
     return;
   }
 
   const a =
     e.accelerationIncludingGravity;
 
-  if(!a) return;
+  if(!a){
+    return;
+  }
 
-  const x = a.x || 0;
-  const y = a.y || 0;
-  const z = a.z || 0;
+  const x =
+    a.x || 0;
+
+  const y =
+    a.y || 0;
+
+  const z =
+    a.z || 0;
 
   const magnitude =
     Math.sqrt(
@@ -2613,39 +2709,96 @@ function motionHandler(e){
       z*z
     );
 
+  /*
+    重力分9.81を除外
+  */
+
   const shake =
     Math.abs(
       magnitude-
       9.81
     );
 
-  if(
-    shake <
-    SHAKE_THRESHOLD
-  ){
-    return;
-  }
-
-  if(
-    now-lastShake <
-    500
-  ){
-    return;
-  }
-
-  lastShake = now;
-
-  lockCreature(shake);
-}
-
-/* =========================================================
-   LOCK
-========================================================= */
-
-function lockCreature(power){
+  currentShakePower =
+    shake;
 
   const now =
     performance.now();
+
+  /*
+    ============================================
+    ★すでにLOCK中
+
+    振動が続いていれば
+    最終SHAKE時刻を更新
+    ============================================
+  */
+
+  if(locked){
+
+    /*
+      ロック開始後は少し低い閾値で
+      「まだ振っている」を判定。
+
+      開始には9必要だが、
+      維持には4でよい。
+    */
+
+    if(
+      shake >=
+      SHAKE_RELEASE_THRESHOLD
+    ){
+
+      lastShakeActivity =
+        now;
+    }
+
+    return;
+  }
+
+  /*
+    ============================================
+    LOCKしていない
+    ============================================
+  */
+
+  if(
+    !creatureVisible
+  ){
+    return;
+  }
+
+  if(
+    now <
+    lockCooldownUntil
+  ){
+    return;
+  }
+
+  /*
+    ★9以上でLOCK開始
+  */
+
+  if(
+    shake >=
+    SHAKE_THRESHOLD
+  ){
+
+    lockCreature(
+      shake,
+      now
+    );
+  }
+}
+
+/* =========================================================
+   ★LOCK START
+========================================================= */
+
+function lockCreature(
+  power,
+  now
+){
 
   if(
     !creatureVisible ||
@@ -2658,6 +2811,33 @@ function lockCreature(power){
 
   locked = true;
 
+  /*
+    ★ロック開始
+  */
+
+  lockStartedAt =
+    now;
+
+  /*
+    ★最大5秒
+  */
+
+  lockEnd =
+    now+
+    MAX_LOCK*1000;
+
+  /*
+    ★今まさに振っているので
+    最終SHAKE時刻もnow
+  */
+
+  lastShakeActivity =
+    now;
+
+  /*
+    キャラクター停止
+  */
+
   runningAway = false;
 
   sleeping = false;
@@ -2665,25 +2845,6 @@ function lockCreature(power){
 
   detected = false;
   detectedAt = 0;
-
-  let seconds =
-    MIN_LOCK+
-    (
-      power-
-      SHAKE_THRESHOLD
-    )*
-    .35;
-
-  seconds =
-    clamp(
-      seconds,
-      MIN_LOCK,
-      MAX_LOCK
-    );
-
-  lockEnd =
-    now+
-    seconds*1000;
 
   setAnimation(
     "damage",
@@ -2700,12 +2861,14 @@ function lockCreature(power){
     "block";
 
   timer.textContent =
-    seconds.toFixed(1);
+    MAX_LOCK.toFixed(1);
 
   cooldownText.style.display =
     "none";
 
-  if(navigator.vibrate){
+  if(
+    navigator.vibrate
+  ){
 
     navigator.vibrate([
       70,
@@ -2713,6 +2876,59 @@ function lockCreature(power){
       120
     ]);
   }
+}
+
+/* =========================================================
+   ★LOCK RELEASE
+
+   SHAKE停止でも
+   5秒経過でも
+   ここを通る
+========================================================= */
+
+function releaseLock(
+  time,
+  reason
+){
+
+  if(!locked){
+    return;
+  }
+
+  locked = false;
+
+  lockText.style.display =
+    "none";
+
+  timer.style.display =
+    "none";
+
+  /*
+    ★解除後3秒
+    再ロック不可
+  */
+
+  lockCooldownUntil =
+    time+
+    LOCK_COOLDOWN;
+
+  detected = false;
+  detectedAt = 0;
+
+  sleeping = false;
+  sleepUntil = 0;
+
+  currentShakePower = 0;
+
+  /*
+    ★解除した瞬間
+    高速RUN
+  */
+
+  startRun(
+    "release",
+    time
+  );
 }
 
 /* =========================================================
@@ -2744,7 +2960,9 @@ function stopCamera(){
   const stream =
     camera.srcObject;
 
-  if(!stream) return;
+  if(!stream){
+    return;
+  }
 
   stream
     .getTracks()
@@ -2752,7 +2970,8 @@ function stopCamera(){
       track=>track.stop()
     );
 
-  camera.srcObject = null;
+  camera.srcObject =
+    null;
 }
 
 addEventListener(
