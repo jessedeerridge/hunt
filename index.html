@@ -3941,6 +3941,10 @@ function renderGame(
     time
   );
 
+  drawDetectorArrow(
+    time
+  );
+
   let detectionRemaining =
     0;
 
@@ -4057,6 +4061,130 @@ function renderGame(
     Math.ceil(
       hp
     );
+}
+
+/* =========================================================
+   DETECTOR DIRECTION
+========================================================= */
+
+function drawDetectorArrow(time){
+
+  if(
+    !sensorReady ||
+    !own("detector") ||
+    creatureVisible
+  ){
+    return;
+  }
+
+  const yawDifference =
+    angleDiff(
+      creatureYaw,
+      cameraYaw
+    );
+
+  const pitchDifference =
+    creaturePitch-
+    cameraPitch;
+
+  let directionX =
+    Math.abs(yawDifference) > HFOV*.38
+      ? Math.sign(yawDifference)
+      : 0;
+
+  let directionY =
+    Math.abs(pitchDifference) > VFOV*.32
+      ? -Math.sign(pitchDifference)
+      : 0;
+
+  if(
+    directionX === 0 &&
+    directionY === 0
+  ){
+    directionX = Math.sign(yawDifference) || 1;
+  }
+
+  const edgeX =
+    Math.max(
+      56,
+      W/2-58
+    );
+
+  const edgeY =
+    Math.max(
+      100,
+      H/2-132
+    );
+
+  const x =
+    W/2+
+    directionX*edgeX;
+
+  const y =
+    H/2+
+    directionY*edgeY;
+
+  const rotation =
+    Math.atan2(
+      directionY,
+      directionX
+    )+
+    Math.PI/2;
+
+  const pulse =
+    1+
+    Math.sin(time*.008)*.1;
+
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(pulse,pulse);
+  ctx.rotate(rotation);
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.shadowColor = "#23baff";
+  ctx.shadowBlur = 18;
+
+  ctx.beginPath();
+  ctx.moveTo(0,-26);
+  ctx.lineTo(18,2);
+  ctx.lineTo(7,-2);
+  ctx.lineTo(7,20);
+  ctx.lineTo(-7,20);
+  ctx.lineTo(-7,-2);
+  ctx.lineTo(-18,2);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(8,35,69,.92)";
+  ctx.fill();
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#dff7ff";
+  ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#31baff";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(-10,7);
+  ctx.lineTo(0,-9);
+  ctx.lineTo(10,7);
+  ctx.strokeStyle = "#54d6ff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.shadowColor = "#000";
+  ctx.shadowBlur = 5;
+  ctx.fillStyle = "#dff7ff";
+  ctx.font = "900 9px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText(
+    "DETECTOR",
+    0,
+    31
+  );
+  ctx.restore();
 }
 
 /* =========================================================
