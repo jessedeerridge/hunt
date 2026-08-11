@@ -1545,10 +1545,13 @@ function requestCameraMode(){
     setDisplayMode("camera");
     return;
   }
-  cameraModeConfirmedThisHunt = true;
   const confirm = document.getElementById("modeConfirm");
   confirm.classList.add("show");
   document.getElementById("modeConfirmYes").focus();
+}
+
+function closeModeConfirm(){
+  document.getElementById("modeConfirm").classList.remove("show");
 }
 
 pixelModeButton.onclick =
@@ -1558,21 +1561,19 @@ cameraModeButton.onclick =
   ()=>setDisplayMode("pixel");
 
 document.getElementById("modeConfirmYes").onclick = ()=>{
-  document.getElementById("modeConfirm").classList.remove("show");
+  cameraModeConfirmedThisHunt = true;
+  closeModeConfirm();
   setDisplayMode("camera");
 };
 
 document.getElementById("modeConfirmNo").onclick = ()=>{
-  const box=document.querySelector(".modeConfirmBox");
-  box.animate(
-    [
-      {transform:"translateX(0)"},
-      {transform:"translateX(-7px)"},
-      {transform:"translateX(7px)"},
-      {transform:"translateX(0)"}
-    ],
-    {duration:220}
-  );
+  closeModeConfirm();
+};
+
+document.getElementById("modeConfirm").onclick = event=>{
+  if(event.target === event.currentTarget){
+    closeModeConfirm();
+  }
 };
 
 /* =========================================================
