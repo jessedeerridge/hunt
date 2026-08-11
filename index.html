@@ -188,7 +188,7 @@ html,body{
   position:absolute;
 
   right:calc(14px + env(safe-area-inset-right));
-  top:calc(14px + env(safe-area-inset-top));
+  bottom:calc(22px + env(safe-area-inset-bottom));
   display:block;
   width:58px;
   height:58px;
@@ -223,7 +223,7 @@ html,body{
 #cameraMode::before{background:linear-gradient(135deg,#57b8ff,#123563);box-shadow:inset 0 0 0 6px #102443}
 #cameraMode::after{content:"";position:absolute;width:9px;height:9px;left:24px;top:24px;border:2px solid #fff;border-radius:50%}
 
-#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));top:calc(14px + env(safe-area-inset-top));width:58px;height:58px;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto;font:900 11px "Yu Gothic",sans-serif}
+#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto;font:900 11px "Yu Gothic",sans-serif}
 #huntHome::before{content:"";display:block;width:20px;height:17px;margin:0 auto 2px;border:3px solid currentColor;border-top:0;transform:translateY(4px)}
 #huntHome::after{content:"";position:absolute;left:18px;top:9px;width:17px;height:17px;border-left:3px solid currentColor;border-top:3px solid currentColor;transform:rotate(45deg)}
 
@@ -981,6 +981,9 @@ html,body{
 }
 
 #moneyHud{position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:145;display:none;padding:8px 11px;border:2px solid #fff;background:#111827;color:#ffe46b;font:900 14px monospace;pointer-events:none}
+#gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
+#gamePopup.show{display:block;animation:gamePopupIn .18s ease-out both}
+@keyframes gamePopupIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 .hubPage{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;background:#10131d;color:#fff;pointer-events:auto;padding-bottom:84px}
 .hubHead{height:62px;display:flex;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid rgba(255,255,255,.16);background:#171b28;font:900 18px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.04em}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
@@ -1113,6 +1116,7 @@ html,body{
 
 
 <div id="moneyHud"><span aria-label="通貨単位">Đ</span> <span id="moneyValue">0</span></div>
+<div id="gamePopup" role="status" aria-live="polite"></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
 <div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
 <div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ショップ</div></div><div class="hubBody" id="shopBody"></div></div>
@@ -1120,9 +1124,9 @@ html,body{
 <div id="bottomNav">
  <button class="navBtn" data-page="roomPage"><span class="pxIcon pxRoom" aria-hidden="true"></span><span>ケージ</span></button>
  <button class="navBtn" data-page="itemPage"><span class="pxIcon pxItem" aria-hidden="true"></span><span>アイテム</span></button>
+ <button id="huntNav"><span class="pxIcon pxHunt" aria-hidden="true"></span><span>HUNT!</span></button>
  <button class="navBtn" data-page="shopPage"><span class="pxIcon pxShop" aria-hidden="true"></span><span>ショップ</span></button>
  <button class="navBtn" data-page="ownedDexPage"><span class="pxIcon pxDex" aria-hidden="true"></span><span>図鑑</span></button>
- <button id="huntNav"><span class="pxIcon pxHunt" aria-hidden="true"></span><span>HUNT!</span></button>
 </div>
 
 <div id="start">
@@ -2185,7 +2189,17 @@ function shopIcon(type){
 function saveHub(){localStorage.setItem(SAVEKEY,JSON.stringify(hubData));updateHubUI()}
 function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money}
 function own(k){return hubData.items[k]||0}
-function buy(k,price){if(hubData.money<price){alert("お金が足りません");return}hubData.money-=price;hubData.items[k]=(hubData.items[k]||0)+1;saveHub();renderShop();renderItems()}
+let gamePopupTimer=0;
+function showGamePopup(message){
+ const popup=document.getElementById("gamePopup");
+ clearTimeout(gamePopupTimer);
+ popup.textContent=message;
+ popup.classList.remove("show");
+ void popup.offsetWidth;
+ popup.classList.add("show");
+ gamePopupTimer=setTimeout(()=>popup.classList.remove("show"),1800);
+}
+function buy(k,price){if(hubData.money<price){showGamePopup("お金が足りません");return}hubData.money-=price;hubData.items[k]=(hubData.items[k]||0)+1;saveHub();renderShop();renderItems();showGamePopup("購入しました！")}
 function shopCard(k,n,ic,d,p){return `<div class="shopCard"><div class="shopIcon">${shopIcon(ic)}</div><div class="shopName">${n}</div><div class="shopDesc">${d}</div><button class="buyBtn" onclick="buy('${k}',${p})">Đ ${p}　購入</button></div>`}
 function rail(title,cards){return `<section class="shopSection"><h3>${title}</h3><div class="shopRailWrap"><div class="shopRail">${cards}</div><div class="railArrow">›</div></div></section>`}
 function renderShop(){
