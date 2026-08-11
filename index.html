@@ -218,14 +218,10 @@ html,body{
   background:transparent;
 }
 #modeSwitch button:not(.active){display:none}
-#modeSwitch button::before{content:"";position:absolute;inset:13px;border:2px solid #fff;border-radius:4px}
-#pixelMode::before{background:repeating-conic-gradient(#fff 0 25%,#315f9e 0 50%) 0/10px 10px}
-#cameraMode::before{background:linear-gradient(135deg,#57b8ff,#123563);box-shadow:inset 0 0 0 6px #102443}
-#cameraMode::after{content:"";position:absolute;width:9px;height:9px;left:24px;top:24px;border:2px solid #fff;border-radius:50%}
+#modeSwitch svg{display:block;width:42px;height:42px;margin:auto;filter:drop-shadow(0 2px 0 #06172c)}
 
-#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto;font:900 11px "Yu Gothic",sans-serif}
-#huntHome::before{content:"";display:block;width:20px;height:17px;margin:0 auto 2px;border:3px solid currentColor;border-top:0;transform:translateY(4px)}
-#huntHome::after{content:"";position:absolute;left:18px;top:9px;width:17px;height:17px;border-left:3px solid currentColor;border-top:3px solid currentColor;transform:rotate(45deg)}
+#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:0;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto}
+#huntHome svg{display:block;width:36px;height:36px;margin:auto;filter:drop-shadow(0 2px 0 #0b3768)}
 
 /* DEBUG */
 
@@ -984,6 +980,12 @@ html,body{
 #gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
 #gamePopup.show{display:block;animation:gamePopupIn .18s ease-out both}
 @keyframes gamePopupIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#modeConfirm{position:fixed;inset:0;z-index:310;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(2,9,18,.72);pointer-events:auto}
+#modeConfirm.show{display:flex}
+.modeConfirmBox{width:min(88vw,360px);padding:22px 18px 18px;border:3px solid #d9efff;border-radius:20px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 8px 0 #06172c,0 18px 38px rgba(0,0,0,.6);text-align:center;font:900 15px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif}
+.modeConfirmActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.modeConfirmActions button{padding:12px;border:2px solid #d9efff;border-radius:12px;background:#77bdff;color:#08294b;box-shadow:0 4px 0 #164f82;font:900 14px "Yu Gothic",sans-serif}
+.modeConfirmActions button:last-child{background:#e9f4ff;color:#26384d}
 .hubPage{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;background:#10131d;color:#fff;pointer-events:auto;padding-bottom:84px}
 .hubHead{height:62px;display:flex;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid rgba(255,255,255,.16);background:#171b28;font:900 18px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.04em}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
@@ -1060,7 +1062,9 @@ html,body{
 
 <div id="hud">
 
-  <button id="huntHome" type="button" aria-label="メニューに戻る">戻る</button>
+  <button id="huntHome" type="button" aria-label="メニューに戻る">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" stroke="#082e55" stroke-width="2" stroke-linejoin="round" d="M6 23 24 7l18 16-4 4-3-3v17H13V24l-3 3z"/><path fill="#2f91df" stroke="#082e55" stroke-width="2" d="M20 29h8v12h-8z"/></svg>
+  </button>
 
   <div id="hp">
 
@@ -1101,11 +1105,11 @@ html,body{
   <div id="modeSwitch">
 
     <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
-      PIXEL
+      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#071b31" stroke-width="1"><path fill="#d8f1ff" d="M5 22h6v-6h6v-6h6V4h6v6h6v6h6v6h4v6h-5v16H9V28H5z"/><path fill="#65b8f2" d="M11 22h6v6h-6zm12-12h6v6h-6zm12 12h6v6h-6zM17 28h6v6h-6zm12 0h6v6h-6zM11 34h6v6h-6zm12 0h6v10h-6zm12 0h5v6h-5z"/></g><path d="m31 8 13 13M44 8 31 21" fill="none" stroke="#ff4055" stroke-width="5" stroke-linecap="round"/><path d="m31 8 13 13M44 8 31 21" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
 
     <button id="cameraMode" aria-label="モザイク表示に切り替える">
-      CAMERA
+      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#071b31" stroke-width="1"><path fill="#d8f1ff" d="M5 22h6v-6h6v-6h6V4h6v6h6v6h6v6h4v6h-5v16H9V28H5z"/><path fill="#65b8f2" d="M11 22h6v6h-6zm12-12h6v6h-6zm12 12h6v6h-6zM17 28h6v6h-6zm12 0h6v6h-6zM11 34h6v6h-6zm12 0h6v10h-6zm12 0h5v6h-5z"/></g></svg>
     </button>
 
   </div>
@@ -1117,6 +1121,7 @@ html,body{
 
 <div id="moneyHud"><span aria-label="通貨単位">Đ</span> <span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
+<div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
 <div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
 <div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ショップ</div></div><div class="hubBody" id="shopBody"></div></div>
@@ -1491,6 +1496,9 @@ let pixelH =
 let displayMode =
   "pixel";
 
+let cameraModeConfirmedThisHunt =
+  false;
+
 function setDisplayMode(mode){
 
   displayMode =
@@ -1530,11 +1538,31 @@ function setDisplayMode(mode){
   }
 }
 
+function requestCameraMode(){
+  if(cameraModeConfirmedThisHunt){
+    setDisplayMode("camera");
+    return;
+  }
+  cameraModeConfirmedThisHunt = true;
+  const confirm = document.getElementById("modeConfirm");
+  confirm.classList.add("show");
+  document.getElementById("modeConfirmYes").focus();
+}
+
 pixelModeButton.onclick =
-  ()=>setDisplayMode("camera");
+  requestCameraMode;
 
 cameraModeButton.onclick =
   ()=>setDisplayMode("pixel");
+
+document.getElementById("modeConfirmYes").onclick = ()=>{
+  document.getElementById("modeConfirm").classList.remove("show");
+  setDisplayMode("camera");
+};
+
+document.getElementById("modeConfirmNo").onclick = ()=>{
+  document.getElementById("modeConfirm").classList.remove("show");
+};
 
 /* =========================================================
    SETTINGS
@@ -2240,7 +2268,7 @@ function renderRoom(){
 function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。"}
 function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
 function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="block";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHunt(){cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>showHub(b.dataset.page)));
 document.getElementById("huntNav").addEventListener("click",showHunt);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
