@@ -187,45 +187,45 @@ html,body{
 #modeSwitch{
   position:absolute;
 
-  left:50%;
-
-  bottom:calc(24px + env(safe-area-inset-bottom));
-
-  transform:translateX(-50%);
-
-  display:flex;
-
-  gap:5px;
-
-  padding:5px;
-
-  background:rgba(0,0,0,.68);
-
-  border:2px solid #fff;
+  right:calc(14px + env(safe-area-inset-right));
+  top:calc(14px + env(safe-area-inset-top));
+  display:block;
+  width:58px;
+  height:58px;
+  padding:0;
+  background:rgba(9,20,39,.86);
+  border:3px solid #fff;
+  border-radius:50%;
+  box-shadow:0 5px 0 #183f78,0 8px 14px rgba(0,0,0,.45);
 
   pointer-events:auto;
 }
 
 #modeSwitch button{
-
-  min-width:92px;
-
-  padding:11px 16px;
-
+  position:absolute;
+  inset:0;
+  width:100%;
+  padding:0;
   border:0;
-
+  border-radius:50%;
   background:transparent;
-
   color:#fff;
-
-  font:900 12px monospace;
+  font:900 0 monospace;
 }
 
 #modeSwitch button.active{
-
-  background:#fff;
-  color:#111;
+  display:block;
+  background:transparent;
 }
+#modeSwitch button:not(.active){display:none}
+#modeSwitch button::before{content:"";position:absolute;inset:13px;border:2px solid #fff;border-radius:4px}
+#pixelMode::before{background:repeating-conic-gradient(#fff 0 25%,#315f9e 0 50%) 0/10px 10px}
+#cameraMode::before{background:linear-gradient(135deg,#57b8ff,#123563);box-shadow:inset 0 0 0 6px #102443}
+#cameraMode::after{content:"";position:absolute;width:9px;height:9px;left:24px;top:24px;border:2px solid #fff;border-radius:50%}
+
+#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));top:calc(14px + env(safe-area-inset-top));width:58px;height:58px;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto;font:900 11px "Yu Gothic",sans-serif}
+#huntHome::before{content:"";display:block;width:20px;height:17px;margin:0 auto 2px;border:3px solid currentColor;border-top:0;transform:translateY(4px)}
+#huntHome::after{content:"";position:absolute;left:18px;top:9px;width:17px;height:17px;border-left:3px solid currentColor;border-top:3px solid currentColor;transform:rotate(45deg)}
 
 /* DEBUG */
 
@@ -811,10 +811,10 @@ html,body{
 }
 
 .navBtn.active{
-  background:#fff4a8;
-  color:#3a3006;
+  background:#8dcbff;
+  color:#082c55;
   box-shadow:
-    0 7px 0 #b78d20,
+    0 7px 0 #2875ba,
     0 9px 0 #111827,
     0 11px 14px rgba(0,0,0,.38),
     inset 0 3px 0 #fff,
@@ -828,16 +828,16 @@ html,body{
   margin:0 1px;
   padding:8px 3px 7px;
   border-radius:20px;
-  background:#ffd84a;
-  color:#3a2a00;
+  background:#399bed;
+  color:#061f3a;
   font-size:15px;
   line-height:1;
-  border:3px solid #fff6b5;
+  border:3px solid #bfe6ff;
   box-shadow:
-    0 9px 0 #b67a00,
-    0 12px 0 #4f3500,
+    0 9px 0 #1260a6,
+    0 12px 0 #082e55,
     0 14px 18px rgba(0,0,0,.42),
-    inset 0 4px 0 #fff7a6,
+    inset 0 4px 0 #bce5ff,
     inset 0 -4px 0 rgba(169,105,0,.22);
   transform:translateY(-12px);
   transition:transform .07s ease,box-shadow .07s ease,filter .1s ease;
@@ -856,11 +856,11 @@ html,body{
 #huntNav:active{
   transform:translateY(-3px);
   box-shadow:
-    0 2px 0 #b67a00,
-    0 5px 0 #4f3500,
+    0 2px 0 #1260a6,
+    0 5px 0 #082e55,
     0 7px 10px rgba(0,0,0,.34),
-    inset 0 3px 0 #fff7a6,
-    inset 0 -3px 0 rgba(169,105,0,.22);
+    inset 0 3px 0 #bce5ff,
+    inset 0 -3px 0 rgba(8,46,85,.22);
 }
 
 /* ===== PIXEL ICON BASE ===== */
@@ -963,20 +963,20 @@ html,body{
   content:"";
   position:absolute;
   width:3px;height:3px;
-  background:#473500;
+  background:#06294c;
   box-shadow:
-    15px 0 #473500,18px 0 #473500,
-    9px 3px #473500,12px 3px #473500,21px 3px #473500,24px 3px #473500,
-    6px 6px #473500,27px 6px #473500,
-    3px 9px #473500,30px 9px #473500,
-    3px 12px #473500,15px 12px #473500,18px 12px #473500,30px 12px #473500,
-    0 15px #473500,12px 15px #473500,15px 15px #473500,18px 15px #473500,21px 15px #473500,33px 15px #473500,
-    0 18px #473500,12px 18px #473500,15px 18px #473500,18px 18px #473500,21px 18px #473500,33px 18px #473500,
-    3px 21px #473500,15px 21px #473500,18px 21px #473500,30px 21px #473500,
-    3px 24px #473500,30px 24px #473500,
-    6px 27px #473500,27px 27px #473500,
-    9px 30px #473500,12px 30px #473500,21px 30px #473500,24px 30px #473500,
-    15px 33px #473500,18px 33px #473500;
+    15px 0 #06294c,18px 0 #06294c,
+    9px 3px #06294c,12px 3px #06294c,21px 3px #06294c,24px 3px #06294c,
+    6px 6px #06294c,27px 6px #06294c,
+    3px 9px #06294c,30px 9px #06294c,
+    3px 12px #06294c,15px 12px #06294c,18px 12px #06294c,30px 12px #06294c,
+    0 15px #06294c,12px 15px #06294c,15px 15px #06294c,18px 15px #06294c,21px 15px #06294c,33px 15px #06294c,
+    0 18px #06294c,12px 18px #06294c,15px 18px #06294c,18px 18px #06294c,21px 18px #06294c,33px 18px #06294c,
+    3px 21px #06294c,15px 21px #06294c,18px 21px #06294c,30px 21px #06294c,
+    3px 24px #06294c,30px 24px #06294c,
+    6px 27px #06294c,27px 27px #06294c,
+    9px 30px #06294c,12px 30px #06294c,21px 30px #06294c,24px 30px #06294c,
+    15px 33px #06294c,18px 33px #06294c;
   left:0;top:0;
 }
 
@@ -991,9 +991,9 @@ html,body{
 #boxPanel{position:absolute;inset:54px 8px 8px;z-index:5;display:none;overflow:auto;padding:10px;background:rgba(10,12,18,.96);border:2px solid #fff}
 .boxRow{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid #555;font-size:11px}.boxRow b{flex:1}.boxRow button{border:1px solid #fff;background:#fff;color:#111;padding:6px;font:900 10px monospace}
 .shopSection{margin-bottom:18px}.shopSection h3{margin:4px 0 8px;font-size:13px}
-.shopRailWrap{position:relative}.shopRail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 16px)/3);gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}.shopRail::-webkit-scrollbar{display:none}
-.shopCard{scroll-snap-align:start;min-height:150px;border:2px solid #fff;background:#0b0e15;padding:8px;text-align:center}.shopIcon{height:62px;display:grid;place-items:center;font-size:38px}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 3px;font:900 10px monospace}
-.railArrow{position:absolute;right:3px;top:45%;z-index:3;font-size:30px;text-shadow:2px 2px #000;pointer-events:none;animation:arrowPulse .8s infinite alternate}@keyframes arrowPulse{to{transform:translateX(7px);opacity:.35}}
+.shopRailWrap{position:relative}.shopRail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:6px}
+.shopCard{min-width:0;min-height:168px;border:2px solid #fff;background:#0b0e15;padding:8px 5px;text-align:center}.shopIcon{height:68px;display:grid;place-items:center}.shopIcon svg{width:58px;height:58px;filter:drop-shadow(0 3px 0 #000)}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 2px;font:900 9px monospace}
+.railArrow{display:none}
 #itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simpleCard{border:2px solid #fff;background:#0b0e15;padding:10px;text-align:center;font-size:10px}
 
 /* ===== CLEAN GAME BUTTON POLISH ===== */
@@ -1015,10 +1015,11 @@ html,body{
 .buyBtn{
   width:100%;
   padding:8px 4px;
-  background:#fff1a8;
-  color:#4b3500;
-  box-shadow:0 4px 0 #a77300,inset 0 2px 0 rgba(255,255,255,.8);
+  background:#77bdff;
+  color:#08294b;
+  box-shadow:0 4px 0 #236cae,inset 0 2px 0 rgba(255,255,255,.8);
 }
+@media(max-width:520px){.shopCard{padding:6px 3px}.shopIcon svg{width:48px;height:48px}.shopDesc{min-height:38px}.buyBtn{font-size:8px}.hubBody{padding:9px}}
 .boxRow button{
   padding:7px 9px;
   background:#eef4ff;
@@ -1055,6 +1056,8 @@ html,body{
 <canvas id="game" width="1432" height="1499" style="width: 895px; height: 937px;"></canvas>
 
 <div id="hud">
+
+  <button id="huntHome" type="button" aria-label="メニューに戻る">戻る</button>
 
   <div id="hp">
 
@@ -1094,11 +1097,11 @@ html,body{
 
   <div id="modeSwitch">
 
-    <button id="pixelMode" class="active">
+    <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
       PIXEL
     </button>
 
-    <button id="cameraMode">
+    <button id="cameraMode" aria-label="モザイク表示に切り替える">
       CAMERA
     </button>
 
@@ -1109,17 +1112,17 @@ html,body{
 </div>
 
 
-<div id="moneyHud">¥ <span id="moneyValue">0</span></div>
-<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ROOM</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
-<div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ITEM</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
-<div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">SHOP</div></div><div class="hubBody" id="shopBody"></div></div>
+<div id="moneyHud"><span aria-label="通貨単位">Đ</span> <span id="moneyValue">0</span></div>
+<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
+<div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
+<div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ショップ</div></div><div class="hubBody" id="shopBody"></div></div>
 <div id="ownedDexPage" class="hubPage"><div class="hubHead"><div class="hubTitle">図鑑</div></div><div class="hubBody"><div id="ownedDexGrid"></div></div></div>
 <div id="bottomNav">
- <button class="navBtn" data-page="roomPage"><span class="pxIcon pxRoom" aria-hidden="true"></span><span>ROOM</span></button>
- <button class="navBtn" data-page="itemPage"><span class="pxIcon pxItem" aria-hidden="true"></span><span>ITEM</span></button>
+ <button class="navBtn" data-page="roomPage"><span class="pxIcon pxRoom" aria-hidden="true"></span><span>ケージ</span></button>
+ <button class="navBtn" data-page="itemPage"><span class="pxIcon pxItem" aria-hidden="true"></span><span>アイテム</span></button>
+ <button class="navBtn" data-page="shopPage"><span class="pxIcon pxShop" aria-hidden="true"></span><span>ショップ</span></button>
+ <button class="navBtn" data-page="ownedDexPage"><span class="pxIcon pxDex" aria-hidden="true"></span><span>図鑑</span></button>
  <button id="huntNav"><span class="pxIcon pxHunt" aria-hidden="true"></span><span>HUNT!</span></button>
- <button class="navBtn" data-page="shopPage"><span class="pxIcon pxShop" aria-hidden="true"></span><span>SHOP</span></button>
- <button class="navBtn" data-page="ownedDexPage"><span class="pxIcon pxDex" aria-hidden="true"></span><span>DEX</span></button>
 </div>
 
 <div id="start">
@@ -1524,10 +1527,10 @@ function setDisplayMode(mode){
 }
 
 pixelModeButton.onclick =
-  ()=>setDisplayMode("pixel");
+  ()=>setDisplayMode("camera");
 
 cameraModeButton.onclick =
-  ()=>setDisplayMode("camera");
+  ()=>setDisplayMode("pixel");
 
 /* =========================================================
    SETTINGS
@@ -2160,30 +2163,40 @@ function spawnCreature(){
 const SAVEKEY="PCH360_HUB_V1";
 let hubData=(()=>{try{return Object.assign({money:0,caught:{},boxed:{},items:{}},JSON.parse(localStorage.getItem(SAVEKEY)||"{}"))}catch(e){return {money:0,caught:{},boxed:{},items:{}}}})();
 const FEEDS=[
-["blueboy","ブルプル缶","🥫","缶詰"]
+["blueboy","ブルプル缶","can","缶詰"]
 ];
 const GEAR=[
-["detector","探知機","📡","存在する方向を8方向で表示",50],
-["toughnet","頑丈ネット","🕸️","ロック時間 +2秒",50],
-["electricnet","電気ネット","⚡","ロック中ダメージ +20%",50],
-["fulldex","キャラ図鑑","📕","キャラ情報を解放",50]
+["detector","探知機","detector","存在する方向を8方向で表示",50],
+["toughnet","頑丈ネット","net","ロック時間 +2秒",50],
+["electricnet","電気ネット","electric","ロック中ダメージ +20%",50],
+["fulldex","キャラ図鑑","book","キャラ情報を解放",50]
 ];
+function shopIcon(type){
+ const common='viewBox="0 0 64 64" role="img" aria-hidden="true"';
+ const icons={
+  detector:`<svg ${common}><path fill="#17253b" stroke="#d7edff" stroke-width="3" d="M12 28h40v25H12z"/><path fill="#4caaff" d="M17 33h16v12H17z"/><path fill="none" stroke="#8bd1ff" stroke-width="3" d="M38 42a8 8 0 0 1 8-8m-8 2a2 2 0 0 1 2-2"/><circle cx="43" cy="45" r="4" fill="#ff5d6c"/><path stroke="#d7edff" stroke-width="4" d="m30 28 8-15m-2 1 8 5"/><path fill="#58718e" d="M8 51h48v6H8z"/></svg>`,
+  net:`<svg ${common}><path fill="none" stroke="#d9efff" stroke-width="4" stroke-linejoin="round" d="M8 8c5 23 12 38 25 48C46 41 53 27 56 8 39 17 24 17 8 8Z"/><path fill="none" stroke="#74bfff" stroke-width="2" d="M16 14c4 18 10 29 17 37 8-10 13-21 16-37M12 24h40M17 37h31M25 15l8 36 8-36"/><path fill="#315a81" stroke="#d9efff" stroke-width="3" d="m31 53 5-2 13 8-4 5z"/></svg>`,
+  electric:`<svg ${common}><path fill="none" stroke="#bce4ff" stroke-width="4" d="M9 11c7 20 14 34 25 43 10-12 17-26 21-43M13 25h39M20 39h27M19 15l15 39 13-39"/><path fill="#ffe75b" stroke="#6b5200" stroke-width="2" d="M35 5 23 30h9l-4 22 15-29h-9z"/></svg>`,
+  book:`<svg ${common}><path fill="#1b72c9" stroke="#d9efff" stroke-width="3" d="M9 10h39a7 7 0 0 1 7 7v38H16a7 7 0 0 1-7-7z"/><path fill="#0a3768" d="M15 13h5v38h-5z"/><path fill="#e8f6ff" d="M25 19h23v5H25zm0 10h18v4H25zm0 8h22v4H25z"/><circle cx="45" cy="48" r="4" fill="#74c6ff"/></svg>`,
+  can:`<svg ${common}><ellipse cx="32" cy="13" rx="18" ry="7" fill="#d9efff" stroke="#315a81" stroke-width="3"/><path fill="#4c9ee8" stroke="#d9efff" stroke-width="3" d="M14 13v38c0 8 36 8 36 0V13c0 8-36 8-36 0Z"/><path fill="#173b64" d="M18 29h28v18H18z"/><path fill="#8fd4ff" d="m27 44 1-9 5 3 5-5 1 11z"/><path fill="none" stroke="#315a81" stroke-width="3" d="M26 11c1-4 11-4 12 0"/></svg>`
+ };
+ return icons[type]||icons.book;
+}
 function saveHub(){localStorage.setItem(SAVEKEY,JSON.stringify(hubData));updateHubUI()}
 function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money}
 function own(k){return hubData.items[k]||0}
 function buy(k,price){if(hubData.money<price){alert("お金が足りません");return}hubData.money-=price;hubData.items[k]=(hubData.items[k]||0)+1;saveHub();renderShop();renderItems()}
-function shopCard(k,n,ic,d,p){return `<div class="shopCard"><div class="shopIcon">${ic}</div><div class="shopName">${n}</div><div class="shopDesc">${d}</div><button class="buyBtn" onclick="buy('${k}',${p})">¥${p}　購入</button></div>`}
+function shopCard(k,n,ic,d,p){return `<div class="shopCard"><div class="shopIcon">${shopIcon(ic)}</div><div class="shopName">${n}</div><div class="shopDesc">${d}</div><button class="buyBtn" onclick="buy('${k}',${p})">Đ ${p}　購入</button></div>`}
 function rail(title,cards){return `<section class="shopSection"><h3>${title}</h3><div class="shopRailWrap"><div class="shopRail">${cards}</div><div class="railArrow">›</div></div></section>`}
 function renderShop(){
  const body=document.getElementById("shopBody"); if(!body)return;
  body.innerHTML=rail("装備 / 図鑑",GEAR.map(x=>shopCard(...x)).join(""))+
- rail("エサ　ALL ¥20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(CREATURE_TYPES.find(c=>c.id===x[0])?.name||""),20)).join(""));
- body.querySelectorAll(".shopRail").forEach(r=>{const a=r.nextElementSibling;const chk=()=>a.style.display=(r.scrollWidth-r.clientWidth-r.scrollLeft>5)?"block":"none";r.addEventListener("scroll",chk);setTimeout(chk,0)})
+ rail("エサ　ALL Đ 20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(CREATURE_TYPES.find(c=>c.id===x[0])?.name||""),20)).join(""));
 }
 function renderItems(){
  const g=document.getElementById("itemGrid");if(!g)return;let a=[];
- GEAR.forEach(x=>{if(own(x[0]))a.push(`<div class="simpleCard"><div style="font-size:34px">${x[2]}</div><b>${x[1]}</b><br>所持 ${own(x[0])}</div>`)});
- FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard"><div style="font-size:34px">${x[2]}</div><b>${x[1]}</b><br>× ${q}</div>`)});
+ GEAR.forEach(x=>{if(own(x[0]))a.push(`<div class="simpleCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><br>所持 ${own(x[0])}</div>`)});
+ FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><br>× ${q}</div>`)});
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
 function renderOwnedDex(){
@@ -2203,10 +2216,11 @@ function renderRoom(){
 }
 function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。"}
 function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
-function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";hud.style.display="block"}
+function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="block";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
+function showHunt(){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>showHub(b.dataset.page)));
 document.getElementById("huntNav").addEventListener("click",showHunt);
+document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
 document.getElementById("roomBoxBtn").addEventListener("click",()=>{let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
@@ -2953,7 +2967,7 @@ function gameLoop(time){
         onCapturedHub(creatureType.id);
 
         lockText.textContent =
-          "★ CAPTURED +¥10 ★";
+          "★ CAPTURED +Đ 10 ★";
 
         lockText.style.display =
           "block";
