@@ -2,1206 +2,574 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<title>AR Camera Character</title>
+<title>横移動AR実験</title>
 
 <style>
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
   margin:0;
-  padding:0;
   width:100%;
   height:100%;
-  background:#000;
   overflow:hidden;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  background:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
-
-body{
-  position:fixed;
-  inset:0;
-}
-
-/* =========================
-   CAMERA
-========================= */
 
 #camera{
   position:fixed;
   inset:0;
-
   width:100%;
   height:100%;
-
   object-fit:cover;
-
-  background:#000;
-
   display:none;
-
-  z-index:1;
 }
-
-/* =========================
-   AR WORLD
-========================= */
-
-#world{
-  position:fixed;
-  inset:0;
-
-  overflow:hidden;
-
-  display:none;
-
-  z-index:2;
-
-  pointer-events:none;
-}
-
-/* =========================
-   CHARACTER
-========================= */
 
 #character{
-  position:absolute;
-
-  left:0;
-  top:55%;
-
-  width:110px;
-  height:110px;
-
-  transform:
-    translateY(-50%)
-    scaleX(1);
-
-  transform-origin:center;
-
-  will-change:
-    left,
-    top,
-    transform;
-
-  filter:
-    drop-shadow(
-      0 7px 5px
-      rgba(0,0,0,.45)
-    );
-}
-
-/* PNG */
-#characterImage{
-  position:absolute;
-  inset:0;
-
-  width:100%;
-  height:100%;
-
-  object-fit:contain;
-
+  position:fixed;
+  left:50%;
+  top:50%;
+  width:100px;
+  height:100px;
+  transform:translate(-50%,-50%);
   display:none;
-
+  align-items:center;
+  justify-content:center;
+  font-size:75px;
+  filter:drop-shadow(0 5px 5px #0008);
+  z-index:5;
   pointer-events:none;
 }
 
-/* PNGが無い場合 */
-#fallback{
-  position:absolute;
-  inset:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:78px;
-
-  user-select:none;
-}
-
-/* =========================
-   START SCREEN
-========================= */
-
-#startScreen{
+#start{
   position:fixed;
   inset:0;
-
-  z-index:100;
-
   display:flex;
   flex-direction:column;
-
   justify-content:center;
   align-items:center;
-
-  padding:
-    env(safe-area-inset-top)
-    25px
-    env(safe-area-inset-bottom);
-
-  background:
-    radial-gradient(
-      circle at 50% 35%,
-      #343434,
-      #111 55%,
-      #000
-    );
-
-  color:#fff;
-}
-
-#icon{
-  font-size:75px;
-  margin-bottom:20px;
-}
-
-#title{
-  margin:0 0 8px;
-
-  font-size:28px;
-  font-weight:800;
-
+  background:#111;
+  color:white;
+  z-index:20;
+  padding:30px;
   text-align:center;
 }
 
-#description{
-  margin:0 0 32px;
+#start h1{
+  font-size:26px;
+}
 
-  font-size:14px;
-  line-height:1.7;
-
+#start p{
   opacity:.7;
-
-  text-align:center;
+  line-height:1.7;
 }
-
-/* START BUTTON */
 
 #startButton{
-  appearance:none;
-  -webkit-appearance:none;
+  margin-top:20px;
+  border:0;
+  border-radius:100px;
+  padding:18px 28px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+#debug{
+  position:fixed;
+  top:calc(15px + env(safe-area-inset-top));
+  left:15px;
+  z-index:10;
+  color:white;
+  background:#0009;
+  padding:12px 14px;
+  border-radius:12px;
+  font-family:monospace;
+  font-size:12px;
+  line-height:1.6;
+  display:none;
+  backdrop-filter:blur(8px);
+}
+
+#centerLine{
+  position:fixed;
+  top:0;
+  bottom:0;
+  left:50%;
+  width:1px;
+  background:#ffffff55;
+  z-index:3;
+  display:none;
+}
+
+#reset{
+  position:fixed;
+  bottom:calc(25px + env(safe-area-inset-bottom));
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  display:none;
 
   border:0;
-
-  min-width:230px;
-
-  padding:18px 28px;
-
   border-radius:100px;
-
-  background:#fff;
-
-  color:#111;
-
-  font-size:18px;
-  font-weight:800;
-
-  box-shadow:
-    0 10px 30px
-    rgba(0,0,0,.45);
-
-  cursor:pointer;
+  padding:14px 24px;
+  font-weight:bold;
+  background:#000a;
+  color:white;
 }
-
-#startButton:active{
-  transform:scale(.95);
-}
-
-/* =========================
-   ERROR
-========================= */
 
 #error{
-  display:none;
-
-  width:min(90vw,420px);
-
-  margin-top:25px;
-
-  padding:16px;
-
-  border-radius:15px;
-
-  background:
-    rgba(255,80,80,.15);
-
-  border:
-    1px solid
-    rgba(255,100,100,.35);
-
-  color:#fff;
-
+  margin-top:20px;
+  color:#ff8b8b;
   font-size:13px;
-  line-height:1.7;
-
   white-space:pre-line;
 }
-
-/* =========================
-   TOP STATUS
-========================= */
-
-#status{
-  position:fixed;
-
-  top:
-    calc(
-      env(safe-area-inset-top)
-      + 12px
-    );
-
-  left:50%;
-
-  transform:
-    translateX(-50%);
-
-  z-index:20;
-
-  display:none;
-
-  padding:8px 14px;
-
-  border-radius:50px;
-
-  background:
-    rgba(0,0,0,.45);
-
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-
-  color:white;
-
-  font-size:12px;
-
-  pointer-events:none;
-}
-
-/* =========================
-   CONTROLS
-========================= */
-
-#controls{
-  position:fixed;
-
-  left:50%;
-
-  bottom:
-    calc(
-      env(safe-area-inset-bottom)
-      + 22px
-    );
-
-  transform:
-    translateX(-50%);
-
-  z-index:20;
-
-  display:none;
-
-  align-items:center;
-
-  gap:8px;
-
-  padding:8px;
-
-  border-radius:100px;
-
-  background:
-    rgba(0,0,0,.48);
-
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-}
-
-.controlButton{
-  appearance:none;
-  -webkit-appearance:none;
-
-  border:0;
-
-  min-width:54px;
-  height:48px;
-
-  padding:0 15px;
-
-  border-radius:50px;
-
-  background:
-    rgba(255,255,255,.15);
-
-  color:#fff;
-
-  font-size:15px;
-  font-weight:700;
-}
-
-.controlButton:active{
-  background:
-    rgba(255,255,255,.3);
-
-  transform:scale(.94);
-}
-
-#stopCamera{
-  background:
-    rgba(255,70,70,.7);
-}
-
-/* =========================
-   LOADING
-========================= */
-
-#loading{
-  display:none;
-
-  margin-top:22px;
-
-  color:#fff;
-
-  font-size:14px;
-}
-
-.spinner{
-  display:inline-block;
-
-  width:16px;
-  height:16px;
-
-  margin-right:8px;
-
-  vertical-align:-3px;
-
-  border:
-    2px solid
-    rgba(255,255,255,.25);
-
-  border-top-color:white;
-
-  border-radius:50%;
-
-  animation:
-    spin .8s linear infinite;
-}
-
-@keyframes spin{
-  to{
-    transform:rotate(360deg);
-  }
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- CAMERA -->
-
 <video
   id="camera"
   autoplay
   muted
-  playsinline
-  webkit-playsinline>
+  playsinline>
 </video>
 
+<div id="centerLine"></div>
 
-<!-- AR WORLD -->
+<div id="character">👾</div>
 
-<div id="world">
-
-  <div id="character">
-
-    <img
-      id="characterImage"
-      src="character.png"
-      alt="">
-
-    <div id="fallback">
-      👾
-    </div>
-
-  </div>
-
+<div id="debug">
+  X加速度: <span id="accel">0.000</span><br>
+  推定速度: <span id="velocity">0.000</span><br>
+  キャラX: <span id="position">0</span><br>
+  センサー: <span id="sensorStatus">待機</span>
 </div>
 
+<button id="reset">
+  中央に戻す
+</button>
 
-<!-- STATUS -->
+<div id="start">
 
-<div id="status">
-  CAMERA ACTIVE
-</div>
+  <h1>📱 横移動テスト</h1>
 
-
-<!-- CONTROLS -->
-
-<div id="controls">
-
-  <button
-    class="controlButton"
-    id="slower">
-    −
-  </button>
-
-  <button
-    class="controlButton"
-    id="pause">
-    停止
-  </button>
-
-  <button
-    class="controlButton"
-    id="faster">
-    ＋
-  </button>
-
-  <button
-    class="controlButton"
-    id="stopCamera">
-    ✕
-  </button>
-
-</div>
-
-
-<!-- START SCREEN -->
-
-<div id="startScreen">
-
-  <div id="icon">
-    📷
-  </div>
-
-  <h1 id="title">
-    CAMERA WORLD
-  </h1>
-
-  <p id="description">
-    カメラの中にキャラクターが出現します。<br>
-    画面をタップするとキャラが移動します。
+  <p>
+    カメラとモーションセンサーを使います。<br><br>
+    起動後、スマホを<strong>傾けずに</strong><br>
+    左右へ平行移動してみてください。
   </p>
 
   <button id="startButton">
-    カメラを起動
+    カメラ＋センサー起動
   </button>
-
-  <div id="loading">
-
-    <span class="spinner"></span>
-
-    カメラを起動しています…
-
-  </div>
 
   <div id="error"></div>
 
 </div>
 
-
 <script>
-
-/* ========================================
-   ELEMENTS
-======================================== */
 
 const camera =
   document.getElementById("camera");
 
-const startScreen =
-  document.getElementById("startScreen");
+const character =
+  document.getElementById("character");
+
+const start =
+  document.getElementById("start");
 
 const startButton =
   document.getElementById("startButton");
 
-const loading =
-  document.getElementById("loading");
+const debug =
+  document.getElementById("debug");
+
+const reset =
+  document.getElementById("reset");
+
+const centerLine =
+  document.getElementById("centerLine");
 
 const errorBox =
   document.getElementById("error");
 
-const world =
-  document.getElementById("world");
+const accelText =
+  document.getElementById("accel");
 
-const character =
-  document.getElementById("character");
+const velocityText =
+  document.getElementById("velocity");
 
-const characterImage =
-  document.getElementById("characterImage");
+const positionText =
+  document.getElementById("position");
 
-const fallback =
-  document.getElementById("fallback");
-
-const controls =
-  document.getElementById("controls");
-
-const status =
-  document.getElementById("status");
-
-const pauseButton =
-  document.getElementById("pause");
-
-const fasterButton =
-  document.getElementById("faster");
-
-const slowerButton =
-  document.getElementById("slower");
-
-const stopCameraButton =
-  document.getElementById("stopCamera");
+const sensorStatus =
+  document.getElementById("sensorStatus");
 
 
-/* ========================================
-   VARIABLES
-======================================== */
+/* ==========================================
+   移動データ
+========================================== */
 
-let stream = null;
+let characterX =
+  window.innerWidth / 2;
 
-let x = 10;
+let velocity = 0;
 
-let speed = 2.2;
+let filteredAcceleration = 0;
 
-let direction = 1;
-
-let running = true;
-
-let animationStarted = false;
+let lastTime = null;
 
 
-/* ========================================
-   CHARACTER IMAGE
-======================================== */
+/*
+ 感度
 
-characterImage.onload = () => {
+ 大きくするとキャラが大きく動く
+*/
 
-  characterImage.style.display =
-    "block";
-
-  fallback.style.display =
-    "none";
-
-};
-
-characterImage.onerror = () => {
-
-  characterImage.style.display =
-    "none";
-
-  fallback.style.display =
-    "flex";
-
-};
+const sensitivity = 150;
 
 
-/* ========================================
-   CAMERA
-======================================== */
+/*
+ 小さなセンサーノイズを無視
+*/
+
+const deadZone = 0.08;
+
+
+/*
+ 速度減衰
+
+ 1に近いほど慣性が強い
+*/
+
+const friction = 0.90;
+
+
+/* ==========================================
+   START
+========================================== */
 
 startButton.addEventListener(
   "click",
-  startCamera
-);
+  async () => {
 
-
-async function startCamera(){
-
-  errorBox.style.display =
-    "none";
-
-  loading.style.display =
-    "block";
-
-  startButton.disabled =
-    true;
-
-  startButton.style.opacity =
-    ".5";
-
-
-  try{
-
-    /* -----------------------------
-       CHECK CAMERA API
-    ----------------------------- */
-
-    if(
-      !navigator.mediaDevices ||
-      !navigator.mediaDevices.getUserMedia
-    ){
-
-      throw new Error(
-        "CAMERA_API_NOT_AVAILABLE"
-      );
-
-    }
-
-
-    /* -----------------------------
-       STOP OLD CAMERA
-    ----------------------------- */
-
-    stopCurrentStream();
-
-
-    /* -----------------------------
-       TRY BACK CAMERA
-    ----------------------------- */
+    errorBox.textContent = "";
 
     try{
 
-      stream =
-        await navigator.mediaDevices
-        .getUserMedia({
+      /* ==============================
+         CAMERA
+      ============================== */
+
+      if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+      ){
+        throw new Error(
+          "カメラAPIが使用できません。\nHTTPSのSafariで開いてください。"
+        );
+      }
+
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
 
           audio:false,
 
           video:{
-
             facingMode:{
               ideal:"environment"
-            },
-
-            width:{
-              ideal:1920
-            },
-
-            height:{
-              ideal:1080
             }
-
           }
 
         });
 
-    }
 
-    catch(firstError){
+      camera.srcObject =
+        stream;
 
-      console.log(
-        "Back camera attempt failed:",
-        firstError
+      await camera.play();
+
+
+      /* ==============================
+         iPhone MOTION PERMISSION
+      ============================== */
+
+      if(
+        typeof DeviceMotionEvent !==
+        "undefined"
+      ){
+
+        if(
+          typeof DeviceMotionEvent.requestPermission ===
+          "function"
+        ){
+
+          const permission =
+            await DeviceMotionEvent.requestPermission();
+
+          if(permission !== "granted"){
+
+            throw new Error(
+              "モーションセンサーの使用が許可されませんでした。"
+            );
+
+          }
+
+        }
+
+      }
+
+
+      /* ==============================
+         SENSOR
+      ============================== */
+
+      window.addEventListener(
+        "devicemotion",
+        motionHandler
       );
 
 
-      /* -----------------------------
-         FALLBACK CAMERA
-      ----------------------------- */
+      /* ==============================
+         SHOW
+      ============================== */
 
-      stream =
-        await navigator.mediaDevices
-        .getUserMedia({
+      camera.style.display =
+        "block";
 
-          audio:false,
+      character.style.display =
+        "flex";
 
-          video:true
+      debug.style.display =
+        "block";
 
-        });
+      reset.style.display =
+        "block";
+
+      centerLine.style.display =
+        "block";
+
+      start.style.display =
+        "none";
+
+      sensorStatus.textContent =
+        "動作中";
 
     }
 
+    catch(error){
 
-    /* -----------------------------
-       VIDEO
-    ----------------------------- */
+      console.error(error);
 
-    camera.srcObject =
-      stream;
-
-    camera.muted =
-      true;
-
-    camera.setAttribute(
-      "playsinline",
-      ""
-    );
-
-    camera.setAttribute(
-      "webkit-playsinline",
-      ""
-    );
-
-
-    await camera.play();
-
-
-    /* -----------------------------
-       SHOW CAMERA
-    ----------------------------- */
-
-    startScreen.style.display =
-      "none";
-
-    camera.style.display =
-      "block";
-
-    world.style.display =
-      "block";
-
-    controls.style.display =
-      "flex";
-
-    status.style.display =
-      "block";
-
-
-    running =
-      true;
-
-    pauseButton.textContent =
-      "停止";
-
-
-    if(!animationStarted){
-
-      animationStarted =
-        true;
-
-      requestAnimationFrame(
-        animate
-      );
+      errorBox.textContent =
+        error.message ||
+        "起動できませんでした。";
 
     }
 
   }
+);
 
-  catch(err){
 
-    console.error(err);
+/* ==========================================
+   MOTION SENSOR
+========================================== */
 
-    showCameraError(err);
+function motionHandler(event){
 
+  /*
+    acceleration は
+    重力を除いた加速度。
+
+    x = 左右方向
+  */
+
+  const acceleration =
+    event.acceleration;
+
+  if(!acceleration){
+    return;
   }
 
-  finally{
 
-    loading.style.display =
-      "none";
-
-    startButton.disabled =
-      false;
-
-    startButton.style.opacity =
-      "1";
-
-  }
-
-}
+  let ax =
+    acceleration.x || 0;
 
 
-/* ========================================
-   CAMERA ERROR
-======================================== */
+  /* ======================================
+     NOISE FILTER
+  ====================================== */
 
-function showCameraError(err){
+  filteredAcceleration =
+    filteredAcceleration * 0.75 +
+    ax * 0.25;
 
-  let message = "";
+
+  let usableAcceleration =
+    filteredAcceleration;
+
+
+  /* ======================================
+     DEAD ZONE
+  ====================================== */
 
   if(
-    err.message ===
-    "CAMERA_API_NOT_AVAILABLE"
+    Math.abs(usableAcceleration)
+    < deadZone
   ){
 
-    message =
-`この環境ではカメラ機能を利用できません。
-
-iPhoneの場合はSafariでHTTPSのWebページとして開いてください。
-
-HTMLファイルを「ファイル」アプリから直接開いた場合はカメラが使えないことがあります。`;
-
-  }
-
-  else if(
-    err.name ===
-    "NotAllowedError"
-  ){
-
-    message =
-`カメラへのアクセスが許可されていません。
-
-iPhoneの場合：
-
-Safariでページを開く
-↓
-アドレスバーのページメニュー
-↓
-Webサイトの設定
-↓
-カメラ
-↓
-「許可」
-
-にしてください。`;
-
-  }
-
-  else if(
-    err.name ===
-    "NotFoundError" ||
-    err.name ===
-    "DevicesNotFoundError"
-  ){
-
-    message =
-`使用できるカメラが見つかりませんでした。`;
-
-  }
-
-  else if(
-    err.name ===
-    "NotReadableError" ||
-    err.name ===
-    "TrackStartError"
-  ){
-
-    message =
-`カメラを使用できません。
-
-他のアプリがカメラを使用している場合は、そのアプリを閉じてからもう一度試してください。`;
-
-  }
-
-  else if(
-    err.name ===
-    "OverconstrainedError"
-  ){
-
-    message =
-`指定したカメラ設定を使用できませんでした。
-
-もう一度「カメラを起動」を押してください。`;
-
-  }
-
-  else{
-
-    message =
-`カメラを起動できませんでした。
-
-エラー：
-${err.name || "Unknown"}
-
-${err.message || ""}
-
-iPhoneではHTTPSのWebサイトとしてSafariから開いてください。`;
+    usableAcceleration = 0;
 
   }
 
 
-  errorBox.textContent =
-    message;
+  /* ======================================
+     TIME
+  ====================================== */
 
-  errorBox.style.display =
-    "block";
-
-}
-
-
-/* ========================================
-   STOP STREAM
-======================================== */
-
-function stopCurrentStream(){
-
-  if(!stream) return;
-
-  stream
-    .getTracks()
-    .forEach(track => {
-
-      track.stop();
-
-    });
-
-  stream = null;
-
-}
+  const now =
+    performance.now();
 
 
-/* ========================================
-   STOP CAMERA BUTTON
-======================================== */
+  if(lastTime === null){
 
-stopCameraButton.addEventListener(
-  "click",
-  () => {
-
-    stopCurrentStream();
-
-    camera.srcObject =
-      null;
-
-    camera.style.display =
-      "none";
-
-    world.style.display =
-      "none";
-
-    controls.style.display =
-      "none";
-
-    status.style.display =
-      "none";
-
-    startScreen.style.display =
-      "flex";
-
-  }
-);
-
-
-/* ========================================
-   CHARACTER ANIMATION
-======================================== */
-
-function animate(){
-
-  if(running){
-
-    x +=
-      speed * direction;
-
-
-    const maxX =
-      window.innerWidth -
-      character.offsetWidth;
-
-
-    /* RIGHT EDGE */
-
-    if(x >= maxX){
-
-      x =
-        maxX;
-
-      direction =
-        -1;
-
-    }
-
-
-    /* LEFT EDGE */
-
-    if(x <= 0){
-
-      x =
-        0;
-
-      direction =
-        1;
-
-    }
-
-
-    character.style.left =
-      x + "px";
-
-
-    /* CHARACTER DIRECTION */
-
-    character.style.transform =
-      `
-      translateY(-50%)
-      scaleX(${direction})
-      `;
+    lastTime = now;
+    return;
 
   }
 
 
-  requestAnimationFrame(
-    animate
-  );
-
-}
+  let dt =
+    (now - lastTime) / 1000;
 
 
-/* ========================================
-   PAUSE
-======================================== */
-
-pauseButton.addEventListener(
-  "click",
-  () => {
-
-    running =
-      !running;
-
-    pauseButton.textContent =
-      running
-      ? "停止"
-      : "再開";
-
-  }
-);
+  lastTime = now;
 
 
-/* ========================================
-   SPEED +
-======================================== */
+  /*
+    センサーイベントが一瞬止まった場合の
+    大ジャンプ防止
+  */
 
-fasterButton.addEventListener(
-  "click",
-  () => {
+  dt =
+    Math.min(dt,0.1);
 
-    speed =
+
+  /* ======================================
+     ACCELERATION → VELOCITY
+  ====================================== */
+
+  velocity +=
+    usableAcceleration *
+    sensitivity *
+    dt;
+
+
+  /*
+    加速度だけだと速度が永遠に残るので
+    徐々に減衰させる
+  */
+
+  velocity *= friction;
+
+
+  /* ======================================
+     PHONE →
+     CHARACTER ←
+
+     ARっぽくするため逆方向
+  ====================================== */
+
+  characterX -=
+    velocity * dt;
+
+
+  /* ======================================
+     LIMIT
+  ====================================== */
+
+  const half =
+    character.offsetWidth / 2;
+
+
+  characterX =
+    Math.max(
+      half,
       Math.min(
-        speed + 0.7,
-        12
-      );
-
-  }
-);
+        window.innerWidth - half,
+        characterX
+      )
+    );
 
 
-/* ========================================
-   SPEED -
-======================================== */
+  /* ======================================
+     DISPLAY
+  ====================================== */
 
-slowerButton.addEventListener(
+  character.style.left =
+    characterX + "px";
+
+
+  /* ======================================
+     DEBUG
+  ====================================== */
+
+  accelText.textContent =
+    usableAcceleration.toFixed(3);
+
+  velocityText.textContent =
+    velocity.toFixed(3);
+
+  positionText.textContent =
+    Math.round(characterX);
+
+}
+
+
+/* ==========================================
+   RESET
+========================================== */
+
+reset.addEventListener(
   "click",
   () => {
 
-    speed =
-      Math.max(
-        speed - 0.7,
-        0.3
-      );
+    characterX =
+      window.innerWidth / 2;
 
-  }
-);
+    velocity = 0;
 
+    filteredAcceleration = 0;
 
-/* ========================================
-   TAP → MOVE CHARACTER
-======================================== */
-
-document.addEventListener(
-  "pointerdown",
-  event => {
-
-    /* Camera isn't running */
-
-    if(
-      world.style.display !==
-      "block"
-    ){
-      return;
-    }
-
-
-    /* Ignore controls */
-
-    if(
-      event.target.closest(
-        "#controls"
-      )
-    ){
-      return;
-    }
-
-
-    const characterWidth =
-      character.offsetWidth;
-
-    const characterHeight =
-      character.offsetHeight;
-
-
-    /* X */
-
-    x =
-      event.clientX -
-      characterWidth / 2;
-
-
-    x =
-      Math.max(
-        0,
-        Math.min(
-          x,
-          window.innerWidth -
-          characterWidth
-        )
-      );
-
-
-    /* Y */
-
-    let y =
-      event.clientY;
-
-
-    y =
-      Math.max(
-        characterHeight / 2,
-        Math.min(
-          y,
-          window.innerHeight -
-          characterHeight / 2
-        )
-      );
-
+    lastTime = null;
 
     character.style.left =
-      x + "px";
-
-    character.style.top =
-      y + "px";
+      "50%";
 
   }
 );
 
 
-/* ========================================
-   SCREEN RESIZE
-======================================== */
+/* ==========================================
+   RESIZE
+========================================== */
 
 window.addEventListener(
   "resize",
   () => {
 
-    const maxX =
-      window.innerWidth -
-      character.offsetWidth;
-
-    if(x > maxX){
-
-      x = maxX;
-
-      character.style.left =
-        x + "px";
-
-    }
-
-  }
-);
-
-
-/* ========================================
-   PAGE CLOSE
-======================================== */
-
-window.addEventListener(
-  "pagehide",
-  () => {
-
-    stopCurrentStream();
+    characterX =
+      Math.min(
+        characterX,
+        window.innerWidth -
+        character.offsetWidth / 2
+      );
 
   }
 );
