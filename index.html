@@ -5,7 +5,7 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 
-<title>AR Catch Game</title>
+<title>360° AR Catch</title>
 
 <style>
 *{
@@ -22,289 +22,193 @@ html,body{
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
-/* CAMERA */
-
 #camera{
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  z-index:1;
   display:none;
+  z-index:1;
 }
-
-/* CHARACTER */
 
 #character{
   position:fixed;
-
   left:50%;
   top:50%;
-
-  width:90px;
-  height:90px;
-
+  width:105px;
+  height:105px;
   transform:translate(-50%,-50%);
-
   display:none;
   align-items:center;
   justify-content:center;
-
-  font-size:70px;
-
-  z-index:5;
-
+  font-size:80px;
+  z-index:10;
   pointer-events:none;
-
-  filter:drop-shadow(0 6px 5px #0008);
-
-  will-change:left,top,transform;
+  filter:drop-shadow(0 8px 8px #0009);
+  will-change:left,top;
 }
 
-/* TARGET */
+/* ======================
+   HP
+====================== */
 
-#target{
+#hpPanel{
   position:fixed;
-
+  top:calc(18px + env(safe-area-inset-top));
   left:50%;
-  top:50%;
-
-  width:130px;
-  height:130px;
-
-  transform:translate(-50%,-50%);
-
-  border:3px solid rgba(255,255,255,.8);
-
-  border-radius:50%;
-
-  z-index:6;
-
-  display:none;
-
-  pointer-events:none;
-
-  transition:
-    border-color .1s,
-    box-shadow .1s,
-    transform .1s;
-}
-
-#target::before,
-#target::after{
-  content:"";
-
-  position:absolute;
-
-  background:white;
-}
-
-#target::before{
-  width:30px;
-  height:2px;
-
-  left:50%;
-  top:50%;
-
-  transform:translate(-50%,-50%);
-}
-
-#target::after{
-  width:2px;
-  height:30px;
-
-  left:50%;
-  top:50%;
-
-  transform:translate(-50%,-50%);
-}
-
-/* CHARACTER IS INSIDE TARGET */
-
-#target.aiming{
-  border-color:#69ff83;
-
-  box-shadow:
-    0 0 20px #69ff83,
-    inset 0 0 20px #69ff8355;
-
-  transform:
-    translate(-50%,-50%)
-    scale(1.08);
-}
-
-/* CAPTURE */
-
-#target.locked{
-  border-color:#5cecff;
-
-  box-shadow:
-    0 0 30px #5cecff,
-    inset 0 0 30px #5cecff66;
-}
-
-/* MESSAGE */
-
-#message{
-  position:fixed;
-
-  top:
-    calc(
-      30px +
-      env(safe-area-inset-top)
-    );
-
-  left:50%;
-
   transform:translateX(-50%);
-
-  z-index:20;
-
-  color:white;
-
-  font-size:20px;
-  font-weight:900;
-
-  text-shadow:
-    0 3px 10px #000;
-
+  width:min(82vw,380px);
+  z-index:30;
   display:none;
+}
 
+#hpText{
+  color:white;
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:6px;
+  text-shadow:0 2px 5px black;
+}
+
+#hpBack{
+  height:15px;
+  background:#0009;
+  border:2px solid #fff;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+#hpBar{
+  height:100%;
+  width:100%;
+  background:#fff;
+  transition:width .15s;
+}
+
+/* ======================
+   DIRECTION
+====================== */
+
+#direction{
+  position:fixed;
+  top:calc(65px + env(safe-area-inset-top));
+  left:50%;
+  transform:translateX(-50%);
+  z-index:30;
+  color:white;
+  background:#0009;
+  padding:8px 15px;
+  border-radius:100px;
+  display:none;
+  font-size:13px;
+  font-weight:bold;
   white-space:nowrap;
 }
 
-/* LOCK TIMER */
+/* ======================
+   MESSAGE
+====================== */
 
-#lockTimer{
+#message{
   position:fixed;
-
   left:50%;
-
-  top:
-    calc(50% + 90px);
-
-  transform:translateX(-50%);
-
-  z-index:20;
-
-  display:none;
-
+  top:25%;
+  transform:translate(-50%,-50%);
+  z-index:40;
   color:white;
-
-  font-size:28px;
-
+  font-size:24px;
   font-weight:900;
-
-  text-shadow:
-    0 3px 8px black;
-}
-
-/* POWER BAR */
-
-#barContainer{
-  position:fixed;
-
-  left:50%;
-
-  bottom:
-    calc(
-      30px +
-      env(safe-area-inset-bottom)
-    );
-
-  transform:translateX(-50%);
-
-  width:min(80vw,350px);
-
-  height:12px;
-
-  border-radius:20px;
-
-  background:#ffffff44;
-
-  overflow:hidden;
-
-  z-index:20;
-
+  text-align:center;
+  text-shadow:0 3px 10px #000;
   display:none;
+  white-space:nowrap;
 }
 
-#bar{
-  width:0%;
-  height:100%;
+/* ======================
+   LOCK
+====================== */
 
-  background:white;
-
-  transition:width .05s;
+#lockRing{
+  position:fixed;
+  left:50%;
+  top:50%;
+  width:170px;
+  height:170px;
+  transform:translate(-50%,-50%);
+  border:6px solid #6ff;
+  border-radius:50%;
+  box-shadow:
+    0 0 30px #6ff,
+    inset 0 0 30px #6ff5;
+  display:none;
+  z-index:9;
+  pointer-events:none;
 }
 
-/* START */
+#lockTime{
+  position:fixed;
+  left:50%;
+  top:calc(50% + 105px);
+  transform:translateX(-50%);
+  color:white;
+  font-size:32px;
+  font-weight:900;
+  z-index:30;
+  display:none;
+  text-shadow:0 3px 8px black;
+}
 
-#startScreen{
+/* ======================
+   START
+====================== */
+
+#start{
   position:fixed;
   inset:0;
-
   z-index:100;
-
   display:flex;
   flex-direction:column;
-
-  align-items:center;
   justify-content:center;
-
+  align-items:center;
   padding:30px;
-
-  text-align:center;
-
   color:white;
-
+  text-align:center;
   background:
-    radial-gradient(
-      circle at 50% 35%,
-      #333,
-      #111 55%,
-      #000
-    );
+    radial-gradient(circle at 50% 30%,#343434,#111 55%,#000);
 }
 
-#startScreen h1{
-  margin:0 0 15px;
+#startIcon{
+  font-size:75px;
+}
+
+#start h1{
+  margin:10px 0;
   font-size:30px;
 }
 
-#startScreen p{
+#start p{
   line-height:1.8;
   opacity:.75;
+  max-width:400px;
 }
 
 #startButton{
-  margin-top:25px;
-
   border:0;
-
-  border-radius:100px;
-
-  padding:18px 30px;
-
+  margin-top:20px;
+  padding:18px 32px;
   min-width:260px;
-
-  font-size:18px;
-
-  font-weight:900;
-
+  border-radius:100px;
   background:white;
-
   color:#111;
+  font-size:18px;
+  font-weight:900;
 }
 
 #error{
   margin-top:20px;
-
   color:#ff9999;
-
   font-size:13px;
-
   white-space:pre-line;
 }
 
@@ -312,9 +216,6 @@ html,body{
 </head>
 
 <body>
-
-
-<!-- CAMERA -->
 
 <video
 id="camera"
@@ -324,73 +225,49 @@ playsinline
 webkit-playsinline>
 </video>
 
+<div id="character">👾</div>
 
-<!-- CHARACTER -->
+<div id="lockRing"></div>
 
-<div id="character">
-👾
-</div>
+<div id="lockTime">6.0</div>
 
-
-<!-- TARGET -->
-
-<div id="target"></div>
-
-
-<!-- MESSAGE -->
-
-<div id="message">
-🎯 とらえた！振れ！
-</div>
-
-
-<!-- TIMER -->
-
-<div id="lockTimer">
-6.0
-</div>
-
-
-<!-- SHAKE POWER -->
-
-<div id="barContainer">
-  <div id="bar"></div>
-</div>
-
-
-<!-- START -->
-
-<div id="startScreen">
-
-  <div style="font-size:70px">
-    👾
+<div id="hpPanel">
+  <div id="hpText">
+    👾 HP <span id="hpNumber">100</span> / 100
   </div>
 
-  <h1>
-    CATCH!
-  </h1>
+  <div id="hpBack">
+    <div id="hpBar"></div>
+  </div>
+</div>
+
+<div id="direction">
+  SEARCHING...
+</div>
+
+<div id="message"></div>
+
+<div id="start">
+
+  <div id="startIcon">📱👾</div>
+
+  <h1>360° HUNT</h1>
 
   <p>
-    👾が左右へ逃げます。
+    👾はあなたの周囲360°を逃げ回ります。
     <br><br>
 
-    中央の照準にとらえたら
+    スマホを持って周囲を探してください。
     <br>
-
-    <strong>
-      スマホを振れ！
-    </strong>
-
+    画面に👾をとらえた状態で
+    <strong>スマホを振る</strong>と拘束できます。
     <br><br>
 
-    振る強さによって
-    <br>
-
-    最大6秒間動きを止められます。
+    拘束してHPを0にすれば捕獲成功！
   </p>
 
   <button id="startButton">
-    GAME START
+    HUNT START
   </button>
 
   <div id="error"></div>
@@ -400,9 +277,9 @@ webkit-playsinline>
 
 <script>
 
-/* ===============================
-   ELEMENTS
-================================ */
+/* =========================================
+   ELEMENT
+========================================= */
 
 const camera =
 document.getElementById("camera");
@@ -410,23 +287,29 @@ document.getElementById("camera");
 const character =
 document.getElementById("character");
 
-const target =
-document.getElementById("target");
+const hpPanel =
+document.getElementById("hpPanel");
+
+const hpBar =
+document.getElementById("hpBar");
+
+const hpNumber =
+document.getElementById("hpNumber");
+
+const directionUI =
+document.getElementById("direction");
 
 const message =
 document.getElementById("message");
 
-const lockTimer =
-document.getElementById("lockTimer");
+const lockRing =
+document.getElementById("lockRing");
 
-const barContainer =
-document.getElementById("barContainer");
+const lockTime =
+document.getElementById("lockTime");
 
-const bar =
-document.getElementById("bar");
-
-const startScreen =
-document.getElementById("startScreen");
+const start =
+document.getElementById("start");
 
 const startButton =
 document.getElementById("startButton");
@@ -435,84 +318,103 @@ const errorBox =
 document.getElementById("error");
 
 
-/* ===============================
-   GAME
-================================ */
+/* =========================================
+   GAME STATE
+========================================= */
 
-let stream;
+/*
+ キャラの方角
 
-let x =
-window.innerWidth / 2;
+ 0〜360°
+*/
 
-let y =
-window.innerHeight / 2;
+let enemyAngle = 0;
 
-let velocityX = 0;
 
-let targetX = x;
+/*
+ スマホが向いている方角
+*/
+
+let phoneAngle = 0;
+
+
+/*
+ キャラが移動する角速度
+*/
+
+let enemySpeed = 0;
+
+
+/*
+ HP
+*/
+
+let hp = 100;
+
+
+/*
+ ロック
+*/
 
 let locked = false;
 
 let lockEnd = 0;
 
-let lastTime =
+let lastFrame =
 performance.now();
 
-let nextDirectionChange = 0;
+let nextEscapeChange = 0;
 
-let shakePower = 0;
+let enemyVisible = false;
 
-let lastShakeTime = 0;
+let lastShake = 0;
 
-let captured = false;
+let stream;
 
 
-/* ===============================
+/* =========================================
    SETTINGS
-================================ */
+========================================= */
 
 /*
-  逃げる速さ
+ カメラの水平視野角を
+ おおよそ65°として扱う
 */
 
-const MIN_SPEED = 350;
-
-const MAX_SPEED = 750;
+const FOV = 65;
 
 
 /*
-  方向転換までの時間
+ HP
 */
 
-const MIN_CHANGE = 180;
-
-const MAX_CHANGE = 700;
+const MAX_HP = 100;
 
 
 /*
-  捕捉範囲
+ 拘束中の毎秒ダメージ
 */
 
-const CAPTURE_RADIUS = 65;
+const DAMAGE_PER_SECOND = 10;
 
 
 /*
-  振った判定
+ 最大拘束時間
+*/
+
+const MAX_LOCK = 6000;
+
+
+/*
+ 振った判定
 */
 
 const SHAKE_THRESHOLD = 10;
 
 
-/*
-  最大拘束時間
-*/
-
-const MAX_LOCK_TIME = 6000;
-
-
-/* ===============================
-   RANDOM
-================================ */
+/* =========================================
+   UTIL
+========================================= */
 
 function random(min,max){
 
@@ -526,21 +428,93 @@ function random(min,max){
 }
 
 
-/* ===============================
+/*
+ 角度を0〜360へ
+*/
+
+function normalizeAngle(angle){
+
+  angle %= 360;
+
+  if(angle < 0){
+    angle += 360;
+  }
+
+  return angle;
+
+}
+
+
+/*
+ -180〜180の差を返す
+*/
+
+function angleDifference(a,b){
+
+  let diff =
+  normalizeAngle(a)
+  -
+  normalizeAngle(b);
+
+  if(diff > 180){
+    diff -= 360;
+  }
+
+  if(diff < -180){
+    diff += 360;
+  }
+
+  return diff;
+
+}
+
+
+/* =========================================
    START
-================================ */
+========================================= */
 
 startButton.addEventListener(
 "click",
 async()=>{
 
-  errorBox.textContent="";
-
   try{
 
-    /* --------------------------
-       MOTION PERMISSION FIRST
-    -------------------------- */
+    errorBox.textContent="";
+
+
+    /* =====================================
+       ORIENTATION PERMISSION
+
+       ★ユーザー操作直後
+    ===================================== */
+
+    if(
+      typeof DeviceOrientationEvent !==
+      "undefined"
+      &&
+      typeof DeviceOrientationEvent
+      .requestPermission ===
+      "function"
+    ){
+
+      const result =
+      await DeviceOrientationEvent
+      .requestPermission();
+
+      if(result !== "granted"){
+
+        throw new Error(
+          "方向センサーが許可されませんでした。"
+        );
+
+      }
+
+    }
+
+
+    /* =====================================
+       MOTION PERMISSION
+    ===================================== */
 
     if(
       typeof DeviceMotionEvent !==
@@ -551,11 +525,11 @@ async()=>{
       "function"
     ){
 
-      const permission =
+      const result =
       await DeviceMotionEvent
       .requestPermission();
 
-      if(permission !== "granted"){
+      if(result !== "granted"){
 
         throw new Error(
           "モーションセンサーが許可されませんでした。"
@@ -566,6 +540,16 @@ async()=>{
     }
 
 
+    /* =====================================
+       EVENTS
+    ===================================== */
+
+    window.addEventListener(
+      "deviceorientation",
+      orientationHandler,
+      true
+    );
+
     window.addEventListener(
       "devicemotion",
       motionHandler,
@@ -573,14 +557,13 @@ async()=>{
     );
 
 
-    /* --------------------------
+    /* =====================================
        CAMERA
-    -------------------------- */
+    ===================================== */
 
     if(
       !navigator.mediaDevices ||
-      !navigator.mediaDevices
-      .getUserMedia
+      !navigator.mediaDevices.getUserMedia
     ){
 
       throw new Error(
@@ -597,11 +580,9 @@ async()=>{
       audio:false,
 
       video:{
-
         facingMode:{
           ideal:"environment"
         }
-
       }
 
     });
@@ -620,36 +601,36 @@ async()=>{
     await camera.play();
 
 
-    /* --------------------------
-       SHOW GAME
-    -------------------------- */
+    /* =====================================
+       GAME START
+    ===================================== */
 
-    startScreen.style.display=
-    "none";
+    start.style.display="none";
 
-    camera.style.display=
-    "block";
+    camera.style.display="block";
 
-    character.style.display=
-    "flex";
+    hpPanel.style.display="block";
 
-    target.style.display=
-    "block";
-
-    barContainer.style.display=
-    "block";
+    directionUI.style.display="block";
 
 
-    x =
-    window.innerWidth/2;
+    /*
+      最初は適当な方向に出現
+    */
 
-    y =
-    window.innerHeight/2;
+    enemyAngle =
+    random(40,320);
 
 
-    chooseNewDirection();
+    hp=MAX_HP;
 
-    lastTime =
+    updateHP();
+
+
+    chooseEscape();
+
+
+    lastFrame =
     performance.now();
 
 
@@ -673,15 +654,51 @@ async()=>{
 });
 
 
-/* ===============================
-   ESCAPE AI
-================================ */
+/* =========================================
+   PHONE DIRECTION
+========================================= */
 
-function chooseNewDirection(){
+function orientationHandler(event){
 
   /*
-    ランダムで
-    左右どちらかへ逃げる
+   iOS Safariでは
+   webkitCompassHeading が利用できる場合がある
+  */
+
+  if(
+    typeof event.webkitCompassHeading ===
+    "number"
+  ){
+
+    phoneAngle =
+    event.webkitCompassHeading;
+
+  }
+
+  else if(
+    event.alpha !== null
+  ){
+
+    /*
+     Android等
+    */
+
+    phoneAngle =
+    360-event.alpha;
+
+  }
+
+}
+
+
+/* =========================================
+   ENEMY ESCAPE
+========================================= */
+
+function chooseEscape(){
+
+  /*
+   時計回り / 反時計回り
   */
 
   const direction =
@@ -690,47 +707,54 @@ function chooseNewDirection(){
   : 1;
 
 
-  velocityX =
+  /*
+   角速度
+
+   45〜120°/秒
+  */
+
+  enemySpeed =
   direction *
   random(
-    MIN_SPEED,
-    MAX_SPEED
+    45,
+    120
   );
 
 
-  nextDirectionChange =
+  /*
+   0.25〜1秒で
+   また行動変更
+  */
+
+  nextEscapeChange =
   performance.now()
   +
   random(
-    MIN_CHANGE,
-    MAX_CHANGE
+    250,
+    1000
   );
 
 }
 
 
-/* ===============================
+/* =========================================
    GAME LOOP
-================================ */
+========================================= */
 
 function gameLoop(time){
 
   let dt =
-  (time-lastTime)/1000;
+  (time-lastFrame)/1000;
 
-  lastTime=time;
-
+  lastFrame=time;
 
   dt =
-  Math.min(
-    dt,
-    .04
-  );
+  Math.min(dt,.05);
 
 
-  /* ===========================
-     LOCKED
-  =========================== */
+  /* =====================================
+     LOCK
+  ===================================== */
 
   if(locked){
 
@@ -738,24 +762,80 @@ function gameLoop(time){
     lockEnd-time;
 
 
+    /*
+      HPを削る
+    */
+
+    hp -=
+    DAMAGE_PER_SECOND *
+    dt;
+
+
+    hp =
+    Math.max(
+      0,
+      hp
+    );
+
+
+    updateHP();
+
+
+    /* ===================================
+       DEFEATED
+    =================================== */
+
+    if(hp <= 0){
+
+      locked=false;
+
+      hp=0;
+
+      updateHP();
+
+
+      character.style.display=
+      "flex";
+
+
+      lockRing.style.display=
+      "none";
+
+      lockTime.style.display=
+      "none";
+
+
+      message.innerHTML =
+      "🎉 CAPTURED!<br>👾 GET!";
+
+      message.style.display=
+      "block";
+
+
+      return;
+
+    }
+
+
+    /* ===================================
+       LOCK END
+    =================================== */
+
     if(remaining <= 0){
 
       locked=false;
 
-      captured=false;
-
-      lockTimer.style.display=
+      lockRing.style.display=
       "none";
 
-      target.classList.remove(
-        "locked"
-      );
+      lockTime.style.display=
+      "none";
 
 
-      message.textContent =
-      "💨 逃げた！";
+      message.textContent=
+      "💨 ESCAPE!";
 
-      message.style.display =
+      message.style.display=
       "block";
 
 
@@ -768,23 +848,23 @@ function gameLoop(time){
 
         }
 
-      },500);
+      },600);
 
 
       /*
-        ロック終了直後は
-        高速で逃げる
+       拘束解除後
+       一気に逃げる
       */
 
-      chooseNewDirection();
+      chooseEscape();
 
-      velocityX *=1.2;
+      enemySpeed *=1.4;
 
     }
 
     else{
 
-      lockTimer.textContent =
+      lockTime.textContent =
       (
         remaining/1000
       ).toFixed(1);
@@ -794,174 +874,158 @@ function gameLoop(time){
   }
 
 
-  /* ===========================
-     ESCAPING
-  =========================== */
+  /* =====================================
+     ENEMY MOVEMENT
+  ===================================== */
 
   else{
 
     if(
       time >
-      nextDirectionChange
+      nextEscapeChange
     ){
 
-      chooseNewDirection();
+      chooseEscape();
 
     }
 
 
-    x +=
-    velocityX *
+    enemyAngle +=
+    enemySpeed *
     dt;
 
 
-    /* ===========================
-       WALL BOUNCE
-    =========================== */
-
-    const half =
-    character.offsetWidth/2;
-
-
-    if(
-      x <
-      half
-    ){
-
-      x=half;
-
-      velocityX =
-      Math.abs(
-        velocityX
-      );
-
-    }
-
-
-    if(
-      x >
-      window.innerWidth-half
-    ){
-
-      x =
-      window.innerWidth-half;
-
-      velocityX =
-      -Math.abs(
-        velocityX
-      );
-
-    }
+    enemyAngle =
+    normalizeAngle(
+      enemyAngle
+    );
 
   }
 
 
-  /* ===========================
-     DRAW
-  =========================== */
+  /* =====================================
+     ENEMY VS CAMERA
+  ===================================== */
 
-  character.style.left =
-  x+"px";
+  const diff =
+  angleDifference(
+    enemyAngle,
+    phoneAngle
+  );
 
-  character.style.top =
-  y+"px";
+
+  const halfFOV =
+  FOV/2;
 
 
   /*
-    キャラの向き
+   画面内判定
   */
 
-  if(!locked){
-
-    const flip =
-    velocityX >= 0
-    ? 1
-    : -1;
+  enemyVisible =
+  Math.abs(diff)
+  <
+  halfFOV;
 
 
-    character.style.transform =
-    `
-    translate(-50%,-50%)
-    scaleX(${flip})
-    `;
+  /* =====================================
+     CHARACTER DISPLAY
+  ===================================== */
 
-  }
+  if(enemyVisible){
 
-
-  /* ===========================
-     AIM CHECK
-  =========================== */
-
-  if(!locked){
-
-    const centerX =
-    window.innerWidth/2;
-
-    const centerY =
-    window.innerHeight/2;
+    character.style.display=
+    "flex";
 
 
-    const dx =
-    x-centerX;
+    /*
+     diffから画面X位置へ変換
 
-    const dy =
-    y-centerY;
+     -FOV/2 → 左端
+      0     → 中央
+     +FOV/2 → 右端
+    */
+
+    const normalized =
+    diff /
+    halfFOV;
 
 
-    const distance =
-    Math.sqrt(
-      dx*dx +
-      dy*dy
+    /*
+     左右を反転
+    */
+
+    let screenX =
+    50
+    -
+    normalized*50;
+
+
+    screenX =
+    Math.max(
+      3,
+      Math.min(
+        97,
+        screenX
+      )
     );
 
 
-    captured =
-    distance <
-    CAPTURE_RADIUS;
+    character.style.left =
+    screenX+"%";
 
 
-    if(captured){
+    /*
+     少し上下にも動かして
+     生き物感を出す
+    */
 
-      target.classList.add(
-        "aiming"
-      );
+    const bob =
+    Math.sin(
+      time*.008
+    )*18;
 
 
-      message.textContent =
-      "🎯 とらえた！振れ！";
+    character.style.top =
+    `calc(50% + ${bob}px)`;
 
-      message.style.display =
-      "block";
+
+    directionUI.textContent =
+    "⚡ TARGET IN VIEW";
+
+
+    /*
+     画面内全部が
+     キャッチ範囲
+    */
+
+  }
+
+  else{
+
+    character.style.display=
+    "none";
+
+
+    /* ===================================
+       どちら側にいるか表示
+    =================================== */
+
+    if(diff > 0){
+
+      directionUI.textContent =
+      "👾 ← TURN LEFT";
 
     }
 
     else{
 
-      target.classList.remove(
-        "aiming"
-      );
-
-      message.style.display =
-      "none";
+      directionUI.textContent =
+      "TURN RIGHT → 👾";
 
     }
 
   }
-
-
-  /* ===========================
-     SHAKE BAR
-  =========================== */
-
-  shakePower *= .92;
-
-
-  bar.style.width =
-  Math.min(
-    shakePower*8,
-    100
-  )
-  +"%";
 
 
   requestAnimationFrame(
@@ -971,11 +1035,19 @@ function gameLoop(time){
 }
 
 
-/* ===============================
-   MOTION
-================================ */
+/* =========================================
+   SHAKE
+========================================= */
 
 function motionHandler(event){
+
+  if(
+    !enemyVisible ||
+    locked
+  ){
+    return;
+  }
+
 
   const a =
   event.accelerationIncludingGravity;
@@ -985,81 +1057,53 @@ function motionHandler(event){
   }
 
 
-  const ax =
+  const x =
   a.x || 0;
 
-  const ay =
+  const y =
   a.y || 0;
 
-  const az =
+  const z =
   a.z || 0;
 
 
-  /*
-    加速度の大きさ
-  */
-
-  const total =
+  const magnitude =
   Math.sqrt(
-    ax*ax +
-    ay*ay +
-    az*az
+    x*x +
+    y*y +
+    z*z
   );
 
-
-  /*
-    重力 9.8 を除いた
-    大まかな振動量
-  */
 
   const shake =
   Math.abs(
-    total-9.81
+    magnitude -
+    9.81
   );
 
-
-  shakePower =
-  Math.max(
-    shakePower,
-    shake
-  );
-
-
-  /* ===========================
-     SHAKE DETECTED
-  =========================== */
 
   if(
     shake >
     SHAKE_THRESHOLD
-    &&
-    captured
-    &&
-    !locked
   ){
 
     const now =
     performance.now();
 
 
-    /*
-      連続判定防止
-    */
-
     if(
-      now-lastShakeTime
+      now-lastShake
       <
-      400
+      500
     ){
       return;
     }
 
 
-    lastShakeTime =
-    now;
+    lastShake=now;
 
 
-    captureCharacter(
+    lockEnemy(
       shake
     );
 
@@ -1068,20 +1112,27 @@ function motionHandler(event){
 }
 
 
-/* ===============================
-   CAPTURE
-================================ */
+/* =========================================
+   LOCK
+========================================= */
 
-function captureCharacter(
-  power
-){
+function lockEnemy(power){
+
+  if(
+    !enemyVisible ||
+    locked
+  ){
+    return;
+  }
+
 
   locked=true;
 
 
   /*
-    振った強さから
-    1.5〜6秒
+   振りの強さ
+
+   約1.5〜6秒
   */
 
   let seconds =
@@ -1091,12 +1142,11 @@ function captureCharacter(
   +
 
   (
-    power-
+    power -
     SHAKE_THRESHOLD
   )
 
-  *
-  .35;
+  *.35;
 
 
   seconds =
@@ -1115,38 +1165,28 @@ function captureCharacter(
   seconds*1000;
 
 
-  velocityX=0;
-
-
-  target.classList.remove(
-    "aiming"
-  );
-
-
-  target.classList.add(
-    "locked"
-  );
+  enemySpeed=0;
 
 
   message.textContent =
-  "⚡ LOCK!";
+  "⚡ CAPTURE!";
 
 
   message.style.display=
   "block";
 
 
-  lockTimer.textContent =
-  seconds.toFixed(1);
-
-
-  lockTimer.style.display=
+  lockRing.style.display=
   "block";
 
 
-  /*
-    バイブ
-  */
+  lockTime.style.display=
+  "block";
+
+
+  lockTime.textContent =
+  seconds.toFixed(1);
+
 
   if(navigator.vibrate){
 
@@ -1155,6 +1195,29 @@ function captureCharacter(
     );
 
   }
+
+}
+
+
+/* =========================================
+   HP
+========================================= */
+
+function updateHP(){
+
+  hpNumber.textContent =
+  Math.ceil(hp);
+
+
+  const percent =
+  (
+    hp /
+    MAX_HP
+  )*100;
+
+
+  hpBar.style.width =
+  percent+"%";
 
 }
 
