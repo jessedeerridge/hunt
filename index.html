@@ -2,247 +2,131 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#000">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
 <title>PIXEL CAMERA HUNT 360</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
-  touch-action:none;
-  font-family:monospace;
+  margin:0;width:100%;height:100%;overflow:hidden;background:#000;
+  touch-action:none;font-family:monospace
+}
+#camera,#world,#game{
+  position:fixed;inset:0;width:100%;height:100%
 }
 #camera{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#000;
-  z-index:0;
-  display:none;
+  object-fit:cover;background:#000;z-index:0;display:none
 }
 #world{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  z-index:0;
-  image-rendering:pixelated;
+  z-index:0;background:#000;
+  image-rendering:pixelated
 }
 #game{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:2;
-  pointer-events:none;
-  image-rendering:pixelated;
+  z-index:2;pointer-events:none;
+  image-rendering:pixelated
 }
 #hud{
-  position:fixed;
-  inset:0;
-  z-index:10;
-  display:none;
-  pointer-events:none;
+  position:fixed;inset:0;z-index:10;
+  display:none;pointer-events:none
 }
-
-/* HP */
-
 #hp{
   position:absolute;
   top:calc(14px + env(safe-area-inset-top));
-  left:50%;
-  transform:translateX(-50%);
-  width:min(82vw,390px);
+  left:50%;transform:translateX(-50%);
+  width:min(82vw,390px)
 }
 #hpText{
-  color:#fff;
-  font-size:13px;
-  font-weight:900;
-  text-shadow:2px 2px #000;
+  color:#fff;font-size:13px;font-weight:900;
+  text-shadow:2px 2px #000
 }
 #hpOuter{
-  height:17px;
-  margin-top:5px;
-  border:3px solid #fff;
-  background:#111;
-  box-shadow:3px 3px #000;
+  height:17px;margin-top:5px;border:3px solid #fff;
+  background:#111;box-shadow:3px 3px #000
 }
-#hpInner{
-  width:100%;
-  height:100%;
-  background:#fff;
-}
-
-/* LOCK */
+#hpInner{width:100%;height:100%;background:#fff}
 
 #lock{
-  position:absolute;
-  top:18%;
-  left:50%;
+  position:absolute;top:18%;left:50%;
   transform:translate(-50%,-50%);
-  display:none;
-  padding:9px 15px;
-  background:#111;
-  border:3px solid #fff;
-  box-shadow:4px 4px #000;
-  color:#fff;
-  font-size:22px;
-  font-weight:900;
+  display:none;padding:9px 15px;background:#111;
+  border:3px solid #fff;box-shadow:4px 4px #000;
+  color:#fff;font-size:22px;font-weight:900
 }
 #timer{
-  position:absolute;
-  bottom:17%;
-  left:50%;
+  position:absolute;bottom:17%;left:50%;
   transform:translateX(-50%);
-  display:none;
-  padding:6px 12px;
-  background:#111;
-  border:3px solid #fff;
-  box-shadow:4px 4px #000;
-  color:#fff;
-  font-size:30px;
-  font-weight:900;
+  display:none;padding:6px 12px;background:#111;
+  border:3px solid #fff;box-shadow:4px 4px #000;
+  color:#fff;font-size:30px;font-weight:900
 }
 #cooldown{
-  position:absolute;
-  top:25%;
-  left:50%;
+  position:absolute;top:25%;left:50%;
   transform:translateX(-50%);
-  display:none;
-  padding:7px 12px;
+  display:none;padding:7px 12px;
   background:rgba(0,0,0,.72);
-  border:2px solid #fff;
-  color:#fff;
-  font-size:13px;
-  font-weight:900;
+  border:2px solid #fff;color:#fff;
+  font-size:13px;font-weight:900
 }
 #sensorWait{
-  position:absolute;
-  top:50%;
-  left:50%;
+  position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  display:none;
-  padding:10px 17px;
-  background:#111;
-  border:3px solid #fff;
-  color:#fff;
-  font-weight:900;
+  display:none;padding:10px 17px;background:#111;
+  border:3px solid #fff;color:#fff;font-weight:900
 }
-
-/* MODE */
-
 #modeSwitch{
-  position:absolute;
-  left:50%;
+  position:absolute;left:50%;
   bottom:calc(24px + env(safe-area-inset-bottom));
   transform:translateX(-50%);
-  display:flex;
-  gap:5px;
-  padding:5px;
+  display:flex;gap:5px;padding:5px;
   background:rgba(0,0,0,.68);
-  border:2px solid #fff;
-  pointer-events:auto;
+  border:2px solid #fff;pointer-events:auto
 }
 #modeSwitch button{
-  min-width:92px;
-  padding:11px 16px;
-  border:0;
-  background:transparent;
-  color:#fff;
-  font-family:monospace;
-  font-size:12px;
-  font-weight:900;
+  min-width:92px;padding:11px 16px;border:0;
+  background:transparent;color:#fff;
+  font:900 12px monospace
 }
-#modeSwitch button.active{
-  background:#fff;
-  color:#111;
-}
+#modeSwitch button.active{background:#fff;color:#111}
 
 #debug{
-  position:absolute;
-  right:6px;
-  bottom:6px;
-  padding:5px 7px;
-  background:rgba(0,0,0,.68);
+  position:absolute;right:6px;bottom:6px;
+  padding:5px 7px;background:rgba(0,0,0,.68);
   border:1px solid rgba(255,255,255,.7);
-  color:#fff;
-  font-size:8px;
-  line-height:1.45;
+  color:#fff;font-size:8px;line-height:1.45
 }
-
-/* START */
 
 #start{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding:25px;
-  background:#161925;
-  color:#fff;
-  text-align:center;
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:25px;background:#161925;
+  color:#fff;text-align:center
 }
-#startIcon{
-  font-size:64px;
-}
-#start h1{
-  margin:8px 0 10px;
-  font-size:25px;
-}
+#startIcon{font-size:64px}
+#start h1{margin:8px 0 10px;font-size:25px}
 #start p{
-  max-width:430px;
-  margin:5px 0;
-  font-size:13px;
-  line-height:1.7;
-  opacity:.86;
+  max-width:430px;margin:5px 0;
+  font-size:13px;line-height:1.7;opacity:.86
 }
 #secureStatus{
-  margin-top:12px;
-  padding:6px 10px;
+  margin-top:12px;padding:6px 10px;
   border:1px solid rgba(255,255,255,.35);
-  font-size:11px;
+  font-size:11px
 }
 #startButton{
-  min-width:250px;
-  margin-top:18px;
-  padding:17px 25px;
-  border:3px solid #fff;
-  background:#fff;
-  color:#111;
+  min-width:250px;margin-top:18px;padding:17px 25px;
+  border:3px solid #fff;background:#fff;color:#111;
   box-shadow:6px 6px #000;
-  font-family:monospace;
-  font-size:16px;
-  font-weight:900;
+  font:900 16px monospace
 }
 #startButton:active{
-  transform:translate(3px,3px);
-  box-shadow:3px 3px #000;
+  transform:translate(3px,3px);box-shadow:3px 3px #000
 }
-#startButton:disabled{
-  opacity:.55;
-}
+#startButton:disabled{opacity:.55}
 #error{
-  max-width:430px;
-  margin-top:16px;
-  color:#ffaaaa;
-  font-size:11px;
-  line-height:1.55;
-  white-space:pre-line;
+  max-width:430px;margin-top:16px;color:#faa;
+  font-size:11px;line-height:1.55;white-space:pre-line
 }
 </style>
 </head>
@@ -254,15 +138,11 @@ html,body{
 <canvas id="game"></canvas>
 
 <div id="hud">
-
   <div id="hp">
     <div id="hpText">
-      CREATURE HP
-      <span id="hpNumber">100</span> / 100
+      CREATURE HP <span id="hpNumber">100</span> / 100
     </div>
-    <div id="hpOuter">
-      <div id="hpInner"></div>
-    </div>
+    <div id="hpOuter"><div id="hpInner"></div></div>
   </div>
 
   <div id="lock">⚡ LOCK!</div>
@@ -279,113 +159,60 @@ html,body{
 </div>
 
 <div id="start">
-
   <div id="startIcon">👾</div>
-
   <h1>PIXEL CAMERA HUNT 360</h1>
-
   <p>
-    STARTをタップしてください。
-    <br><br>
-    キャラクターは360°世界を歩いています。
-    <br>
-    画面に捉えると0.5秒後に気づき、
-    一気に高速で逃げます。
-    <br><br>
+    STARTをタップしてください。<br><br>
+    360°スマホを動かしてキャラクターを探します。<br>
+    発見すると0.5秒後に気づき、高速で逃走します。<br><br>
     スマホを振るとロックできます。
   </p>
-
   <div id="secureStatus">CHECKING...</div>
-
   <button id="startButton">START</button>
-
   <div id="error"></div>
-
 </div>
 
 <script>
 "use strict";
 
 /* =========================================================
-   ELEMENT
+   ELEMENTS
 ========================================================= */
 
-const camera =
-  document.getElementById("camera");
+const camera = document.getElementById("camera");
+const world = document.getElementById("world");
+const wctx = world.getContext("2d",{alpha:false});
+const game = document.getElementById("game");
+const ctx = game.getContext("2d");
 
-const world =
-  document.getElementById("world");
+const start = document.getElementById("start");
+const startButton = document.getElementById("startButton");
+const errorBox = document.getElementById("error");
+const secureStatus = document.getElementById("secureStatus");
+const hud = document.getElementById("hud");
 
-const wctx =
-  world.getContext("2d",{alpha:false});
+const hpNumber = document.getElementById("hpNumber");
+const hpInner = document.getElementById("hpInner");
 
-const game =
-  document.getElementById("game");
+const lockText = document.getElementById("lock");
+const timer = document.getElementById("timer");
+const cooldownText = document.getElementById("cooldown");
+const sensorWait = document.getElementById("sensorWait");
+const debug = document.getElementById("debug");
 
-const ctx =
-  game.getContext("2d");
-
-const start =
-  document.getElementById("start");
-
-const startButton =
-  document.getElementById("startButton");
-
-const errorBox =
-  document.getElementById("error");
-
-const secureStatus =
-  document.getElementById("secureStatus");
-
-const hud =
-  document.getElementById("hud");
-
-const hpNumber =
-  document.getElementById("hpNumber");
-
-const hpInner =
-  document.getElementById("hpInner");
-
-const lockText =
-  document.getElementById("lock");
-
-const timer =
-  document.getElementById("timer");
-
-const cooldownText =
-  document.getElementById("cooldown");
-
-const sensorWait =
-  document.getElementById("sensorWait");
-
-const debug =
-  document.getElementById("debug");
-
-const pixelModeButton =
-  document.getElementById("pixelMode");
-
-const cameraModeButton =
-  document.getElementById("cameraMode");
-
+const pixelModeButton = document.getElementById("pixelMode");
+const cameraModeButton = document.getElementById("cameraMode");
 
 /* =========================================================
    HTTPS
 ========================================================= */
 
 if(window.isSecureContext){
-
-  secureStatus.textContent =
-    "✓ SECURE";
-
+  secureStatus.textContent = "✓ SECURE";
 }else{
-
-  secureStatus.textContent =
-    "⚠ HTTPS REQUIRED";
-
-  secureStatus.style.color =
-    "#ff9999";
+  secureStatus.textContent = "⚠ HTTPS REQUIRED";
+  secureStatus.style.color = "#ff9999";
 }
-
 
 /* =========================================================
    SCREEN
@@ -393,516 +220,309 @@ if(window.isSecureContext){
 
 let W = innerWidth;
 let H = innerHeight;
-
 let DPR = 1;
 
-
 function resize(){
-
   W = innerWidth;
   H = innerHeight;
 
-  DPR =
-    Math.min(
-      devicePixelRatio || 1,
-      2
-    );
+  DPR = Math.min(devicePixelRatio || 1,2);
 
-  game.width =
-    Math.round(W*DPR);
+  game.width = Math.round(W*DPR);
+  game.height = Math.round(H*DPR);
 
-  game.height =
-    Math.round(H*DPR);
+  game.style.width = W+"px";
+  game.style.height = H+"px";
 
-  game.style.width =
-    W+"px";
-
-  game.style.height =
-    H+"px";
-
-  ctx.setTransform(
-    DPR,0,0,DPR,0,0
-  );
-
-  ctx.imageSmoothingEnabled =
-    false;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.imageSmoothingEnabled = false;
 }
 
-
-addEventListener(
-  "resize",
-  resize
-);
-
-addEventListener(
-  "orientationchange",
-  ()=>setTimeout(resize,250)
-);
+addEventListener("resize",resize);
+addEventListener("orientationchange",()=>setTimeout(resize,250));
 
 resize();
 
-
 /* =========================================================
-   PIXEL CAMERA
+   CAMERA PIXEL
 ========================================================= */
 
 const PIXEL_WIDTH = 70;
 
-const rawCanvas =
-  document.createElement("canvas");
+const rawCanvas = document.createElement("canvas");
+const rawCtx = rawCanvas.getContext("2d",{alpha:false});
 
-const rawCtx =
-  rawCanvas.getContext(
-    "2d",
-    {alpha:false}
-  );
-
-let pixelW =
-  PIXEL_WIDTH;
-
-let pixelH =
-  100;
-
+let pixelW = PIXEL_WIDTH;
+let pixelH = 100;
 
 /* =========================================================
    MODE
 ========================================================= */
 
-let displayMode =
-  "pixel";
-
+let displayMode = "pixel";
 
 function setDisplayMode(mode){
-
-  displayMode =
-    mode;
+  displayMode = mode;
 
   if(mode === "pixel"){
-
-    world.style.display =
-      "block";
-
-    camera.style.display =
-      "none";
-
-    pixelModeButton
-      .classList.add("active");
-
-    cameraModeButton
-      .classList.remove("active");
-
+    world.style.display = "block";
+    camera.style.display = "none";
+    pixelModeButton.classList.add("active");
+    cameraModeButton.classList.remove("active");
   }else{
-
-    world.style.display =
-      "none";
-
-    camera.style.display =
-      "block";
-
-    pixelModeButton
-      .classList.remove("active");
-
-    cameraModeButton
-      .classList.add("active");
+    world.style.display = "none";
+    camera.style.display = "block";
+    pixelModeButton.classList.remove("active");
+    cameraModeButton.classList.add("active");
   }
 }
 
-
-pixelModeButton.onclick =
-  ()=>setDisplayMode("pixel");
-
-cameraModeButton.onclick =
-  ()=>setDisplayMode("camera");
-
+pixelModeButton.onclick = ()=>setDisplayMode("pixel");
+cameraModeButton.onclick = ()=>setDisplayMode("camera");
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
 const HFOV = 68;
-
 const VFOV = 55;
 
-
-/* HP */
-
 const MAX_HP = 100;
-
 const DAMAGE_PER_SECOND = 12;
 
-
-/* LOCK */
-
 const SHAKE_THRESHOLD = 9;
-
 const MIN_LOCK = 1.5;
-
 const MAX_LOCK = 5;
-
 const LOCK_COOLDOWN = 3000;
 
+/* detection */
+
+const NOTICE_DELAY = 500;
+const NOTICE_DURATION = 220;
+
+/* WALK */
+
+const WALK_SPEED_MIN = 22;
+const WALK_SPEED_MAX = 29;
+
+/* RUN */
+
+const RUN_SPEED_MIN = 75;
+const RUN_SPEED_MAX = 100;
+
+/* RELEASE RUN */
+
+const RELEASE_RUN_MIN = 95;
+const RELEASE_RUN_MAX = 125;
+
+/* RUN DISTANCE */
+
+const RUN_DISTANCE_MIN = 90;
+const RUN_DISTANCE_MAX = 160;
 
 /* =========================================================
-   DETECTION
+   RUN DIRECTION
+
+   60% = WALKと反対
+   40% = WALKと同じ
+========================================================= */
+
+const RUN_REVERSE_CHANCE = 0.60;
+
+/* =========================================================
+   SLEEP
 ========================================================= */
 
 /*
-  画面に捉えてから
-  気づくまで0.5秒
+  発見されてから30秒未満
+  → 30%
 */
 
-const NOTICE_DELAY =
-  500;
-
+const NORMAL_SLEEP_CHANCE = 0.30;
 
 /*
-  9番表示時間
+  30秒以上見つからない
+  → 50%
 */
 
-const NOTICE_DURATION =
-  220;
+const LONG_SLEEP_CHANCE = 0.50;
 
-
-/* =========================================================
-   SPEED
-
-   ★重要
-
-   前バージョンのRUN速度を
-   今回はWALKとして使用
-========================================================= */
+const LONG_UNSEEN_TIME = 30000;
 
 /*
-  WALK
-
-  普段の移動速度。
-  発見後0.5秒もこの速度。
+  一回の睡眠時間
 */
 
-const WALK_SPEED_MIN =
-  22;
-
-const WALK_SPEED_MAX =
-  29;
-
+const SLEEP_MIN = 2500;
+const SLEEP_MAX = 6000;
 
 /*
-  RUN
-
-  ★大幅高速化
-
-  75〜100°/秒
+  睡眠判定間隔
 */
 
-const RUN_SPEED_MIN =
-  75;
+const SLEEP_CHECK_MIN = 3500;
+const SLEEP_CHECK_MAX = 7000;
 
-const RUN_SPEED_MAX =
-  100;
+/* SENSOR */
 
-
-/*
-  ロック解除後は
-  さらに高速
-*/
-
-const RELEASE_RUN_MIN =
-  95;
-
-const RELEASE_RUN_MAX =
-  125;
-
-
-/*
-  RUN距離
-
-  最大160°
-*/
-
-const RUN_DISTANCE_MIN =
-  90;
-
-const RUN_DISTANCE_MAX =
-  160;
-
-
-/* =========================================================
-   SENSOR
-========================================================= */
-
-const YAW_SMOOTH =
-  .24;
-
-const PITCH_SMOOTH =
-  .20;
-
+const YAW_SMOOTH = .24;
+const PITCH_SMOOTH = .20;
 
 /* =========================================================
    ZONES
 ========================================================= */
 
 const CREATURE_ZONES = {
-
   SKY:{
     minPitch:20,
     maxPitch:34
   },
-
   FRONT:{
     minPitch:-6,
     maxPitch:6
   },
-
   EARTH:{
     minPitch:-34,
     maxPitch:-20
   }
-
 };
 
-
 /* =========================================================
-   SENSOR STATE
+   SENSOR
 ========================================================= */
 
 let cameraYaw = 0;
-
 let cameraPitch = 0;
 
 let targetYaw = 0;
-
 let targetPitch = 0;
 
-let sensorReady =
-  false;
-
+let sensorReady = false;
 
 /* =========================================================
    CREATURE
 ========================================================= */
 
-let creatureZone =
-  "FRONT";
+let creatureZone = "FRONT";
 
-let creatureYaw =
-  0;
+let creatureYaw = 0;
+let creaturePitch = 0;
+let creatureBasePitch = 0;
 
-let creaturePitch =
-  0;
+/* WALK direction */
 
-let creatureBasePitch =
-  0;
+let moveDirection = 1;
 
+/* WALK speed */
 
-/*
-  移動方向
+let walkSpeed = 25;
 
-  +1 / -1
+/* RUN */
 
-  画面には表示しない
-*/
+let runningAway = false;
 
-let moveDirection =
-  Math.random() < .5
-  ? -1
-  : 1;
+let runSpeed = 0;
+let runDistance = 0;
+let runTravel = 0;
 
+/* BOB */
 
-/*
-  WALK SPEED
-*/
+let bobAmplitude = 10;
+let bobPhase = 0;
+let bobSpeed = 1;
 
-let walkSpeed =
-  25;
+/* visible */
 
+let creatureVisible = false;
+let wasCreatureVisible = false;
 
-/*
-  RUN
-*/
+/* detection */
 
-let runningAway =
-  false;
+let detected = false;
+let detectedAt = 0;
 
-let runSpeed =
-  0;
+/* =========================================================
+   SLEEP STATE
+========================================================= */
 
-let runDistance =
-  0;
+let sleeping = false;
 
-let runTravel =
-  0;
-
+let sleepUntil = 0;
+let nextSleepCheck = 0;
 
 /*
-  上下5〜20px
+  最後に画面に捉えられた時刻
 */
 
-let bobAmplitude =
-  10;
-
-let bobPhase =
-  0;
-
-let bobSpeed =
-  1;
-
-
-/*
-  VISIBILITY
-*/
-
-let creatureVisible =
-  false;
-
-let wasCreatureVisible =
-  false;
-
-
-/*
-  DETECTION
-*/
-
-let detected =
-  false;
-
-let detectedAt =
-  0;
-
+let lastDetectedTime = 0;
 
 /* =========================================================
    ANIMATION
 ========================================================= */
 
-let animState =
-  "sleep";
+let animState = "move";
+let animFrame = 1;
+let animStateStart = 0;
 
-let animFrame =
-  8;
-
-let animStateStart =
-  0;
-
-let nextSpecialTime =
-  0;
-
-let nextAttackTime =
-  0;
-
+let nextSpecialTime = 0;
+let nextAttackTime = 0;
 
 /* =========================================================
    GAME
 ========================================================= */
 
-let gameRunning =
-  false;
+let gameRunning = false;
 
-let hp =
-  MAX_HP;
+let hp = MAX_HP;
 
-let locked =
-  false;
+let locked = false;
+let lockEnd = 0;
+let lockCooldownUntil = 0;
 
-let lockEnd =
-  0;
-
-let lockCooldownUntil =
-  0;
-
-let lastShake =
-  0;
-
-let lastTime =
-  0;
-
+let lastShake = 0;
+let lastTime = 0;
 
 /* =========================================================
    MATH
 ========================================================= */
 
 function rad(v){
-
-  return v*
-    Math.PI/180;
+  return v*Math.PI/180;
 }
-
 
 function deg(v){
-
-  return v*
-    180/Math.PI;
+  return v*180/Math.PI;
 }
-
 
 function clamp(v,min,max){
-
-  return Math.max(
-    min,
-    Math.min(max,v)
-  );
+  return Math.max(min,Math.min(max,v));
 }
-
 
 function random(min,max){
-
-  return (
-    Math.random()*
-    (max-min)+
-    min
-  );
+  return Math.random()*(max-min)+min;
 }
 
-
 function normalize360(a){
-
   a %= 360;
-
-  if(a < 0){
-    a += 360;
-  }
-
+  if(a < 0) a += 360;
   return a;
 }
 
+function angleDiff(target,current){
+  let d = normalize360(target)-normalize360(current);
 
-function angleDiff(
-  target,
-  current
-){
-
-  let d =
-    normalize360(target) -
-    normalize360(current);
-
-  if(d > 180){
-    d -= 360;
-  }
-
-  if(d < -180){
-    d += 360;
-  }
+  if(d > 180) d -= 360;
+  if(d < -180) d += 360;
 
   return d;
 }
 
-
-function smoothAngle(
-  current,
-  target,
-  amount
-){
-
+function smoothAngle(current,target,amount){
   return normalize360(
-
-    current +
-
-    angleDiff(
-      target,
-      current
-    )*
-    amount
+    current+
+    angleDiff(target,current)*amount
   );
 }
-
 
 /* =========================================================
    SPAWN
@@ -910,62 +530,30 @@ function smoothAngle(
 
 function spawnCreature(){
 
+  const now = performance.now();
+
   const types = [
     "SKY",
     "FRONT",
     "EARTH"
   ];
 
-
   creatureZone =
-    types[
-      Math.floor(
-        Math.random()*
-        types.length
-      )
-    ];
-
+    types[Math.floor(Math.random()*types.length)];
 
   const zone =
-    CREATURE_ZONES[
-      creatureZone
-    ];
+    CREATURE_ZONES[creatureZone];
 
-
-  /*
-    ★360°ランダム位置
-  */
-
-  creatureYaw =
-    random(0,360);
-
+  creatureYaw = random(0,360);
 
   creatureBasePitch =
-    random(
-      zone.minPitch,
-      zone.maxPitch
-    );
-
+    random(zone.minPitch,zone.maxPitch);
 
   creaturePitch =
     creatureBasePitch;
 
-
-  /*
-    左右ランダム
-  */
-
   moveDirection =
-    Math.random() < .5
-      ? -1
-      : 1;
-
-
-  /*
-    ★前バージョンRUN速度
-    ↓
-    今回WALK
-  */
+    Math.random() < .5 ? -1 : 1;
 
   walkSpeed =
     random(
@@ -973,143 +561,110 @@ function spawnCreature(){
       WALK_SPEED_MAX
     );
 
+  runningAway = false;
 
-  runningAway =
-    false;
+  runSpeed = 0;
+  runDistance = 0;
+  runTravel = 0;
 
-  runSpeed =
-    0;
+  bobAmplitude = random(5,20);
+  bobPhase = random(0,Math.PI*2);
+  bobSpeed = random(.7,1.25);
 
-  runDistance =
-    0;
+  creatureVisible = false;
+  wasCreatureVisible = false;
 
-  runTravel =
-    0;
-
-
-  bobAmplitude =
-    random(5,20);
-
-  bobPhase =
-    random(
-      0,
-      Math.PI*2
-    );
-
-  bobSpeed =
-    random(.7,1.25);
-
-
-  creatureVisible =
-    false;
-
-  wasCreatureVisible =
-    false;
-
-
-  detected =
-    false;
-
-  detectedAt =
-    0;
-
+  detected = false;
+  detectedAt = 0;
 
   /*
-    最初は未発見なので
-    8
+    発見タイマー開始
   */
 
-  animState =
-    "sleep";
+  lastDetectedTime = now;
 
-  animFrame =
-    8;
+  /*
+    ★最初から30%で睡眠
+  */
 
-  animStateStart =
-    performance.now();
+  sleeping =
+    Math.random() <
+    NORMAL_SLEEP_CHANCE;
 
+  if(sleeping){
+
+    sleepUntil =
+      now+
+      random(
+        SLEEP_MIN,
+        SLEEP_MAX
+      );
+
+    setAnimation(
+      "sleep",
+      now
+    );
+
+  }else{
+
+    sleepUntil = 0;
+
+    setAnimation(
+      "move",
+      now
+    );
+  }
+
+  nextSleepCheck =
+    now+
+    random(
+      SLEEP_CHECK_MIN,
+      SLEEP_CHECK_MAX
+    );
 
   nextSpecialTime =
-    performance.now()+
+    now+
     random(3000,6500);
 
-
   nextAttackTime =
-    performance.now()+
+    now+
     random(4500,8500);
 }
-
 
 /* =========================================================
    START
 ========================================================= */
 
-startButton.addEventListener(
-"click",
-async ()=>{
+startButton.addEventListener("click",async()=>{
 
-  startButton.disabled =
-    true;
-
-  startButton.textContent =
-    "STARTING...";
-
-  errorBox.textContent =
-    "";
-
+  startButton.disabled = true;
+  startButton.textContent = "STARTING...";
+  errorBox.textContent = "";
 
   try{
 
-    if(
-      !window.isSecureContext
-    ){
-
-      throw new Error(
-        "HTTPSで開いてください。"
-      );
+    if(!window.isSecureContext){
+      throw new Error("HTTPSで開いてください。");
     }
 
-
-    /*
-      SENSOR PERMISSION
-    */
-
-    let orientationPromise =
-      null;
-
-    let motionPromise =
-      null;
-
+    let orientationPromise = null;
+    let motionPromise = null;
 
     if(
-      typeof DeviceOrientationEvent !==
-      "undefined" &&
-
-      typeof DeviceOrientationEvent
-      .requestPermission ===
-      "function"
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
     ){
-
       orientationPromise =
-        DeviceOrientationEvent
-        .requestPermission();
+        DeviceOrientationEvent.requestPermission();
     }
-
 
     if(
-      typeof DeviceMotionEvent !==
-      "undefined" &&
-
-      typeof DeviceMotionEvent
-      .requestPermission ===
-      "function"
+      typeof DeviceMotionEvent !== "undefined" &&
+      typeof DeviceMotionEvent.requestPermission === "function"
     ){
-
       motionPromise =
-        DeviceMotionEvent
-        .requestPermission();
+        DeviceMotionEvent.requestPermission();
     }
-
 
     if(orientationPromise){
 
@@ -1117,13 +672,11 @@ async ()=>{
         await orientationPromise;
 
       if(result !== "granted"){
-
         throw new Error(
           "方向センサーが許可されませんでした。"
         );
       }
     }
-
 
     if(motionPromise){
 
@@ -1131,88 +684,49 @@ async ()=>{
         await motionPromise;
 
       if(result !== "granted"){
-
         throw new Error(
           "モーションセンサーが許可されませんでした。"
         );
       }
     }
 
-
-    /*
-      CAMERA
-    */
-
     if(
       !navigator.mediaDevices ||
-      !navigator.mediaDevices
-      .getUserMedia
+      !navigator.mediaDevices.getUserMedia
     ){
-
       throw new Error(
         "カメラを使用できません。"
       );
     }
 
-
     let stream;
-
 
     try{
 
       stream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
-
+        await navigator.mediaDevices.getUserMedia({
           video:{
-
-            facingMode:{
-              ideal:"environment"
-            },
-
-            width:{
-              ideal:1920
-            },
-
-            height:{
-              ideal:1080
-            }
+            facingMode:{ideal:"environment"},
+            width:{ideal:1920},
+            height:{ideal:1080}
           },
-
           audio:false
         });
 
     }catch(e){
 
       stream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
-
+        await navigator.mediaDevices.getUserMedia({
           video:true,
-
           audio:false
         });
     }
 
-
-    camera.srcObject =
-      stream;
-
-    camera.muted =
-      true;
-
-    camera.playsInline =
-      true;
-
+    camera.srcObject = stream;
+    camera.muted = true;
+    camera.playsInline = true;
 
     await camera.play();
-
-
-    /*
-      SENSOR
-    */
 
     addEventListener(
       "deviceorientation",
@@ -1220,81 +734,44 @@ async ()=>{
       true
     );
 
-
     addEventListener(
       "devicemotion",
       motionHandler,
       {passive:true}
     );
 
+    hp = MAX_HP;
 
-    /*
-      RESET
-    */
+    locked = false;
+    lockEnd = 0;
+    lockCooldownUntil = 0;
 
-    hp =
-      MAX_HP;
-
-    locked =
-      false;
-
-    lockEnd =
-      0;
-
-    lockCooldownUntil =
-      0;
-
-    sensorReady =
-      false;
-
+    sensorReady = false;
 
     spawnCreature();
 
     updateHP();
 
-    setDisplayMode(
-      "pixel"
-    );
+    setDisplayMode("pixel");
 
+    start.style.display = "none";
+    hud.style.display = "block";
+    sensorWait.style.display = "block";
 
-    start.style.display =
-      "none";
-
-    hud.style.display =
-      "block";
-
-    sensorWait.style.display =
-      "block";
-
-
-    gameRunning =
-      true;
-
+    gameRunning = true;
 
     lastTime =
       performance.now();
 
-
-    requestAnimationFrame(
-      cameraLoop
-    );
-
-    requestAnimationFrame(
-      gameLoop
-    );
-
+    requestAnimationFrame(cameraLoop);
+    requestAnimationFrame(gameLoop);
 
   }catch(e){
 
     console.error(e);
 
-
-    startButton.disabled =
-      false;
-
-    startButton.textContent =
-      "START";
-
+    startButton.disabled = false;
+    startButton.textContent = "START";
 
     errorBox.textContent =
       (e.name || "ERROR")+
@@ -1303,33 +780,24 @@ async ()=>{
   }
 });
 
-
 /* =========================================================
-   CAMERA
+   CAMERA LOOP
 ========================================================= */
 
 function cameraLoop(){
 
-  if(!gameRunning){
-    return;
-  }
-
+  if(!gameRunning) return;
 
   if(
     displayMode === "pixel" &&
     camera.readyState >= 2 &&
     camera.videoWidth > 0
   ){
-
     drawPixelCamera();
   }
 
-
-  requestAnimationFrame(
-    cameraLoop
-  );
+  requestAnimationFrame(cameraLoop);
 }
-
 
 /* =========================================================
    PIXEL CAMERA
@@ -1337,24 +805,13 @@ function cameraLoop(){
 
 function drawPixelCamera(){
 
-  const vw =
-    camera.videoWidth;
+  const vw = camera.videoWidth;
+  const vh = camera.videoHeight;
 
-  const vh =
-    camera.videoHeight;
+  if(!vw || !vh) return;
 
-
-  if(!vw || !vh){
-    return;
-  }
-
-
-  const screenRatio =
-    W/H;
-
-  const videoRatio =
-    vw/vh;
-
+  const screenRatio = W/H;
+  const videoRatio = vw/vh;
 
   let sx = 0;
   let sy = 0;
@@ -1362,68 +819,41 @@ function drawPixelCamera(){
   let sw = vw;
   let sh = vh;
 
+  if(videoRatio > screenRatio){
 
-  if(
-    videoRatio >
-    screenRatio
-  ){
-
-    sw =
-      vh*
-      screenRatio;
-
-    sx =
-      (vw-sw)/2;
+    sw = vh*screenRatio;
+    sx = (vw-sw)/2;
 
   }else{
 
-    sh =
-      vw/
-      screenRatio;
-
-    sy =
-      (vh-sh)/2;
+    sh = vw/screenRatio;
+    sy = (vh-sh)/2;
   }
 
-
-  pixelW =
-    PIXEL_WIDTH;
-
+  pixelW = PIXEL_WIDTH;
 
   pixelH =
     Math.max(
       1,
       Math.round(
-        PIXEL_WIDTH*
-        H/W
+        PIXEL_WIDTH*H/W
       )
     );
-
 
   if(
     rawCanvas.width !== pixelW ||
     rawCanvas.height !== pixelH
   ){
 
-    rawCanvas.width =
-      pixelW;
+    rawCanvas.width = pixelW;
+    rawCanvas.height = pixelH;
 
-    rawCanvas.height =
-      pixelH;
+    world.width = pixelW;
+    world.height = pixelH;
 
-    world.width =
-      pixelW;
-
-    world.height =
-      pixelH;
-
-    rawCtx.imageSmoothingEnabled =
-      true;
-
-    wctx.imageSmoothingEnabled =
-      false;
+    rawCtx.imageSmoothingEnabled = true;
+    wctx.imageSmoothingEnabled = false;
   }
-
 
   rawCtx.drawImage(
     camera,
@@ -1431,13 +861,11 @@ function drawPixelCamera(){
     0,0,pixelW,pixelH
   );
 
-
   wctx.drawImage(
     rawCanvas,
     0,0
   );
 }
-
 
 /* =========================================================
    ORIENTATION
@@ -1450,131 +878,67 @@ function orientationHandler(e){
     !Number.isFinite(e.beta) ||
     !Number.isFinite(e.gamma)
   ){
-
     return;
   }
 
+  const alpha = rad(e.alpha);
+  const beta = rad(e.beta);
+  const gamma = rad(e.gamma);
 
-  const alpha =
-    rad(e.alpha);
+  const ca = Math.cos(alpha);
+  const sa = Math.sin(alpha);
 
-  const beta =
-    rad(e.beta);
+  const cb = Math.cos(beta);
+  const sb = Math.sin(beta);
 
-  const gamma =
-    rad(e.gamma);
-
-
-  const ca =
-    Math.cos(alpha);
-
-  const sa =
-    Math.sin(alpha);
-
-  const cb =
-    Math.cos(beta);
-
-  const sb =
-    Math.sin(beta);
-
-  const cg =
-    Math.cos(gamma);
-
-  const sg =
-    Math.sin(gamma);
-
+  const cg = Math.cos(gamma);
+  const sg = Math.sin(gamma);
 
   let x = 0;
   let y = 0;
   let z = -1;
 
+  let x1 = cg*x+sg*z;
+  let y1 = y;
+  let z1 = -sg*x+cg*z;
 
-  let x1 =
-    cg*x +
-    sg*z;
+  let x2 = x1;
+  let y2 = cb*y1-sb*z1;
+  let z2 = sb*y1+cb*z1;
 
-  let y1 =
-    y;
+  let wx = ca*x2-sa*y2;
+  let wy = sa*x2+ca*y2;
+  let wz = z2;
 
-  let z1 =
-    -sg*x +
-    cg*z;
-
-
-  let x2 =
-    x1;
-
-  let y2 =
-    cb*y1 -
-    sb*z1;
-
-  let z2 =
-    sb*y1 +
-    cb*z1;
-
-
-  let wx =
-    ca*x2 -
-    sa*y2;
-
-  let wy =
-    sa*x2 +
-    ca*y2;
-
-  let wz =
-    z2;
-
-
-  let screenAngle =
-    0;
-
+  let screenAngle = 0;
 
   if(
     screen.orientation &&
-    typeof screen.orientation.angle ===
-    "number"
+    typeof screen.orientation.angle === "number"
   ){
-
     screenAngle =
       screen.orientation.angle;
 
   }else if(
-    typeof window.orientation ===
-    "number"
+    typeof window.orientation === "number"
   ){
-
     screenAngle =
       window.orientation;
   }
 
-
   if(screenAngle !== 0){
 
-    const r =
-      rad(
-        -screenAngle
-      );
+    const r = rad(-screenAngle);
 
-    const c =
-      Math.cos(r);
+    const c = Math.cos(r);
+    const s = Math.sin(r);
 
-    const s =
-      Math.sin(r);
-
-
-    const nx =
-      c*wx -
-      s*wy;
-
-    const ny =
-      s*wx +
-      c*wy;
-
+    const nx = c*wx-s*wy;
+    const ny = s*wx+c*wy;
 
     wx = nx;
     wy = ny;
   }
-
 
   const horizontal =
     Math.sqrt(
@@ -1582,21 +946,17 @@ function orientationHandler(e){
       wy*wy
     );
 
-
   targetPitch =
     clamp(
-
       deg(
         Math.atan2(
           wz,
           horizontal
         )
       ),
-
       -90,
       90
     );
-
 
   let yaw =
     deg(
@@ -1606,51 +966,33 @@ function orientationHandler(e){
       )
     );
 
-
   yaw =
-    normalize360(
-      yaw
-    );
-
+    normalize360(yaw);
 
   if(
-    typeof e.webkitCompassHeading ===
-    "number" &&
-
-    Number.isFinite(
-      e.webkitCompassHeading
-    ) &&
-
+    typeof e.webkitCompassHeading === "number" &&
+    Number.isFinite(e.webkitCompassHeading) &&
     horizontal > .15
   ){
-
     yaw =
       normalize360(
         e.webkitCompassHeading
       );
   }
 
-
-  targetYaw =
-    yaw;
-
+  targetYaw = yaw;
 
   if(!sensorReady){
 
-    cameraYaw =
-      targetYaw;
+    cameraYaw = targetYaw;
+    cameraPitch = targetPitch;
 
-    cameraPitch =
-      targetPitch;
-
-    sensorReady =
-      true;
+    sensorReady = true;
 
     sensorWait.style.display =
       "none";
   }
 }
-
 
 /* =========================================================
    GAME LOOP
@@ -1658,26 +1000,15 @@ function orientationHandler(e){
 
 function gameLoop(time){
 
-  if(!gameRunning){
-    return;
-  }
-
+  if(!gameRunning) return;
 
   let dt =
-    (time-lastTime)/
-    1000;
+    (time-lastTime)/1000;
 
-
-  lastTime =
-    time;
-
+  lastTime = time;
 
   dt =
-    Math.min(
-      dt,
-      .05
-    );
-
+    Math.min(dt,.05);
 
   /* SENSOR */
 
@@ -1690,7 +1021,6 @@ function gameLoop(time){
         YAW_SMOOTH
       );
 
-
     cameraPitch +=
       (
         targetPitch-
@@ -1699,7 +1029,6 @@ function gameLoop(time){
       PITCH_SMOOTH;
   }
 
-
   /* =====================================================
      LOCK
   ===================================================== */
@@ -1707,37 +1036,24 @@ function gameLoop(time){
   if(locked){
 
     const remaining =
-      lockEnd-
-      time;
-
+      lockEnd-time;
 
     hp -=
       DAMAGE_PER_SECOND*
       dt;
 
-
     hp =
-      Math.max(
-        0,
-        hp
-      );
-
+      Math.max(0,hp);
 
     updateHP();
-
 
     if(hp <= 0){
 
       hp = 0;
-
       updateHP();
 
-      locked =
-        false;
-
-      gameRunning =
-        false;
-
+      locked = false;
+      gameRunning = false;
 
       lockText.textContent =
         "★ CAPTURED ★";
@@ -1751,26 +1067,14 @@ function gameLoop(time){
       cooldownText.style.display =
         "none";
 
-
-      renderGame(
-        time
-      );
+      renderGame(time);
 
       return;
     }
 
+    if(remaining <= 0){
 
-    /*
-      ★LOCK解除
-    */
-
-    if(
-      remaining <= 0
-    ){
-
-      locked =
-        false;
-
+      locked = false;
 
       lockText.style.display =
         "none";
@@ -1778,19 +1082,19 @@ function gameLoop(time){
       timer.style.display =
         "none";
 
-
       lockCooldownUntil =
         time+
         LOCK_COOLDOWN;
 
+      detected = false;
+      detectedAt = 0;
 
-      detected =
-        false;
-
+      sleeping = false;
+      sleepUntil = 0;
 
       /*
-        ★即RUN
-        95〜125°/秒
+        ★ロック解除
+        即RUN
       */
 
       startRun(
@@ -1808,16 +1112,15 @@ function gameLoop(time){
     }
   }
 
-
   /* =====================================================
      MOVEMENT
   ===================================================== */
 
   if(!locked){
 
-    /*
-      ★RUN
-    */
+    /* =========================
+       RUN
+    ========================= */
 
     if(runningAway){
 
@@ -1825,24 +1128,15 @@ function gameLoop(time){
         runSpeed*
         dt;
 
-
       creatureYaw =
         normalize360(
-
-          creatureYaw +
-
+          creatureYaw+
           moveDirection*
           move
         );
 
-
       runTravel +=
         Math.abs(move);
-
-
-      /*
-        RUN終了
-      */
 
       if(
         runTravel >=
@@ -1852,50 +1146,155 @@ function gameLoop(time){
         runningAway =
           false;
 
-
         /*
-          RUN後は
-          WALKへ戻る
-
-          眠らない
+          RUN終了
+          ↓
+          WALK
         */
+
+        sleeping = false;
 
         setAnimation(
           "move",
           time
         );
+
+        nextSleepCheck =
+          time+
+          random(
+            SLEEP_CHECK_MIN,
+            SLEEP_CHECK_MAX
+          );
       }
 
-    }else{
-
-      /*
-        ★WALK
-
-        未発見でも
-        発見待ちでも
-        常に歩く
-      */
-
-      const move =
-        walkSpeed*
-        dt;
-
-
-      creatureYaw =
-        normalize360(
-
-          creatureYaw +
-
-          moveDirection*
-          move
-        );
     }
 
+    /* =========================
+       WALK / SLEEP
+    ========================= */
+
+    else{
+
+      /*
+        ★画面に捉えられている間は
+        SLEEP判定を一切しない
+      */
+
+      if(!creatureVisible){
+
+        /* =====================
+           現在睡眠中
+        ===================== */
+
+        if(sleeping){
+
+          if(
+            time >=
+            sleepUntil
+          ){
+
+            sleeping = false;
+
+            sleepUntil = 0;
+
+            setAnimation(
+              "move",
+              time
+            );
+
+            nextSleepCheck =
+              time+
+              random(
+                SLEEP_CHECK_MIN,
+                SLEEP_CHECK_MAX
+              );
+          }
+
+        }
+
+        /* =====================
+           起きている
+        ===================== */
+
+        else if(
+          time >=
+          nextSleepCheck
+        ){
+
+          const unseenTime =
+            time-
+            lastDetectedTime;
+
+          /*
+            30秒未満
+            →30%
+
+            30秒以上
+            →50%
+          */
+
+          const sleepChance =
+
+            unseenTime >=
+            LONG_UNSEEN_TIME
+
+            ? LONG_SLEEP_CHANCE
+
+            : NORMAL_SLEEP_CHANCE;
+
+          if(
+            Math.random() <
+            sleepChance
+          ){
+
+            sleeping = true;
+
+            sleepUntil =
+              time+
+              random(
+                SLEEP_MIN,
+                SLEEP_MAX
+              );
+
+            setAnimation(
+              "sleep",
+              time
+            );
+
+          }else{
+
+            nextSleepCheck =
+              time+
+              random(
+                SLEEP_CHECK_MIN,
+                SLEEP_CHECK_MAX
+              );
+          }
+        }
+      }
+
+      /*
+        ★起きている時だけWALK
+      */
+
+      if(!sleeping){
+
+        const move =
+          walkSpeed*
+          dt;
+
+        creatureYaw =
+          normalize360(
+            creatureYaw+
+            moveDirection*
+            move
+          );
+      }
+    }
 
     creaturePitch =
       creatureBasePitch;
   }
-
 
   /* =====================================================
      VISIBILITY
@@ -1909,25 +1308,16 @@ function gameLoop(time){
         cameraYaw
       );
 
-
     const dy =
       creaturePitch-
       cameraPitch;
 
-
     creatureVisible =
-
-      Math.abs(dx) <
-      HFOV/2
-
-      &&
-
-      Math.abs(dy) <
-      VFOV/2;
-
+      Math.abs(dx) < HFOV/2 &&
+      Math.abs(dy) < VFOV/2;
 
     /* ===================================================
-       ★画面に入った瞬間
+       ★画面に入った
     =================================================== */
 
     if(
@@ -1938,24 +1328,28 @@ function gameLoop(time){
     ){
 
       /*
-        ★発見開始
+        最後に発見された時間
       */
 
-      if(!detected){
-
-        detected =
-          true;
-
-        detectedAt =
-          time;
-      }
-
+      lastDetectedTime =
+        time;
 
       /*
-        ★捉えた瞬間から
-        眠りをやめる
+        ★SLEEP中なら即起床
+      */
 
-        1〜4 WALK
+      sleeping = false;
+      sleepUntil = 0;
+
+      /*
+        ★発見カウント開始
+      */
+
+      detected = true;
+      detectedAt = time;
+
+      /*
+        ★捉え中はWALK
       */
 
       setAnimation(
@@ -1964,17 +1358,10 @@ function gameLoop(time){
       );
     }
 
-
     /* ===================================================
-       ★重要
+       ★0.5秒前に画面外へ
 
-       画面から外れた場合
-
-       0.5秒の発見カウントは
-       キャンセルする
-
-       →「画面に捉えて0.5秒」
-       を正確にする
+       発見キャンセル
     =================================================== */
 
     if(
@@ -1983,33 +1370,31 @@ function gameLoop(time){
       !runningAway
     ){
 
-      detected =
-        false;
-
-      detectedAt =
-        0;
-
+      detected = false;
+      detectedAt = 0;
 
       /*
-        未発見なので
-        眠りに戻してよい
+        即SLEEPにはしない
+        WALKへ戻る
       */
 
+      sleeping = false;
+
       setAnimation(
-        "sleep",
+        "move",
         time
       );
+
+      nextSleepCheck =
+        time+
+        random(
+          SLEEP_CHECK_MIN,
+          SLEEP_CHECK_MAX
+        );
     }
 
-
     /* ===================================================
-       ★画面に捉え続けて0.5秒
-
-       ↓
-
-       FRAME 9
-       ↓
-       RUN
+       ★0.5秒捉え続けた
     =================================================== */
 
     if(
@@ -2017,16 +1402,13 @@ function gameLoop(time){
       detected &&
       !locked &&
       !runningAway &&
-      time-detectedAt >=
-      NOTICE_DELAY
+      time-detectedAt >= NOTICE_DELAY
     ){
 
-      detected =
-        false;
+      detected = false;
+      detectedAt = 0;
 
-      detectedAt =
-        0;
-
+      sleeping = false;
 
       /*
         ★9 気づき
@@ -2037,9 +1419,8 @@ function gameLoop(time){
         time
       );
 
-
       /*
-        ★RUN開始
+        ★RUN
       */
 
       startRun(
@@ -2049,20 +1430,19 @@ function gameLoop(time){
       );
     }
 
-
     wasCreatureVisible =
       creatureVisible;
   }
 
+  /* =====================================================
+     ANIMATION
+  ===================================================== */
 
-  /* ANIMATION */
+  updateAnimation(time);
 
-  updateAnimation(
-    time
-  );
-
-
-  /* COOLDOWN */
+  /* =====================================================
+     COOLDOWN
+  ===================================================== */
 
   if(
     !locked &&
@@ -2077,10 +1457,8 @@ function gameLoop(time){
       )/
       1000;
 
-
     cooldownText.style.display =
       "block";
-
 
     cooldownText.textContent =
       "LOCK DISABLED "+
@@ -2092,20 +1470,13 @@ function gameLoop(time){
       "none";
   }
 
+  renderGame(time);
 
-  renderGame(
-    time
-  );
-
-
-  requestAnimationFrame(
-    gameLoop
-  );
+  requestAnimationFrame(gameLoop);
 }
 
-
 /* =========================================================
-   START RUN
+   RUN
 ========================================================= */
 
 function startRun(
@@ -2114,26 +1485,37 @@ function startRun(
   keepAnimation=false
 ){
 
-  runningAway =
-    true;
+  runningAway = true;
 
+  runTravel = 0;
 
-  runTravel =
-    0;
-
+  sleeping = false;
+  sleepUntil = 0;
 
   /*
-    ★逃げる方向は
-    現在歩いている方向を維持
+    =====================================================
+    ★RUN方向
 
-    ここでランダム反転しない
+    60%:
+    WALKと反対方向
+
+    40%:
+    WALKと同じ方向
+    =====================================================
   */
 
-
   if(
-    reason ===
-    "release"
+    Math.random() <
+    RUN_REVERSE_CHANCE
   ){
+    moveDirection *= -1;
+  }
+
+  /*
+    SPEED
+  */
+
+  if(reason === "release"){
 
     runSpeed =
       random(
@@ -2150,18 +1532,11 @@ function startRun(
       );
   }
 
-
   runDistance =
     random(
       RUN_DISTANCE_MIN,
       RUN_DISTANCE_MAX
     );
-
-
-  /*
-    RUNでも上下は
-    5〜20pxのみ
-  */
 
   bobAmplitude =
     random(5,20);
@@ -2173,11 +1548,7 @@ function startRun(
     );
 
   bobSpeed =
-    random(
-      1.1,
-      1.8
-    );
-
+    random(1.1,1.8);
 
   if(!keepAnimation){
 
@@ -2187,14 +1558,12 @@ function startRun(
     );
   }
 
-
   nextSpecialTime =
     time+
     random(
       2200,
       5000
     );
-
 
   nextAttackTime =
     time+
@@ -2204,22 +1573,14 @@ function startRun(
     );
 }
 
-
 /* =========================================================
    ANIMATION
 ========================================================= */
 
-function setAnimation(
-  state,
-  time
-){
+function setAnimation(state,time){
 
-  animState =
-    state;
-
-  animStateStart =
-    time;
-
+  animState = state;
+  animStateStart = time;
 
   switch(state){
 
@@ -2253,7 +1614,6 @@ function setAnimation(
   }
 }
 
-
 /* =========================================================
    UPDATE ANIMATION
 ========================================================= */
@@ -2269,7 +1629,6 @@ function updateAnimation(time){
     animState =
       "damage";
 
-
     animFrame =
       10+
       (
@@ -2278,18 +1637,15 @@ function updateAnimation(time){
         )%2
       );
 
-
     return;
   }
-
 
   const elapsed =
     time-
     animStateStart;
 
-
   /*
-    ★NOTICE
+    NOTICE 9
   */
 
   if(
@@ -2297,59 +1653,20 @@ function updateAnimation(time){
     "notice"
   ){
 
-    animFrame =
-      9;
-
+    animFrame = 9;
 
     if(
       elapsed >=
       NOTICE_DURATION
     ){
-
       setAnimation(
         "move",
         time
       );
     }
 
-
     return;
   }
-
-
-  /*
-    TURN
-  */
-
-  if(
-    animState ===
-    "turn"
-  ){
-
-    animFrame =
-      5+
-      Math.min(
-        Math.floor(
-          elapsed/100
-        ),
-        2
-      );
-
-
-    if(
-      elapsed >= 300
-    ){
-
-      setAnimation(
-        "move",
-        time
-      );
-    }
-
-
-    return;
-  }
-
 
   /*
     SPECIAL
@@ -2368,16 +1685,12 @@ function updateAnimation(time){
         )%2
       );
 
-
-    if(
-      elapsed >= 360
-    ){
+    if(elapsed >= 360){
 
       setAnimation(
         "move",
         time
       );
-
 
       nextSpecialTime =
         time+
@@ -2387,10 +1700,8 @@ function updateAnimation(time){
         );
     }
 
-
     return;
   }
-
 
   /*
     ATTACK
@@ -2409,16 +1720,12 @@ function updateAnimation(time){
         )%2
       );
 
-
-    if(
-      elapsed >= 360
-    ){
+    if(elapsed >= 360){
 
       setAnimation(
         "move",
         time
       );
-
 
       nextAttackTime =
         time+
@@ -2428,13 +1735,33 @@ function updateAnimation(time){
         );
     }
 
+    return;
+  }
+
+  /* =====================================================
+     SLEEP
+
+     画面内では絶対禁止
+  ===================================================== */
+
+  if(
+    sleeping &&
+    !creatureVisible &&
+    !detected &&
+    !runningAway
+  ){
+
+    animState =
+      "sleep";
+
+    animFrame =
+      8;
 
     return;
   }
 
-
   /* =====================================================
-     ★RUN
+     RUN
   ===================================================== */
 
   if(runningAway){
@@ -2442,24 +1769,21 @@ function updateAnimation(time){
     animState =
       "move";
 
-
     /*
-      RUNアニメも高速
+      高速RUNアニメ
     */
-
-    const frameDuration =
-      55;
-
 
     animFrame =
       1+
       (
         Math.floor(
-          time/
-          frameDuration
+          time/55
         )%4
       );
 
+    /*
+      特殊エモート
+    */
 
     if(
       time >=
@@ -2475,67 +1799,32 @@ function updateAnimation(time){
       return;
     }
 
-
     return;
   }
 
-
   /* =====================================================
-     ★画面に捉え中
+     WALK
 
-     絶対に眠らせない
-  ===================================================== */
-
-  if(
-    creatureVisible ||
-    detected
-  ){
-
-    animState =
-      "move";
-
-
-    const frameDuration =
-      100;
-
-
-    animFrame =
-      1+
-      (
-        Math.floor(
-          time/
-          frameDuration
-        )%4
-      );
-
-
-    return;
-  }
-
-
-  /* =====================================================
-     未発見
-
-     WALKしているが
-     表示上は眠り
+     捉え中もここ
   ===================================================== */
 
   animState =
-    "sleep";
+    "move";
 
   animFrame =
-    8;
+    1+
+    (
+      Math.floor(
+        time/105
+      )%4
+    );
 }
 
-
 /* =========================================================
-   PROJECT
+   PROJECTION
 ========================================================= */
 
-function projectCreature(
-  yaw,
-  pitch
-){
+function projectCreature(yaw,pitch){
 
   const dx =
     angleDiff(
@@ -2543,11 +1832,17 @@ function projectCreature(
       cameraYaw
     );
 
-
   const dy =
     pitch-
     cameraPitch;
 
+  /*
+    ★左右方向
+
+    世界の右
+    →
+    画面の右
+  */
 
   const x =
     W/2+
@@ -2557,6 +1852,11 @@ function projectCreature(
     )*
     (W/2);
 
+  /*
+    ★上方向
+    →
+    画面上
+  */
 
   const y =
     H/2-
@@ -2566,26 +1866,17 @@ function projectCreature(
     )*
     (H/2);
 
-
   return{
-
     x,
     y,
     dx,
     dy,
 
     visible:
-
-      Math.abs(dx) <
-      HFOV/2
-
-      &&
-
-      Math.abs(dy) <
-      VFOV/2
+      Math.abs(dx)<HFOV/2 &&
+      Math.abs(dy)<VFOV/2
   };
 }
-
 
 /* =========================================================
    RENDER
@@ -2594,26 +1885,21 @@ function projectCreature(
 function renderGame(time){
 
   ctx.clearRect(
-    0,0,W,H
+    0,
+    0,
+    W,
+    H
   );
 
+  drawCreature(time);
 
-  drawCreature(
-    time
-  );
-
-
-  let detectionRemaining =
-    0;
-
+  let detectionRemaining = 0;
 
   if(detected){
 
     detectionRemaining =
       Math.max(
-
         0,
-
         (
           NOTICE_DELAY-
           (
@@ -2625,50 +1911,50 @@ function renderGame(time){
       );
   }
 
+  const unseen =
+    Math.max(
+      0,
+      (
+        time-
+        lastDetectedTime
+      )/
+      1000
+    );
+
+  const sleepChance =
+    unseen >= 30
+    ? 50
+    : 30;
 
   debug.innerHTML =
-
-    "YAW "+
-    cameraYaw.toFixed(1)+
-    "°"+
-
-    "<br>PITCH "+
-    cameraPitch.toFixed(1)+
-    "°"+
-
-    "<br>TYPE "+
-    creatureZone+
-
-    "<br>FRAME "+
-    animFrame+
-
-    "<br>VISIBLE "+
-    creatureVisible+
-
-    "<br>DETECT "+
-    detectionRemaining.toFixed(2)+
-
+    "YAW "+cameraYaw.toFixed(1)+"°"+
+    "<br>PITCH "+cameraPitch.toFixed(1)+"°"+
+    "<br>TYPE "+creatureZone+
+    "<br>FRAME "+animFrame+
+    "<br>VISIBLE "+creatureVisible+
+    "<br>DETECT "+detectionRemaining.toFixed(2)+
     "<br>STATE "+
-    (
-      locked
-      ? "LOCK"
-      : runningAway
-        ? "RUN"
-        : "WALK"
-    )+
-
-    "<br>WALK "+
-    walkSpeed.toFixed(1)+
-    "°/s"+
-
-    "<br>RUN "+
-    runSpeed.toFixed(1)+
-    "°/s"+
-
-    "<br>HP "+
-    Math.ceil(hp);
+      (
+        locked
+        ? "LOCK"
+        : runningAway
+          ? "RUN"
+          : sleeping
+            ? "SLEEP"
+            : "WALK"
+      )+
+    "<br>DIR "+
+      (
+        moveDirection > 0
+        ? "RIGHT"
+        : "LEFT"
+      )+
+    "<br>WALK "+walkSpeed.toFixed(1)+"°/s"+
+    "<br>RUN "+runSpeed.toFixed(1)+"°/s"+
+    "<br>UNSEEN "+unseen.toFixed(1)+"s"+
+    "<br>SLEEP "+sleepChance+"%"+
+    "<br>HP "+Math.ceil(hp);
 }
-
 
 /* =========================================================
    DRAW CREATURE
@@ -2676,13 +1962,7 @@ function renderGame(time){
 
 function drawCreature(time){
 
-  if(
-    !creatureVisible
-  ){
-
-    return;
-  }
-
+  if(!creatureVisible) return;
 
   const p =
     projectCreature(
@@ -2690,37 +1970,27 @@ function drawCreature(time){
       creaturePitch
     );
 
+  if(!p.visible) return;
 
-  if(!p.visible){
-    return;
-  }
-
+  let bob = 0;
 
   /*
-    ★上下移動は
-    WALK / RUNともに
-    5〜20px
+    SLEEP時は揺れない
   */
 
-  const bob =
+  if(!sleeping && !locked){
 
-    Math.sin(
-
-      time*
-      .001*
-      bobSpeed+
-
-      bobPhase
-
-    )*
-    bobAmplitude;
-
+    bob =
+      Math.sin(
+        time*.001*
+        bobSpeed+
+        bobPhase
+      )*
+      bobAmplitude;
+  }
 
   const x =
-    Math.round(
-      p.x
-    );
-
+    Math.round(p.x);
 
   const y =
     Math.round(
@@ -2728,50 +1998,32 @@ function drawCreature(time){
       bob
     );
 
-
   const S =
     clamp(
-
       Math.round(
-        Math.min(W,H)/
-        72
+        Math.min(W,H)/72
       ),
-
       5,
       8
     );
 
-
   ctx.save();
 
-
-  ctx.translate(
-    x,
-    y
-  );
-
+  ctx.translate(x,y);
 
   /*
-    キャラの向き
+    移動方向に向ける
   */
 
-  if(
-    moveDirection < 0
-  ){
-
-    ctx.scale(
-      -1,
-      1
-    );
+  if(moveDirection < 0){
+    ctx.scale(-1,1);
   }
-
 
   drawPixelFrame(
     animFrame,
     S,
     time
   );
-
 
   if(locked){
 
@@ -2781,14 +2033,12 @@ function drawCreature(time){
     ctx.lineWidth =
       3;
 
-
     const pulse =
       12*S+
       Math.sin(
         time*.015
       )*
       S;
-
 
     ctx.strokeRect(
       -pulse,
@@ -2798,23 +2048,18 @@ function drawCreature(time){
     );
   }
 
-
   ctx.restore();
 }
 
-
 /* =========================================================
-   PIXEL
+   PIXEL HELPER
 ========================================================= */
 
 function px(
   x,y,w,h,
   color,S
 ){
-
-  ctx.fillStyle =
-    color;
-
+  ctx.fillStyle = color;
 
   ctx.fillRect(
     Math.round(x*S),
@@ -2824,19 +2069,13 @@ function px(
   );
 }
 
-
 /* =========================================================
-   CHARACTER
+   CHARACTER FRAMES 1-15
 ========================================================= */
 
-function drawPixelFrame(
-  frame,
-  S,
-  time
-){
+function drawPixelFrame(frame,S,time){
 
-  const OUTLINE =
-    "#17121e";
+  const OUTLINE = "#17121e";
 
   const BODY =
     locked
@@ -2853,22 +2092,10 @@ function drawPixelFrame(
     ? "#1598b0"
     : "#5a35aa";
 
-  const WHITE =
-    "#fff";
-
-  const BLACK =
-    "#151219";
-
-  const PINK =
-    "#ff8ebd";
-
-  const YELLOW =
-    "#ffe66d";
-
-
-  /*
-    SHADOW
-  */
+  const WHITE = "#fff";
+  const BLACK = "#151219";
+  const PINK = "#ff8ebd";
+  const YELLOW = "#ffe66d";
 
   px(
     -6,8,
@@ -2877,16 +2104,11 @@ function drawPixelFrame(
     S
   );
 
+  /* 1 WALK */
 
-  /* =========================
-     1
-  ========================= */
+  if(frame===1){
 
-  if(frame === 1){
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-8,0,3,2,OUTLINE,S);
     px(-7,0,2,1,BODY,S);
@@ -2900,25 +2122,16 @@ function drawPixelFrame(
     px(2,6,4,3,OUTLINE,S);
     px(3,6,3,2,BODY,S);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    faceNormal(S,WHITE,BLACK);
   }
 
+  /* 2 WALK */
 
-  /* =========================
-     2
-  ========================= */
+  else if(frame===2){
 
-  else if(frame === 2){
+    ctx.translate(0,-S);
 
-    ctx.translate(
-      0,-S
-    );
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-8,-1,4,2,OUTLINE,S);
     px(-7,-1,3,1,BODY,S);
@@ -2932,21 +2145,14 @@ function drawPixelFrame(
     px(2,6,3,4,OUTLINE,S);
     px(2,6,2,3,BODY,S);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    faceNormal(S,WHITE,BLACK);
   }
 
+  /* 3 WALK */
 
-  /* =========================
-     3
-  ========================= */
+  else if(frame===3){
 
-  else if(frame === 3){
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-9,-1,4,2,OUTLINE,S);
     px(-8,-1,3,1,BODY,S);
@@ -2960,25 +2166,16 @@ function drawPixelFrame(
     px(2,6,3,4,OUTLINE,S);
     px(2,6,2,3,BODY,S);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    faceNormal(S,WHITE,BLACK);
   }
 
+  /* 4 WALK */
 
-  /* =========================
-     4
-  ========================= */
+  else if(frame===4){
 
-  else if(frame === 4){
+    ctx.translate(0,-S);
 
-    ctx.translate(
-      0,-S
-    );
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-8,0,3,2,OUTLINE,S);
     px(-7,0,2,1,BODY,S);
@@ -2992,40 +2189,26 @@ function drawPixelFrame(
     px(2,6,4,3,OUTLINE,S);
     px(3,6,3,2,BODY,S);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    faceNormal(S,WHITE,BLACK);
   }
 
+  /* 5 */
 
-  /* =========================
-     5 TURN
-  ========================= */
+  else if(frame===5){
 
-  else if(frame === 5){
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(1,-2,4,3,WHITE,S);
     px(3,-1,2,2,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    legsNeutral(S,BODY,OUTLINE);
   }
 
+  /* 6 */
 
-  /* =========================
-     6 TURN
-  ========================= */
+  else if(frame===6){
 
-  else if(frame === 6){
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-1,-2,3,3,WHITE,S);
     px(1,-1,1,2,BLACK,S);
@@ -3033,21 +2216,14 @@ function drawPixelFrame(
     px(3,-2,3,3,WHITE,S);
     px(4,-1,1,2,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    legsNeutral(S,BODY,OUTLINE);
   }
 
+  /* 7 */
 
-  /* =========================
-     7 TURN
-  ========================= */
+  else if(frame===7){
 
-  else if(frame === 7){
-
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-4,-3,3,4,WHITE,S);
     px(-3,-2,1,2,BLACK,S);
@@ -3057,56 +2233,69 @@ function drawPixelFrame(
 
     px(-1,2,2,2,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    legsNeutral(S,BODY,OUTLINE);
   }
 
-
-  /* =========================
+  /* =====================================================
      8 SLEEP
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 8){
+  else if(frame===8){
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    ctx.translate(0,S);
+
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+
+    /*
+      閉じた目
+    */
 
     px(-4,-1,3,1,BLACK,S);
     px(2,-1,3,1,BLACK,S);
 
     px(-1,2,2,1,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    /*
+      腕
+    */
+
+    px(-7,2,3,3,OUTLINE,S);
+    px(-6,2,2,2,BODY,S);
+
+    px(5,2,3,3,OUTLINE,S);
+    px(5,2,2,2,BODY,S);
+
+    legsNeutral(S,BODY,OUTLINE);
+
+    /*
+      Z
+    */
 
     px(7,-7,3,1,WHITE,S);
     px(9,-6,1,1,WHITE,S);
     px(8,-5,1,1,WHITE,S);
     px(7,-4,3,1,WHITE,S);
+
+    px(11,-10,2,1,WHITE,S);
+    px(12,-9,1,1,WHITE,S);
+    px(11,-8,2,1,WHITE,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      9 NOTICE
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 9){
+  else if(frame===9){
 
     ctx.translate(
       0,
       -2*S
     );
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
-
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     /*
-      BIG EYES
+      大きい目
     */
 
     px(-5,-3,4,4,WHITE,S);
@@ -3115,16 +2304,14 @@ function drawPixelFrame(
     px(2,-3,4,4,WHITE,S);
     px(3,-2,2,2,BLACK,S);
 
-
     /*
-      SURPRISE
+      口
     */
 
     px(-1,2,2,2,BLACK,S);
 
-
     /*
-      ARMS
+      腕
     */
 
     px(-8,-3,3,4,OUTLINE,S);
@@ -3133,11 +2320,7 @@ function drawPixelFrame(
     px(5,-3,3,4,OUTLINE,S);
     px(5,-3,2,3,BODY,S);
 
-
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
-
+    legsNeutral(S,BODY,OUTLINE);
 
     /*
       !
@@ -3147,158 +2330,133 @@ function drawPixelFrame(
     px(9,-3,2,2,YELLOW,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      10 DAMAGE
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 10){
+  else if(frame===10){
 
-    ctx.translate(
-      -S,S
-    );
+    ctx.translate(-S,S);
+    ctx.rotate(-.08);
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
-    drawXEye(
-      -3,-1,S,WHITE
-    );
-
-    drawXEye(
-      3,-1,S,WHITE
-    );
+    drawXEye(-3,-1,S,WHITE);
+    drawXEye(3,-1,S,WHITE);
 
     px(-2,3,4,1,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    px(-9,-2,4,3,OUTLINE,S);
+    px(5,2,4,3,OUTLINE,S);
+
+    legsNeutral(S,BODY,OUTLINE);
 
     px(8,-7,2,3,YELLOW,S);
     px(6,-5,3,2,YELLOW,S);
+    px(9,-3,2,3,YELLOW,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      11 DAMAGE
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 11){
+  else if(frame===11){
 
-    ctx.translate(
-      S,-S
-    );
+    ctx.translate(S,-S);
+    ctx.rotate(.08);
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
-    drawXEye(
-      -3,-1,S,WHITE
-    );
-
-    drawXEye(
-      3,-1,S,WHITE
-    );
+    drawXEye(-3,-1,S,WHITE);
+    drawXEye(3,-1,S,WHITE);
 
     px(-1,3,3,1,BLACK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    px(-8,2,3,3,OUTLINE,S);
+    px(5,-2,4,3,OUTLINE,S);
+
+    legsNeutral(S,BODY,OUTLINE);
 
     px(-10,-6,2,3,YELLOW,S);
     px(-11,-4,3,2,YELLOW,S);
+    px(-10,-1,2,2,YELLOW,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      12 ATTACK
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 12){
+  else if(frame===12){
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    faceNormal(S,WHITE,BLACK);
+
+    px(-9,0,4,3,OUTLINE,S);
+    px(-8,0,3,2,BODY,S);
 
     px(5,-5,3,6,OUTLINE,S);
     px(5,-4,2,5,BODY,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    legsNeutral(S,BODY,OUTLINE);
   }
 
-
-  /* =========================
+  /* =====================================================
      13 ATTACK
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 13){
+  else if(frame===13){
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    ctx.translate(2*S,0);
 
-    faceNormal(
-      S,WHITE,BLACK
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
+
+    faceNormal(S,WHITE,BLACK);
 
     px(5,-1,7,4,OUTLINE,S);
     px(5,0,6,2,BODY,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    px(11,-2,3,5,OUTLINE,S);
+    px(11,-1,2,3,LIGHT,S);
+
+    legsNeutral(S,BODY,OUTLINE);
 
     px(15,-3,1,3,YELLOW,S);
     px(14,1,3,1,YELLOW,S);
+    px(15,3,1,2,YELLOW,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      14 SPECIAL
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 14){
+  else if(frame===14){
 
-    ctx.translate(
-      0,-4*S
-    );
+    ctx.translate(0,-4*S);
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
-    faceHappy(
-      S,BLACK,PINK
-    );
+    faceHappy(S,BLACK,PINK);
 
     px(-8,-5,3,6,OUTLINE,S);
+    px(-7,-4,2,5,BODY,S);
+
     px(5,-5,3,6,OUTLINE,S);
+    px(5,-4,2,5,BODY,S);
+
+    px(-6,6,4,2,OUTLINE,S);
+    px(2,6,4,2,OUTLINE,S);
   }
 
-
-  /* =========================
+  /* =====================================================
      15 SPECIAL
-  ========================= */
+  ===================================================== */
 
-  else if(frame === 15){
+  else if(frame===15){
 
-    ctx.translate(
-      0,-2*S
-    );
+    ctx.translate(0,-2*S);
 
-    bodyBase(
-      S,BODY,LIGHT,DARK,OUTLINE
-    );
+    bodyBase(S,BODY,LIGHT,DARK,OUTLINE);
 
     px(-4,-1,3,1,BLACK,S);
 
@@ -3308,12 +2466,19 @@ function drawPixelFrame(
     px(-1,2,3,1,BLACK,S);
     px(0,3,2,2,PINK,S);
 
-    legsNeutral(
-      S,BODY,OUTLINE
-    );
+    px(-9,-1,4,2,OUTLINE,S);
+    px(-8,-1,3,1,BODY,S);
+
+    px(5,-3,4,3,OUTLINE,S);
+    px(5,-2,3,2,BODY,S);
+
+    px(-6,6,4,3,OUTLINE,S);
+    px(-5,6,3,2,BODY,S);
+
+    px(2,6,4,4,OUTLINE,S);
+    px(3,6,3,3,BODY,S);
   }
 }
-
 
 /* =========================================================
    BODY
@@ -3342,7 +2507,6 @@ function bodyBase(
   px(4,-1,2,6,DARK,S);
 }
 
-
 /* =========================================================
    FACE
 ========================================================= */
@@ -3362,7 +2526,6 @@ function faceNormal(
   px(-1,3,2,1,BLACK,S);
 }
 
-
 function faceHappy(
   S,
   BLACK,
@@ -3375,7 +2538,6 @@ function faceHappy(
   px(-2,2,5,1,BLACK,S);
   px(-1,3,3,1,PINK,S);
 }
-
 
 /* =========================================================
    LEGS
@@ -3394,7 +2556,6 @@ function legsNeutral(
   px(2,6,2,3,BODY,S);
 }
 
-
 /* =========================================================
    X EYE
 ========================================================= */
@@ -3412,7 +2573,6 @@ function drawXEye(
   px(x+1,y+1,1,1,color,S);
 }
 
-
 /* =========================================================
    SHAKE
 ========================================================= */
@@ -3424,48 +2584,34 @@ function motionHandler(e){
     !creatureVisible ||
     locked
   ){
-
     return;
   }
 
-
   const now =
     performance.now();
-
 
   if(
     now <
     lockCooldownUntil
   ){
-
     return;
   }
-
 
   const a =
     e.accelerationIncludingGravity;
 
+  if(!a) return;
 
-  if(!a){
-    return;
-  }
-
-
-  const x =
-    a.x || 0;
-
-  const y =
-    a.y || 0;
-
-  const z =
-    a.z || 0;
-
+  const x = a.x || 0;
+  const y = a.y || 0;
+  const z = a.z || 0;
 
   const magnitude =
     Math.sqrt(
-      x*x+y*y+z*z
+      x*x+
+      y*y+
+      z*z
     );
-
 
   const shake =
     Math.abs(
@@ -3473,34 +2619,24 @@ function motionHandler(e){
       9.81
     );
 
-
   if(
     shake <
     SHAKE_THRESHOLD
   ){
-
     return;
   }
-
 
   if(
     now-lastShake <
     500
   ){
-
     return;
   }
 
+  lastShake = now;
 
-  lastShake =
-    now;
-
-
-  lockCreature(
-    shake
-  );
+  lockCreature(shake);
 }
-
 
 /* =========================================================
    LOCK
@@ -3511,44 +2647,32 @@ function lockCreature(power){
   const now =
     performance.now();
 
-
   if(
     !creatureVisible ||
     locked ||
     now <
     lockCooldownUntil
   ){
-
     return;
   }
 
+  locked = true;
 
-  locked =
-    true;
+  runningAway = false;
 
+  sleeping = false;
+  sleepUntil = 0;
 
-  /*
-    RUN停止
-  */
-
-  runningAway =
-    false;
-
-
-  detected =
-    false;
-
+  detected = false;
+  detectedAt = 0;
 
   let seconds =
-
-    MIN_LOCK +
-
+    MIN_LOCK+
     (
       power-
       SHAKE_THRESHOLD
     )*
     .35;
-
 
   seconds =
     clamp(
@@ -3557,17 +2681,17 @@ function lockCreature(power){
       MAX_LOCK
     );
 
-
   lockEnd =
     now+
     seconds*1000;
-
 
   setAnimation(
     "damage",
     now
   );
 
+  lockText.textContent =
+    "⚡ LOCK!";
 
   lockText.style.display =
     "block";
@@ -3578,17 +2702,18 @@ function lockCreature(power){
   timer.textContent =
     seconds.toFixed(1);
 
+  cooldownText.style.display =
+    "none";
 
-  if(
-    navigator.vibrate
-  ){
+  if(navigator.vibrate){
 
     navigator.vibrate([
-      70,40,120
+      70,
+      40,
+      120
     ]);
   }
 }
-
 
 /* =========================================================
    HP
@@ -3599,7 +2724,6 @@ function updateHP(){
   hpNumber.textContent =
     Math.ceil(hp);
 
-
   hpInner.style.width =
     (
       hp/
@@ -3609,25 +2733,18 @@ function updateHP(){
     "%";
 }
 
-
 /* =========================================================
    STOP
 ========================================================= */
 
 function stopCamera(){
 
-  gameRunning =
-    false;
-
+  gameRunning = false;
 
   const stream =
     camera.srcObject;
 
-
-  if(!stream){
-    return;
-  }
-
+  if(!stream) return;
 
   stream
     .getTracks()
@@ -3635,11 +2752,8 @@ function stopCamera(){
       track=>track.stop()
     );
 
-
-  camera.srcObject =
-    null;
+  camera.srcObject = null;
 }
-
 
 addEventListener(
   "pagehide",
