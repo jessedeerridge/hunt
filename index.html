@@ -971,7 +971,7 @@ html,body{
 }
 
 #moneyHud{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top));z-index:145;display:none;align-items:center;gap:8px;min-width:92px;padding:7px 13px 7px 8px;border:0;border-radius:999px;background:rgba(30,28,34,.88);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(8px);font:800 14px "Arial Rounded MT Bold","Yu Gothic",sans-serif;letter-spacing:.04em;pointer-events:none}#moneyHud .moneyMark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(145deg,#ffe797,#d9a62d);color:#493713;box-shadow:inset 0 1px #fff5c8;font:900 11px monospace}
-#gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
+#gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;white-space:pre-line;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
 #gamePopup.show{display:block;animation:gamePopupIn .18s ease-out both}
 @keyframes gamePopupIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 #modeConfirm{position:fixed;inset:0;z-index:310;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(2,9,18,.72);pointer-events:auto}
@@ -2317,14 +2317,19 @@ function saveHub(){persistHubData();updateHubUI()}
 function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money;const dexNav=document.querySelector('.navBtn[data-page="ownedDexPage"]');if(dexNav){const unlocked=!!own("fulldex");dexNav.disabled=!unlocked;dexNav.setAttribute("aria-disabled",String(!unlocked));dexNav.title=unlocked?"図鑑を開く":"ショップでキャラ図鑑を購入すると解放"}}
 function own(k){return hubData.items[k]||0}
 let gamePopupTimer=0;
-function showGamePopup(message){
+function showGamePopup(message,duration=1800){
  const popup=document.getElementById("gamePopup");
  clearTimeout(gamePopupTimer);
  popup.textContent=message;
  popup.classList.remove("show");
  void popup.offsetWidth;
  popup.classList.add("show");
- gamePopupTimer=setTimeout(()=>popup.classList.remove("show"),1800);
+ gamePopupTimer=setTimeout(()=>popup.classList.remove("show"),duration);
+}
+function totalCapturedCreatures(){return Object.values(hubData.caught).reduce((total,count)=>total+Math.max(0,Number(count)||0),0)}
+function showFirstHuntGuide(){
+ if(totalCapturedCreatures()!==0)return;
+ showGamePopup("ピクセル生物をスマホの中にとらえて、\nスマホを振るとロック！\nふり続けて、ピクセル生物 をハントだ！",6000);
 }
 function buy(k,price){if(!k.startsWith("feed_")&&own(k)){showGamePopup("購入済みです");return}if(hubData.money<price){showGamePopup("お金が足りません");return}hubData.money-=price;hubData.items[k]=(hubData.items[k]||0)+1;saveHub();renderShop();renderItems();showGamePopup("購入しました！")}
 function shopCard(k,n,ic,d,p){const sold=!k.startsWith("feed_")&&own(k)>0;return `<div class="shopCard"><div class="shopIcon">${shopIcon(ic)}</div><div class="shopName">${n}</div><div class="shopDesc">${d}</div><button class="buyBtn" onclick="buy('${k}',${p})" ${sold?"disabled":""}>${sold?"購入済み":"Đ "+p+"　購入"}</button></div>`}
@@ -2392,7 +2397,7 @@ function boxChange(id,d){
  hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"
 }
 function showHub(id){huntCompanion.style.display="none";feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){feedPicker.classList.remove("show");hideCreatureHP();setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHunt(){feedPicker.classList.remove("show");hideCreatureHP();setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block";showFirstHuntGuide()}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
 document.getElementById("huntNav").addEventListener("click",openHuntLoadout);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
