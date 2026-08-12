@@ -1064,6 +1064,10 @@ html,body{
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
 .dexEntry{display:flex;flex-direction:column;justify-content:flex-start}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:0 0 auto;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
+
+/* HUNT LOADOUT */
+#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
+#huntCompanion{position:fixed;left:50%;bottom:70px;z-index:8;display:none;width:104px;height:104px;transform:translateX(-50%);transition:left .65s ease,bottom .65s ease;pointer-events:none}#huntCompanion canvas{width:104px;height:104px;image-rendering:pixelated}
 </style>
 </head>
 
@@ -1140,6 +1144,8 @@ html,body{
 <div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
+<div id="huntLoadout" role="dialog" aria-modal="true" aria-labelledby="loadoutTitle"><div class="loadoutBox"><h2 id="loadoutTitle">HUNT編成</h2><p>連れて行くキャラと装備を1つずつ選択</p><div class="loadoutLabel">PARTNER</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">EQUIPMENT</div><div id="gearChoices" class="loadoutGrid"></div><div class="loadoutActions"><button id="loadoutCancel" class="loadoutCancel">もどる</button><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
+<div id="huntCompanion"><canvas width="128" height="128" aria-label="同行キャラクター"></canvas></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
 <div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
@@ -1800,6 +1806,7 @@ const CREATURE_TYPES = [
  ["riooria","リオーリア","アシカ×獅子","水面すれすれを泳ぎ、喜ぶと背びれが透き通る。",14,20,-18]
 ].map(([id,name,motif,trait,speedPct,hpPct,lockPct])=>({id,name,motif,trait,speedPct,hpPct,lockPct}));
 
+CREATURE_TYPES.forEach((c,i)=>c.attackDamage=4+(i%5)+Math.round(Math.max(0,c.speedPct)/6));
 const DEX_SPECIES=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle");
 const ENCOUNTER_TIERS=[DEX_SPECIES.slice(0,4),DEX_SPECIES.slice(4,8),DEX_SPECIES.slice(8,12),DEX_SPECIES.slice(12,16),DEX_SPECIES.slice(16,19)];
 function speciesCaught(c){return c.id==="hachibee_square"?(hubData.caught.hachibee_square||0)+(hubData.caught.hachibee_circle||0):(hubData.caught[c.id]||0)}
@@ -2352,7 +2359,7 @@ const OWNED_DEX_FRAMES=[1,2,3,4,1,2,3,4,1,2,3,4,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
  cancelAnimationFrame(ownedDexAnim);
- g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryMotif">${c.motif}</div><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
+ g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
  const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/170)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
 function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
@@ -2389,16 +2396,34 @@ function boxChange(id,d){
  }
  hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"
 }
-function showHub(id){feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
+function showHub(id){huntCompanion.style.display="none";feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
 function showHunt(){feedPicker.classList.remove("show");setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
-document.getElementById("huntNav").addEventListener("click",showHunt);
+document.getElementById("huntNav").addEventListener("click",openHuntLoadout);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
 document.getElementById("roomBoxBtn").addEventListener("click",e=>{e.stopPropagation();let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
 document.getElementById("boxPanel").addEventListener("click",e=>e.stopPropagation());
 document.addEventListener("pointerdown",e=>{const p=document.getElementById("boxPanel"),b=document.getElementById("roomBoxBtn");if(p.style.display==="block"&&!p.contains(e.target)&&!b.contains(e.target))p.style.display="none"});
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
+
+/* ===== HUNT LOADOUT / PARTNER ===== */
+const huntLoadout=document.getElementById("huntLoadout"),partnerChoices=document.getElementById("partnerChoices"),gearChoices=document.getElementById("gearChoices"),loadoutStart=document.getElementById("loadoutStart"),huntCompanion=document.getElementById("huntCompanion"),companionCanvas=huntCompanion.querySelector("canvas");
+let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedAt=0;
+function openHuntLoadout(){
+ const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);selectedPartner=partners.find(c=>c.id===selectedPartner?.id)||partners[0]||null;
+ const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));selectedGear=gears.find(g=>g[0]===selectedGear?.[0])||gears[0]||null;
+ partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("");partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
+ gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">ショップで装備を購入してください</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
+ loadoutStart.disabled=!(selectedPartner&&selectedGear);huntLoadout.classList.add("show")
+}
+document.getElementById("loadoutCancel").onclick=()=>huntLoadout.classList.remove("show");
+loadoutStart.onclick=()=>{huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()};
+function updateHuntCompanion(time){
+ if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
+ if(creatureVisible&&!locked){const p=projectCreature(creatureYaw,creaturePitch);if(!companionEngagedAt)companionEngagedAt=time;const approaching=time-companionEngagedAt<850;if(approaching){huntCompanion.style.left=clamp(p.x-55,55,W-55)+"px";huntCompanion.style.bottom=clamp(H-p.y-60,65,H-150)+"px";frame=1+(Math.floor(time/140)%4);flip=p.x<W/2}else{frame=12+(Math.floor(time/260)%2);if(time>=companionAttackAt){hp=Math.max(1,hp-selectedPartner.attackDamage);updateHP();companionAttackAt=time+720}}}else{companionEngagedAt=0;huntCompanion.style.left="50%";huntCompanion.style.bottom="70px"}
+ drawMiniFrame(companionCanvas,selectedPartner.id,frame,time,flip)
+}
 
 /* ===== PLACED FEED ===== */
 const feedButton=document.getElementById("feedButton"),feedPicker=document.getElementById("feedPicker"),roomFeedBtn=document.getElementById("roomFeedBtn"),roomFeedBowl=document.getElementById("roomFeedBowl");
@@ -3153,7 +3178,7 @@ function gameLoop(time){
     }else{
 
       hp -=
-        DAMAGE_PER_SECOND*
+        DAMAGE_PER_SECOND*(selectedGear?.[0]==="electricnet"?1.2:1)*
         dt;
 
       hp =
@@ -3200,6 +3225,11 @@ function gameLoop(time){
           updateHP();
           lockText.style.display="none";
           if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
+          /* The capture branch returns before scheduling the next frame. Resume the
+             single game loop after preparing the next encounter so re-entry never
+             shows the defeated frame indefinitely. */
+          lastTime=performance.now();
+          requestAnimationFrame(gameLoop);
         },2000);
 
         return;
@@ -3572,6 +3602,8 @@ function gameLoop(time){
     cooldownText.style.display =
       "none";
   }
+
+  updateHuntCompanion(time);
 
   renderGame(
     time
@@ -4243,7 +4275,7 @@ function renderGame(
 function drawDetectorArrow(time){
 
   if(
-    !own("detector") ||
+    selectedGear?.[0]!=="detector" ||
     creatureVisible
   ){
     return;
@@ -9282,7 +9314,7 @@ function lockCreature(
 
   lockEnd =
     now+
-    MAX_LOCK*
+    (MAX_LOCK+(selectedGear?.[0]==="toughnet"?2:0))*
     (1+creatureType.lockPct/100)*
     1000;
 
