@@ -3225,6 +3225,11 @@ function gameLoop(time){
           updateHP();
           lockText.style.display="none";
           if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
+          /* The capture branch returns before scheduling the next frame. Resume the
+             single game loop after preparing the next encounter so re-entry never
+             shows the defeated frame indefinitely. */
+          lastTime=performance.now();
+          requestAnimationFrame(gameLoop);
         },2000);
 
         return;
