@@ -2410,25 +2410,29 @@ document.addEventListener("pointerdown",e=>{const p=document.getElementById("box
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
-let huntAccessReady=false,huntAccessPending=null;
+let huntAccessReady=false,huntAccessPending=null,huntPermissionDenied=false;
+function hasLiveHuntCamera(){return camera.srcObject?.getVideoTracks().some(track=>track.readyState==="live")===true}
 async function requestHuntAccess(){
- if(huntAccessReady)return;
+ if(huntAccessReady&&hasLiveHuntCamera())return;
+ huntAccessReady=false;
  if(huntAccessPending)return huntAccessPending;
  huntAccessPending=(async()=>{
   let stream=null;
   try{
    if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
-   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。もう一度HUNTを押して許可してください。");
-   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(huntPermissionDenied&&!window.confirm("HUNTにはカメラとセンサーの許可が必要です。\nもう一度、許可を試しますか？"))throw new Error("許可するまで、HUNTを押すたびに確認します。");
+   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted"){huntPermissionDenied=true;throw new Error("方向センサーが許可されませんでした。もう一度HUNTを押して許可してください。")}
+   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted"){huntPermissionDenied=true;throw new Error("モーションセンサーが許可されませんでした。もう一度HUNTを押して許可してください。")}
    if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
    try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){if(e?.name!=="OverconstrainedError")throw e;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
    camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
    addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
    sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
-   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+   stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{huntAccessReady=false},{once:true}));
+   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;huntPermissionDenied=false;
   }catch(e){
    stream?.getTracks().forEach(track=>track.stop());camera.srcObject=null;huntAccessReady=false;
-   if(e?.name==="NotAllowedError")throw new Error("カメラが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(e?.name==="NotAllowedError"){huntPermissionDenied=true;throw new Error("カメラが許可されませんでした。もう一度HUNTを押して許可してください。ブラウザでブロック済みの場合は、サイト設定からカメラを許可してください。")}
    throw e;
   }
  })();
