@@ -6121,41 +6121,591 @@ function drawFukurouguFrame(frame,S,time){
 }
 
 function drawUsasasagiFrame(frame,S,time){
-  const {C,q,d,P}=makeCuteTools(S,{o:'#493f46',b:'#f5e9e1',p:'#e8a8b8',e:'#242126',w:'#fffaf5',shade:'#d7c1b7',fx:'#ffe36b'},.60);
-  if(locked)P.b='#c8f8fa';
-  function tail(x,y,w,h){q(x,y,w,h,P.o);q(x+1,y+1,w-2,Math.max(1,h-2),P.b)}
-  function fanTail(){
-    // one root, three tails opening like a hand fan
-    q(-13,3,5,5,P.o);q(-12,4,4,3,P.b);
-    tail(-20,-9,8,5);tail(-25,-12,7,5);
-    tail(-22,-1,10,6);tail(-28,-2,8,6);
-    tail(-20,8,8,5);tail(-25,11,7,5);
+  const C=Math.max(2,Math.round(S*.75));
+  const P={
+    o:"#3a333e",
+    b:"#f0e9ef",
+    l:"#fff9fc",
+    s:"#d5c8d5",
+    p:"#e79cab",
+    e:"#242127",
+    fx:"#a5eaff",
+    fx2:"#bcaeff"
+  };
+  if(locked){
+    P.b="#c5f0f2"; P.l="#edffff"; P.s="#8fcdd2"; P.p="#83d9df";
   }
-  function rabbit(kind='n',hop=0){
-    fanTail();
-    // pear-shaped body, low and animal-like
-    q(-12,1,17,2,P.o);q(-15,3,22,7,P.o);q(-14,10,21,7,P.o);q(-11,17,15,2,P.o);
-    q(-11,2,15,2,P.b);q(-14,4,20,5,P.b);q(-13,9,19,7,P.b);q(-10,16,13,1,P.b);
-    // round head with short cheek and clear rabbit profile
-    q(-2,-13,12,2,P.o);q(-5,-11,18,5,P.o);q(-6,-6,20,8,P.o);q(-4,2,17,4,P.o);
-    q(-1,-12,10,2,P.b);q(-4,-10,16,4,P.b);q(-5,-5,18,7,P.b);q(-3,1,15,3,P.b);
-    // long ears growing directly from head
-    q(-2,-21,5,9,P.o);q(-1,-29,4,9,P.o);q(0,-27,2,13,P.p);
-    q(6,-21,5,9,P.o);q(8,-28,4,8,P.o);q(8,-26,2,12,P.p);
-    // face: eye, small triangular nose, tiny mouth
-    if(kind==='sleep') q(4,-6,4,1,P.e);
-    else if(kind==='hurt'){d(3,-7,P.e);d(5,-5,P.e);d(5,-7,P.e);d(3,-5,P.e)}
-    else{q(3,-8,4,3,P.e);d(4,-7,P.w)}
-    q(10,-4,4,3,P.shade);d(13,-3,P.p);d(14,-3,P.e);d(11,0,P.e);d(12,1,P.e);
-    // forelegs tucked under chest; large hind feet
-    q(1,5,5,6,P.o);q(2,6,3,4,P.b);
-    q(-11,13-hop,9,5,P.o);q(-10,14-hop,7,3,P.b);q(-14,17-hop,13,3,P.o);q(-13,17-hop,11,2,P.b);
-    q(-1,14+hop,9,5,P.o);q(0,15+hop,7,3,P.b);q(-3,18+hop,13,3,P.o);q(-2,18+hop,11,2,P.b);
+
+  const q=(x,y,w,h,c)=>{
+    activeCtx.fillStyle=c;
+    activeCtx.fillRect(x*C,y*C,w*C,h*C);
+  };
+  const d=(x,y,c)=>q(x,y,1,1,c);
+
+  function tails(sway=0){
+    // Clear 3-tail silhouette: shared root, three obvious plumes.
+    // Each tail has a thick middle and tapered end.
+    q(-12,0,7,8,P.o);
+    q(-11,1,5,6,P.s);
+
+    // upper tail
+    q(-16,-7+sway,6,5,P.o);
+    q(-20,-9+sway,6,5,P.o);
+    q(-23,-9+sway,4,4,P.o);
+    q(-16,-6+sway,5,3,P.b);
+    q(-19,-8+sway,5,3,P.b);
+    q(-22,-8+sway,3,2,P.l);
+
+    // middle tail
+    q(-18,0+sway,8,6,P.o);
+    q(-23,1+sway,7,5,P.o);
+    q(-26,2+sway,4,4,P.o);
+    q(-17,1+sway,6,4,P.b);
+    q(-22,2+sway,6,3,P.b);
+    q(-25,3+sway,3,2,P.l);
+
+    // lower tail
+    q(-16,8-sway,6,5,P.o);
+    q(-20,10-sway,6,5,P.o);
+    q(-23,11-sway,4,4,P.o);
+    q(-16,9-sway,5,3,P.b);
+    q(-19,11-sway,5,3,P.b);
+    q(-22,12-sway,3,2,P.l);
   }
-  if(frame===8){activeCtx.translate(0,5*C);activeCtx.scale(1.04,.86);rabbit('sleep')}
-  else if(frame===10||frame===11) rabbit('hurt',frame%2);
-  else if(frame===12||frame===13){activeCtx.translate((frame===12?1:3)*C,-C);rabbit('n',frame===12?-1:1);q(17,-5,5,2,P.fx)}
-  else rabbit('n',frame%4<2?-1:1);
+
+  function attackTails(power=1){
+    /*
+      ATK tails rebuilt from scratch.
+      Three distinct black fox-like plumes:
+      - all start together at the rump
+      - broaden behind the back
+      - curl upward over the torso/head
+      - ATK2 opens farther and higher
+      Keep each plume readable as ONE tail, not a black blob.
+    */
+    const K="#151318";
+    const H="#2b2730";
+    const up = power===2 ? -3 : 0;
+    const wide = power===2 ? 2 : 0;
+
+    // common root
+    q(-13,0,6,7,K);
+    q(-12,1,4,5,H);
+
+    // ===== TAIL 1: rear / upper arc =====
+    q(-18,-4,7,5,K);
+    q(-21,-8+up,7+wide,5,K);
+    q(-20,-12+up,8+wide,5,K);
+    q(-16,-16+up,8+wide,5,K);
+    q(-11,-19+up,7+wide,4,K);
+    q(-7,-20+up,4+wide,3,K);
+
+    q(-17,-5,4,3,H);
+    q(-18,-9+up,5,3,H);
+    q(-16,-13+up,5,3,H);
+    q(-12,-16+up,4,2,H);
+
+    // ===== TAIL 2: center / highest =====
+    q(-17,0,7,5,K);
+    q(-20,-4+up,8+wide,5,K);
+    q(-19,-9+up,9+wide,5,K);
+    q(-15,-14+up,9+wide,5,K);
+    q(-10,-18+up,8+wide,5,K);
+    q(-4,-21+up,6+wide,4,K);
+    q(1,-21+up,3+wide,3,K);
+
+    q(-16,-1,4,3,H);
+    q(-17,-5+up,5,3,H);
+    q(-15,-10+up,5,3,H);
+    q(-10,-15+up,5,3,H);
+    q(-5,-18+up,4,2,H);
+
+    // ===== TAIL 3: lower arc, then curls above the face =====
+    q(-17,5,7,5,K);
+    q(-20,2,8+wide,5,K);
+    q(-19,-2+up,9+wide,5,K);
+    q(-15,-6+up,9+wide,5,K);
+    q(-10,-10+up,8+wide,5,K);
+    q(-4,-13+up,7+wide,4,K);
+    q(1,-14+up,4+wide,3,K);
+
+    q(-16,5,4,3,H);
+    q(-17,2,5,3,H);
+    q(-15,-2+up,5,3,H);
+    q(-10,-7+up,5,3,H);
+    q(-5,-10+up,4,2,H);
+  }
+
+  function body(){
+    // One broad continuous body/chest mass with very little internal separation.
+    q(-10,-4,17,12,P.o);
+    q(-12,-1,20,8,P.o);
+    q(-7,-5,15,13,P.o);
+
+    q(-8,-3,14,10,P.b);
+    q(-10,0,17,5,P.b);
+    q(-5,-4,12,10,P.b);
+
+    // only one subtle underside shade
+    q(-7,4,10,2,P.s);
+  }
+
+  function ears(){
+    // Bent ears: sweep backward, then bend at the tip.
+    // rear ear
+    q(4,-14,4,6,P.o);
+    q(2,-18,5,5,P.o);
+    q(0,-20,4,3,P.o);
+    q(4,-13,2,5,P.p);
+    q(3,-17,2,4,P.p);
+
+    // front ear
+    q(9,-14,4,6,P.o);
+    q(8,-18,5,5,P.o);
+    q(6,-21,4,4,P.o);
+    q(10,-13,2,5,P.p);
+    q(9,-17,2,4,P.p);
+  }
+
+  function head(kind="normal"){
+    // Softer compact rabbit head.
+    q(1,-10,13,12,P.o);
+    q(0,-7,16,7,P.o);
+    q(3,-9,10,10,P.b);
+    q(1,-6,14,5,P.b);
+
+    // rounded cheek and small tapered muzzle
+    q(8,-4,7,6,P.o);
+    q(10,-3,6,4,P.o);
+    q(9,-3,5,4,P.l);
+    q(11,-2,4,3,P.l);
+    q(14,-2,2,2,P.p);
+
+    ears();
+
+    if(kind==="sleep"){
+      q(5,-5,4,1,P.e);
+    }else if(kind==="hurt"){
+      // DAMAGE: proper 3x3 X eyes (5 pixels each), not four corner dots.
+      // left X
+      d(4,-7,P.e); d(6,-7,P.e);
+      d(5,-6,P.e);
+      d(4,-5,P.e); d(6,-5,P.e);
+      // right X
+      d(9,-7,P.e); d(11,-7,P.e);
+      d(10,-6,P.e);
+      d(9,-5,P.e); d(11,-5,P.e);
+    }else{
+      q(5,-7,3,3,P.e);
+      d(6,-7,P.l);
+    }
+
+    // tiny natural mouth
+    d(15,0,P.e);
+    d(14,1,P.e);
+  }
+
+  function backLegs(step=0){
+    /*
+      FAR-SIDE LIMBS — 4-step walk cycle support.
+      step: -2 / -1 / 1 / 2
+      奥脚は手前脚と逆位相で動かす。
+      1本の足はひと続き、内部に黒い区切りなし。
+    */
+    const far = -step;
+
+    // FAR HIND LEG
+    if(far<=-2){
+      // 後ろへ蹴る
+      q(-7,6,4,1,P.o);
+      q(-8,7,6,3,P.o);
+      q(-7,10,7,2,P.o);
+      q(-5,12,5,1,P.o);
+
+      q(-7,7,4,2,P.s);
+      q(-6,9,4,2,P.s);
+      q(-4,11,3,1,P.s);
+    }else if(far<0){
+      // 後ろ寄り
+      q(-5,6,4,1,P.o);
+      q(-6,7,6,3,P.o);
+      q(-5,10,7,2,P.o);
+      q(-3,12,5,1,P.o);
+
+      q(-5,7,4,2,P.s);
+      q(-4,9,4,2,P.s);
+      q(-2,11,3,1,P.s);
+    }else if(far>=2){
+      // 前へ踏み出す
+      q(-2,5,4,1,P.o);
+      q(-4,6,6,3,P.o);
+      q(-2,9,8,2,P.o);
+      q(1,11,5,1,P.o);
+
+      q(-2,6,4,2,P.s);
+      q(-1,8,4,2,P.s);
+      q(1,10,3,1,P.s);
+    }else{
+      // 前寄り
+      q(-3,6,4,1,P.o);
+      q(-5,7,6,3,P.o);
+      q(-3,10,7,2,P.o);
+      q(0,12,5,1,P.o);
+
+      q(-3,7,4,2,P.s);
+      q(-2,9,4,2,P.s);
+      q(0,11,3,1,P.s);
+    }
+
+    // FAR FRONT HAND — small diagonal oval, opposite swing
+    const hx = far<0 ? 4 : 6;
+    const hy = far<=-2 ? 7 : far>=2 ? 5 : 6;
+    q(hx,hy,2,1,P.o);
+    q(hx-1,hy+1,4,1,P.o);
+    q(hx,hy+2,4,1,P.o);
+    q(hx+1,hy+3,2,1,P.o);
+    q(hx,hy+1,2,1,P.s);
+    q(hx+1,hy+2,2,1,P.s);
+  }
+
+  function frontLegs(step=0,attack=0){
+    /*
+      NEAR-SIDE LIMBS.
+      WALKでは手前後脚を大きく前後に振る。
+      足先の位置も変えて、4コマで歩いている感じを出す。
+    */
+
+    if(attack){
+      // Tail attack: forepaw stays compact near the chest.
+      const hx = attack===2 ? 8 : 7;
+      const hy = attack===2 ? 4 : 5;
+
+      q(hx,hy,2,1,P.o);
+      q(hx-1,hy+1,4,1,P.o);
+      q(hx,hy+2,4,1,P.o);
+      q(hx+1,hy+3,2,1,P.o);
+      q(hx,hy+1,2,1,P.b);
+      q(hx+1,hy+2,2,1,P.b);
+      return;
+    }
+
+    // ===== NEAR HIND LEG =====
+    if(step<=-2){
+      // 強く後ろへ蹴る
+      q(-6,3,4,1,P.o);
+      q(-8,4,8,2,P.o);
+      q(-9,6,9,3,P.o);
+      q(-8,9,9,2,P.o);
+      q(-6,11,9,2,P.o);
+      q(-3,13,6,1,P.o);
+
+      q(-6,4,5,2,P.b);
+      q(-7,6,6,3,P.b);
+      q(-7,9,6,2,P.b);
+      q(-5,11,7,2,P.b);
+      q(-2,13,4,1,P.b);
+    }else if(step<0){
+      // 後ろ寄り
+      q(-4,3,4,1,P.o);
+      q(-6,4,8,2,P.o);
+      q(-7,6,9,3,P.o);
+      q(-6,9,9,2,P.o);
+      q(-4,11,9,2,P.o);
+      q(-1,13,6,1,P.o);
+
+      q(-4,4,5,2,P.b);
+      q(-5,6,6,3,P.b);
+      q(-5,9,6,2,P.b);
+      q(-3,11,7,2,P.b);
+      q(0,13,4,1,P.b);
+    }else if(step>=2){
+      // 大きく前へ踏み出す
+      q(-1,3,4,1,P.o);
+      q(-3,4,8,2,P.o);
+      q(-4,6,9,3,P.o);
+      q(-2,9,10,2,P.o);
+      q(1,11,10,2,P.o);
+      q(5,13,6,1,P.o);
+
+      q(-1,4,5,2,P.b);
+      q(-2,6,6,3,P.b);
+      q(-1,9,8,2,P.b);
+      q(2,11,8,2,P.b);
+      q(6,13,4,1,P.b);
+    }else{
+      // 前寄り
+      q(-2,3,4,1,P.o);
+      q(-4,4,8,2,P.o);
+      q(-5,6,9,3,P.o);
+      q(-3,9,10,2,P.o);
+      q(0,11,10,2,P.o);
+      q(3,13,6,1,P.o);
+
+      q(-2,4,5,2,P.b);
+      q(-3,6,6,3,P.b);
+      q(-2,9,8,2,P.b);
+      q(1,11,8,2,P.b);
+      q(4,13,4,1,P.b);
+    }
+
+    // ===== NEAR HAND =====
+    // hind legと逆に振る。形は小さい斜め楕円。
+    let hx,hy;
+    if(step<=-2){ hx=9; hy=5; }
+    else if(step<0){ hx=8; hy=6; }
+    else if(step>=2){ hx=5; hy=7; }
+    else { hx=6; hy=6; }
+
+    q(hx,hy,2,1,P.o);
+    q(hx-1,hy+1,4,1,P.o);
+    q(hx,hy+2,4,1,P.o);
+    q(hx+1,hy+3,2,1,P.o);
+    q(hx,hy+1,2,1,P.b);
+    q(hx+1,hy+2,2,1,P.b);
+  }
+
+  function rabbit(kind="normal",step=0,attack=0,sway=0){
+    // Correct depth: far limbs -> tails -> torso -> near limbs -> head
+    backLegs(step);
+
+    if(attack){
+      attackTails(attack);
+    }else{
+      tails(sway);
+    }
+
+    body();
+    frontLegs(step,attack);
+    head(kind);
+  }
+
+  function turnDiagonal(dir=1){
+    /*
+      TURN1 / TURN3 — clean 3/4 view.
+      dir=-1: turning toward front
+      dir= 1: turning away from front
+      Symmetry is handled by mirroring one carefully-built pose.
+    */
+    activeCtx.save();
+    if(dir<0) activeCtx.scale(-1,1);
+
+    // far tails, compressed by perspective
+    q(-16,-5,5,4,P.o);
+    q(-19,-6,4,3,P.o);
+    q(-15,-4,4,2,P.b);
+
+    q(-17,1,7,5,P.o);
+    q(-21,2,5,4,P.o);
+    q(-16,2,5,3,P.b);
+
+    q(-15,7,6,4,P.o);
+    q(-18,9,4,3,P.o);
+    q(-14,8,4,2,P.b);
+
+    // body in 3/4: slightly narrower than side view
+    q(-8,-3,14,11,P.o);
+    q(-9,-1,16,7,P.o);
+    q(-6,-2,12,9,P.b);
+    q(-7,1,13,5,P.b);
+
+    // chest
+    q(1,-5,7,10,P.o);
+    q(2,-4,5,8,P.b);
+
+    // head turned toward viewer
+    q(1,-11,12,11,P.o);
+    q(0,-8,14,7,P.o);
+    q(2,-10,10,9,P.b);
+    q(1,-7,12,5,P.b);
+
+    // soft cheek
+    q(8,-4,6,5,P.o);
+    q(9,-3,5,3,P.l);
+
+    // bent ears with perspective difference
+    q(3,-16,4,6,P.o);
+    q(1,-19,5,4,P.o);
+    q(4,-15,2,5,P.p);
+    q(2,-18,2,3,P.p);
+
+    q(8,-15,4,6,P.o);
+    q(7,-18,5,4,P.o);
+    q(9,-14,2,5,P.p);
+    q(8,-17,2,3,P.p);
+
+    // eyes: natural 3/4 placement
+    // far eye is smaller and slightly higher; near eye is clear and round.
+    d(4,-7,P.e);
+    q(7,-8,2,2,P.e);
+    d(7,-8,P.l);
+
+    // nose and minimal mouth
+    q(13,-3,2,1,P.p);
+    d(13,-2,P.e);
+    d(12,-1,P.e);
+
+    // far hand, small diagonal oval
+    q(3,4,2,1,P.s);
+    q(2,5,4,1,P.s);
+    q(3,6,3,1,P.s);
+
+    // near hand
+    q(7,3,2,1,P.o);
+    q(6,4,4,1,P.o);
+    q(7,5,4,1,P.o);
+    q(8,6,2,1,P.o);
+    q(7,4,2,1,P.b);
+    q(8,5,2,1,P.b);
+
+    // far hind foot
+    q(-5,7,6,3,P.s);
+    q(-3,9,5,2,P.s);
+
+    // near hind leg, one flowing shape
+    q(-2,5,7,4,P.o);
+    q(0,8,8,3,P.o);
+    q(-1,6,5,3,P.b);
+    q(1,9,6,1,P.b);
+
+    activeCtx.restore();
+  }
+
+  function turnFront(){
+    /*
+      TURN2 — true front view.
+      Fully symmetric silhouette. No side-view leftovers.
+    */
+
+    // three tails fan behind the body
+    q(-15,-4,5,4,P.o);
+    q(-18,-6,4,3,P.o);
+    q(-14,-3,4,2,P.b);
+
+    q(-3,-7,6,5,P.o);
+    q(-2,-10,4,4,P.o);
+    q(-2,-6,4,3,P.b);
+
+    q(10,-4,5,4,P.o);
+    q(14,-6,4,3,P.o);
+    q(11,-3,4,2,P.b);
+
+    // symmetrical body
+    q(-8,-2,16,12,P.o);
+    q(-9,0,18,8,P.o);
+    q(-6,-1,12,10,P.b);
+    q(-7,1,14,6,P.b);
+    q(-5,6,10,3,P.s);
+
+    // neck/chest
+    q(-5,-5,10,7,P.o);
+    q(-4,-4,8,6,P.b);
+
+    // symmetrical head
+    q(-7,-12,14,11,P.o);
+    q(-8,-9,16,7,P.o);
+    q(-6,-11,12,9,P.b);
+    q(-7,-8,14,5,P.b);
+
+    // cheek/muzzle
+    q(-5,-4,10,4,P.l);
+    q(-3,-3,6,3,P.l);
+
+    // bent ears, mirrored
+    q(-5,-17,4,6,P.o);
+    q(-7,-20,4,4,P.o);
+    q(-4,-16,2,5,P.p);
+    q(-6,-19,2,3,P.p);
+
+    q(1,-17,4,6,P.o);
+    q(3,-20,4,4,P.o);
+    q(2,-16,2,5,P.p);
+    q(4,-19,2,3,P.p);
+
+    // eyes: small, symmetric, and centered naturally
+    q(-4,-8,2,2,P.e);
+    q(2,-8,2,2,P.e);
+    d(-3,-8,P.l);
+    d(3,-8,P.l);
+
+    // nose and mouth
+    q(-1,-5,2,1,P.p);
+    d(0,-4,P.e);
+    d(-1,-3,P.e);
+    d(1,-3,P.e);
+
+    // small hands, symmetric
+    q(-6,3,2,1,P.o);
+    q(-7,4,4,1,P.o);
+    q(-6,5,4,1,P.o);
+    q(-5,6,2,1,P.o);
+    q(-6,4,2,1,P.b);
+    q(-5,5,2,1,P.b);
+
+    q(4,3,2,1,P.o);
+    q(3,4,4,1,P.o);
+    q(3,5,4,1,P.o);
+    q(4,6,2,1,P.o);
+    q(4,4,2,1,P.b);
+    q(4,5,2,1,P.b);
+
+    // front-facing hind feet, symmetric and compact
+    q(-7,8,5,3,P.o);
+    q(-6,9,4,2,P.b);
+
+    q(2,8,5,3,P.o);
+    q(3,9,4,2,P.b);
+  }
+
+  if(frame===5){
+    turnDiagonal(-1);          // TURN1: diagonal toward front
+  }else if(frame===6){
+    turnFront();               // TURN2: true front
+  }else if(frame===7){
+    turnDiagonal(1);           // TURN3: diagonal away from front
+  }else if(frame===8){
+    activeCtx.translate(0,4*C);
+    // tucked far paws behind body
+    q(-6,6,7,3,P.o);
+    q(2,6,5,3,P.o);
+    tails(0);
+    body();
+    // one foreground folded hind leg + one tiny foreground paw
+    q(-3,5,10,5,P.o);
+    q(-2,6,8,3,P.b);
+    q(6,4,4,5,P.o);
+    q(7,5,2,3,P.b);
+    head("sleep");
+  }else if(frame===10 || frame===11){
+    activeCtx.translate((frame===10?-1:1)*C,C);
+    rabbit("hurt",frame===10?-1:1,0,frame===10?0:1);
+  }else if(frame===12){
+    activeCtx.translate(C,-C);
+    rabbit("normal",-1,1,1);
+  }else if(frame===13){
+    activeCtx.translate(2*C,-2*C);
+    rabbit("normal",1,2,0);
+  }else if(frame===14 || frame===15){
+    rabbit("normal",frame===14?-1:1,0,frame===14?1:0);
+    q(-22,-8,3,1,P.fx);
+    q(-23,1,2,2,P.fx2);
+    q(-20,11,3,1,P.fx);
+    q(18,-7,2,2,P.fx2);
+    q(19,5,3,1,P.fx);
+  }else if(frame===1){
+    activeCtx.translate(0,0);
+    rabbit("normal",-2,0,0);   // WALK1
+  }else if(frame===2){
+    activeCtx.translate(0,-C);
+    rabbit("normal",-1,0,1);   // WALK2
+  }else if(frame===3){
+    activeCtx.translate(0,0);
+    rabbit("normal",2,0,0);    // WALK3
+  }else if(frame===4){
+    activeCtx.translate(0,-C);
+    rabbit("normal",1,0,1);    // WALK4
+  }else{
+    rabbit("normal",0,0,frame%2);
+  }
 }
 
 function drawKeruberosuFrame(frame,S,time){
