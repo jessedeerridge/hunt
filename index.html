@@ -1005,7 +1005,7 @@ html,body{
 .shopRailWrap{position:relative}.shopRail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:6px}
 .shopCard{min-width:0;min-height:168px;border:2px solid #fff;background:#0b0e15;padding:8px 5px;text-align:center}.shopIcon{height:68px;display:grid;place-items:center}.shopIcon svg{width:58px;height:58px;filter:drop-shadow(0 3px 0 #000)}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 2px;font:900 9px monospace}
 .railArrow{display:none}
-#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.simpleCard{aspect-ratio:1;min-width:0;overflow:hidden;border:2px solid #fff;background:#0b0e15;padding:6px;text-align:center;font-size:clamp(7px,1.8vw,10px);line-height:1.25;white-space:nowrap}.simpleCard b,.simpleCard .shopDesc,.dexEntryName,.dexEntryTrait{display:block;min-height:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:inherit;line-height:1.25}.simpleCard .shopIcon{height:48%}.simpleCard .shopIcon svg{width:min(52px,80%);height:min(52px,80%)}.dexEntry{aspect-ratio:auto!important;min-height:clamp(150px,30vw,250px);text-align:center}.dexEntry canvas{display:block;width:62%;height:auto;aspect-ratio:1;max-width:128px;margin:0 auto 2px;image-rendering:pixelated}.dexEntryName{color:#ffe46b}.dexEntryTrait{margin-top:3px;opacity:.8}
+#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.simpleCard{aspect-ratio:1;min-width:0;overflow:hidden;border:2px solid #fff;background:#0b0e15;padding:6px;text-align:center;font-size:clamp(7px,1.8vw,10px);line-height:1.25;white-space:nowrap}.simpleCard b,.simpleCard .shopDesc,.dexEntryName,.dexEntryTrait{display:block;min-height:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:inherit;line-height:1.25}.simpleCard .shopIcon{height:48%}.simpleCard .shopIcon svg{width:min(52px,80%);height:min(52px,80%)}.inventoryCard{aspect-ratio:1/1.18!important;padding-bottom:30px!important}.dexEntry{aspect-ratio:1/1.22!important;min-height:0;text-align:center}.dexEntry canvas{display:block;width:62%;height:auto;aspect-ratio:1;max-width:128px;margin:0 auto 2px;image-rendering:pixelated}.dexEntryName{color:#ffe46b}.dexEntryTrait{margin-top:3px;opacity:.8}
 
 /* ===== CLEAN GAME BUTTON POLISH ===== */
 #roomBoxBtn,
@@ -1018,12 +1018,12 @@ html,body{
   transition:transform .08s ease,box-shadow .08s ease,filter .1s ease;
 }
 #roomBoxBtn{
-  display:grid;place-items:center;width:48px;height:43px;padding:0;
+  display:grid;place-items:center;width:40px;height:36px;padding:0;
   background:#eef4ff;
   color:#25324b;
   box-shadow:0 4px 0 #71809b,inset 0 2px 0 #fff;
 }
-#roomBoxBtn svg{width:30px;height:27px;display:block}
+#roomBoxBtn svg{width:25px;height:23px;display:block}
 .buyBtn{
   width:100%;
   padding:8px 4px;
@@ -1063,7 +1063,7 @@ html,body{
 /* HUNT FEED */
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
-.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
+.dexEntry{display:flex;flex-direction:column;justify-content:flex-start}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:0 0 auto;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
 </style>
 </head>
 
@@ -1123,7 +1123,7 @@ html,body{
   <div id="modeSwitch">
 
     <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff5db" stroke="#3e3049" stroke-width="3" stroke-linejoin="round" d="M5 24 24 7l19 17-5 5-4-4v17H14V25l-4 4z"/><path fill="#b58ac8" d="M15 23h7v7h-7zm7 7h7v7h-7zm7-14h7v7h-7zm0 14h5v12h-5z"/><path d="M11 11 37 37M37 11 11 37" stroke="#e34d5c" stroke-width="8" stroke-linecap="round"/><path d="M11 11 37 37M37 11 11 37" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3e3049" stroke-width="1.5"><path fill="#f3d86f" d="M5 5h9v9H5zm18 0h9v9h-9zm9 9h11v9H32zM5 23h9v9H5zm18 0h9v9h-9zm9 9h11v11H32zM14 14h9v9h-9zm0 18h9v11h-9z"/><path fill="#b58ac8" d="M14 5h9v9h-9zm18 0h11v9H32zM5 14h9v9H5zm18 0h9v9h-9zM14 23h9v9h-9zm18 0h11v9H32zM5 32h9v11H5zm18 0h9v11h-9z"/></g><path d="M10 10 38 38M38 10 10 38" stroke="#e34d5c" stroke-width="8" stroke-linecap="round"/><path d="M10 10 38 38M38 10 10 38" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
 
     <button id="cameraMode" aria-label="モザイク表示に切り替える">
@@ -1761,6 +1761,8 @@ const CREATURE_ZONES = {
 ========================================================= */
 
 let cameraYaw = 0;
+let huntFacingYaw = 0;
+let huntFacingReady = false;
 
 let cameraPitch = 0;
 
@@ -2000,6 +2002,14 @@ function normalize360(a){
   return a;
 }
 
+function setHuntFacing(){huntFacingYaw=normalize360(cameraYaw);huntFacingReady=true}
+function keepCreatureInHuntFront(){
+ if(!huntFacingReady)return;
+ const offset=angleDiff(creatureYaw,huntFacingYaw),limit=89;
+ if(Math.abs(offset)>limit){creatureYaw=normalize360(huntFacingYaw+Math.sign(offset)*limit);moveDirection*=-1}
+}
+function randomHuntYaw(){return normalize360(huntFacingYaw+random(-86,86))}
+
 function angleDiff(
   target,
   current
@@ -2127,11 +2137,7 @@ function spawnCreature(){
 
   creatureMovePitch = randomPitchForZone(creatureZone);
 
-  creatureYaw =
-    random(
-      0,
-      360
-    );
+  creatureYaw = huntFacingReady ? randomHuntYaw() : normalize360(cameraYaw+random(-86,86));
 
   creatureBasePitch = creatureMovePitch;
 
@@ -2384,11 +2390,13 @@ function boxChange(id,d){
  hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"
 }
 function showHub(id){feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){feedPicker.classList.remove("show");cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHunt(){feedPicker.classList.remove("show");setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
 document.getElementById("huntNav").addEventListener("click",showHunt);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
-document.getElementById("roomBoxBtn").addEventListener("click",()=>{let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
+document.getElementById("roomBoxBtn").addEventListener("click",e=>{e.stopPropagation();let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
+document.getElementById("boxPanel").addEventListener("click",e=>e.stopPropagation());
+document.addEventListener("pointerdown",e=>{const p=document.getElementById("boxPanel"),b=document.getElementById("roomBoxBtn");if(p.style.display==="block"&&!p.contains(e.target)&&!b.contains(e.target))p.style.display="none"});
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
@@ -2405,7 +2413,7 @@ function openFeedPicker(mode="hunt"){
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
  hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),contactSeconds:0};saveHub();renderItems();feedPicker.classList.remove("show");
- creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
 }
 function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.2)";ctx.beginPath();ctx.ellipse(0,16,25,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff1cf";ctx.strokeStyle="#4f3040";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,-5);ctx.quadraticCurveTo(-18,19,0,20);ctx.quadraticCurveTo(18,19,22,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle="#e57c62";ctx.beginPath();ctx.ellipse(0,-5,22,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#ffd76a";for(let i=-12;i<=12;i+=8){ctx.beginPath();ctx.arc(i,-7+(i%3),4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function updateFeedAttraction(time,dt){
@@ -2415,12 +2423,12 @@ function updateFeedAttraction(time,dt){
 }
 function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
 function placeRoomFeed(id){
- const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");const now=performance.now();roomFeed={id,eatStart:now+2800,until:now+12800};roomFeedBowl.classList.add("show");attractRoomPets();
- const expire=()=>{if(!roomFeed||roomFeed.id!==id)return;const wait=roomFeed.until-performance.now();if(wait>0){setTimeout(expire,wait);return}roomFeed=null;roomFeedBowl.classList.remove("show")};setTimeout(expire,12800)
+ const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");const now=performance.now();roomFeed={id,eatStart:now+3200,until:now+13200};roomFeedBowl.classList.add("show");attractRoomPets();
+ const expire=()=>{if(!roomFeed||roomFeed.id!==id)return;const wait=roomFeed.until-performance.now();if(wait>0){setTimeout(expire,wait);return}roomFeed=null;roomFeedBowl.classList.remove("show")};setTimeout(expire,13200)
 }
 let roomFeedDragging=false;
 roomFeedBowl.addEventListener("pointerdown",e=>{roomFeedDragging=true;roomFeedBowl.setPointerCapture(e.pointerId)});
-roomFeedBowl.addEventListener("pointermove",e=>{if(!roomFeedDragging||!roomFeed)return;const r=document.getElementById("roomStage").getBoundingClientRect();roomFeedBowl.style.left=clamp((e.clientX-r.left)/r.width*100,8,92)+"%";roomFeedBowl.style.top=clamp((e.clientY-r.top)/r.height*100,12,88)+"%";roomFeed.eatStart=performance.now()+800;roomFeed.until=roomFeed.eatStart+10000;attractRoomPets()});
+roomFeedBowl.addEventListener("pointermove",e=>{if(!roomFeedDragging||!roomFeed)return;const r=document.getElementById("roomStage").getBoundingClientRect();roomFeedBowl.style.left=clamp((e.clientX-r.left)/r.width*100,8,92)+"%";roomFeedBowl.style.top=clamp((e.clientY-r.top)/r.height*100,12,88)+"%";roomFeed.eatStart=performance.now()+3000;roomFeed.until=roomFeed.eatStart+10000;attractRoomPets()});
 roomFeedBowl.addEventListener("pointerup",()=>roomFeedDragging=false);
 feedButton.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("hunt")});
 roomFeedBtn.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("room")});
@@ -3048,6 +3056,8 @@ function orientationHandler(e){
     sensorReady =
       true;
 
+    if(!huntFacingReady){setHuntFacing();creatureYaw=randomHuntYaw()}
+
     sensorWait.style.display =
       "none";
   }
@@ -3189,7 +3199,7 @@ function gameLoop(time){
           creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;
           updateHP();
           lockText.style.display="none";
-          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
+          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
         },2000);
 
         return;
@@ -3375,6 +3385,8 @@ function gameLoop(time){
           );
       }
     }
+
+    keepCreatureInHuntFront();
 
     creaturePitch =
       creatureBasePitch;
