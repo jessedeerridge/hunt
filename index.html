@@ -2249,7 +2249,7 @@ const SAVEKEY="PCH360_PLAYER_SAVE"; // Stable forever: never tie player data to 
 const SAVEBACKUPKEY="PCH360_PLAYER_SAVE_BACKUP";
 const LEGACY_SAVE_KEYS=["PCH360_HUB_V1"];
 const SAVE_SCHEMA_VERSION=2;
-const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:5000,caught:{blueboy:5},boxed:{},items:{}};
+const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:50,caught:{},boxed:{},items:{}};
 function normalizeHubData(source){
  const raw=source&&typeof source==="object"?source:{};
  return {schemaVersion:SAVE_SCHEMA_VERSION,money:Number.isFinite(Number(raw.money))?Math.max(0,Number(raw.money)):DEFAULT_HUB_DATA.money,caught:Object.assign({},DEFAULT_HUB_DATA.caught,raw.caught||{}),boxed:Object.assign({},raw.boxed||{}),items:Object.assign({},raw.items||{})};
@@ -2379,7 +2379,7 @@ function moveRoomPets(){
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
  CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.dataset.frame="1";d.dataset.flip="0";d.dataset.specialUntil="0";d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}});
- cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))f=t<roomFeed.eatStart?1+(Math.floor(t/240)%4):12+(Math.floor(t/260)%2);else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
+ cancelAnimationFrame(roomAnim);const mealFrames=[1,2,3,12,13],loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame),eating=roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_")));if(eating){f=t<roomFeed.eatStart?1+(Math.floor(t/240)%3):mealFrames[Math.floor((t-roomFeed.eatStart)/260)%mealFrames.length];d.dataset.flip=d.dataset.feedFlip||d.dataset.flip}else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
  clearInterval(roomMoveTimer);requestAnimationFrame(moveRoomPets);roomMoveTimer=setInterval(moveRoomPets,2200);renderBox()
 }
 function renderBox(){
@@ -2415,15 +2415,22 @@ async function requestHuntAccess(){
  if(huntAccessReady)return;
  if(huntAccessPending)return huntAccessPending;
  huntAccessPending=(async()=>{
-  if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
-  if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。");
-  if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。");
-  if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
-  let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
-  camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
-  addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
-  sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
-  spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+  let stream=null;
+  try{
+   if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
+   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
+   try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){if(e?.name!=="OverconstrainedError")throw e;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+   camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
+   addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
+   sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
+   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+  }catch(e){
+   stream?.getTracks().forEach(track=>track.stop());camera.srcObject=null;huntAccessReady=false;
+   if(e?.name==="NotAllowedError")throw new Error("カメラが許可されませんでした。もう一度HUNTを押して許可してください。");
+   throw e;
+  }
  })();
  try{await huntAccessPending}finally{huntAccessPending=null}
 }
@@ -2468,7 +2475,7 @@ function updateFeedAttraction(time,dt){
  const d=angleDiff(placedFeed.yaw,creatureYaw);sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
  if(Math.abs(d)<1.3){placedFeed.contactSeconds+=dt;if(animState!=="attack")setAnimation("attack",time);if(placedFeed.contactSeconds>=10)placedFeed=null}
 }
-function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
+function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.dataset.feedFlip=next>left?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
 function placeRoomFeed(id){
  const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");const now=performance.now();roomFeed={id,eatStart:now+3200,until:now+13200};roomFeedBowl.classList.add("show");attractRoomPets();
  const expire=()=>{if(!roomFeed||roomFeed.id!==id)return;const wait=roomFeed.until-performance.now();if(wait>0){setTimeout(expire,wait);return}roomFeed=null;roomFeedBowl.classList.remove("show")};setTimeout(expire,13200)
