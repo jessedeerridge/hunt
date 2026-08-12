@@ -995,6 +995,7 @@ html,body{
 .hubHead{display:none}.hubBody{padding-top:calc(58px + env(safe-area-inset-top))!important}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
 #roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(165deg,#fff 0 56%,#f3f0e9 56% 58%,#e7e2d8 58% 100%);border:8px solid #665a7c;border-radius:10px;box-shadow:inset 0 0 0 4px #c7bdd8,inset 0 0 32px rgba(72,61,94,.12),0 4px 0 #332d42}#roomStage::after{content:"";position:absolute;inset:8px;border:2px solid rgba(102,90,124,.45);border-radius:3px;pointer-events:none;z-index:2}
+#roomFeedBtn{position:absolute;right:12px;bottom:12px;z-index:4;width:48px;height:48px;padding:5px;border:2px solid #fff;border-radius:50%;background:#e8785e;box-shadow:0 4px 0 #8c3b31;color:#fff;pointer-events:auto}#roomFeedBtn svg{width:30px;height:30px;display:block;margin:auto}#roomFeedBowl{position:absolute;left:50%;top:62%;z-index:3;display:none;width:54px;height:30px;transform:translate(-50%,-50%);border:3px solid #4f3040;border-radius:8px 8px 24px 24px;background:#fff1cf;box-shadow:0 6px 0 rgba(0,0,0,.15)}#roomFeedBowl.show{display:block}#roomFeedBowl::before{content:"";position:absolute;left:5px;right:5px;top:-8px;height:13px;border:2px solid #4f3040;border-radius:50%;background:#e57c62}
 #roomBoxBtn{position:absolute;right:10px;top:10px;z-index:3;border:2px solid #fff;background:#111827;color:#fff;padding:9px;font:900 11px monospace}
 .roomPet{position:absolute;width:86px;text-align:center;transition:left 2.8s linear,top 2.8s linear}
 .roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:none}
@@ -1057,12 +1058,12 @@ html,body{
   font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
 }
 
-.inventoryCard{position:relative}.inventoryCard .shopDesc{min-height:0!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.35vw,8px)!important;line-height:1.3!important}.itemCount{position:absolute;right:5px;bottom:5px;display:grid;place-items:center;min-width:25px;height:22px;padding:0 5px;border-radius:999px;background:#f3bc48;color:#35230f;box-shadow:0 2px 0 #8f621b;font:900 9px monospace}
+.inventoryCard{position:relative}.inventoryCard .shopDesc{min-height:0!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.3!important}.itemCount{position:absolute;right:5px;bottom:5px;display:grid;place-items:center;min-width:25px;height:22px;padding:0 5px;border-radius:999px;background:#f3bc48;color:#35230f;box-shadow:0 2px 0 #8f621b;font:900 9px monospace}
 #timer{display:none!important}
 /* HUNT FEED */
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
-.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
+.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
 </style>
 </head>
 
@@ -1140,7 +1141,7 @@ html,body{
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
-<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
+<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
 <div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
 <div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ショップ</div></div><div class="hubBody" id="shopBody"></div></div>
 <div id="ownedDexPage" class="hubPage"><div class="hubHead"><div class="hubTitle">図鑑</div></div><div class="hubBody"><div id="ownedDexGrid"></div></div></div>
@@ -2335,8 +2336,8 @@ function renderShop(){
 }
 function renderItems(){
  const g=document.getElementById("itemGrid");if(!g)return;let a=[];
- GEAR.forEach(x=>{if(own(x[0]))a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${x[3]}</div><span class="itemCount">×${own(x[0])}</span></div>`)});
- FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"キャラ")}を引き寄せる専用エサ</div><span class="itemCount">×${q}</span></div>`)});
+ GEAR.forEach(x=>{if(own(x[0]))a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">${x[3]}</div><span class="itemCount">×${own(x[0])}</span></div>`)});
+ FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">${x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"キャラ")}を引き寄せる専用エサ</div><span class="itemCount">×${q}</span></div>`)});
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
 const signed=v=>(v>=0?"+":"")+v;
@@ -2359,8 +2360,8 @@ let roomAnim=0,roomMoveTimer=0;
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
  CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.dataset.frame="1";d.dataset.flip="0";d.dataset.specialUntil="0";d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}});
- cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
- clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"}),2200);renderBox()
+ cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))f=12+(Math.floor(t/260)%2);else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
+ clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{if(roomFeed&&performance.now()<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"}),2200);renderBox()
 }
 function renderBox(){
  const p=document.getElementById("boxPanel"),rows=[];
@@ -2389,13 +2390,14 @@ function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
 /* ===== PLACED FEED ===== */
-const feedButton=document.getElementById("feedButton"),feedPicker=document.getElementById("feedPicker");
-let placedFeed=null;
-function openFeedPicker(){
+const feedButton=document.getElementById("feedButton"),feedPicker=document.getElementById("feedPicker"),roomFeedBtn=document.getElementById("roomFeedBtn"),roomFeedBowl=document.getElementById("roomFeedBowl");
+let placedFeed=null,feedPickerMode="hunt",roomFeed=null;
+function openFeedPicker(mode="hunt"){
+ feedPickerMode=mode;
  const owned=FEEDS.filter(x=>own("feed_"+x[0])>0);
  feedPicker.innerHTML='<div class="feedHint">置くエサを選択</div>'+owned.map(x=>`<button class="feedChoice" data-id="${x[0]}"><span class="shopIcon">${shopIcon(x[2])}</span>${x[1]} ×${own("feed_"+x[0])}</button>`).join("")+(owned.length?"":'<div class="feedHint">購入済みのエサがありません</div>');
  feedPicker.classList.toggle("show");
- feedPicker.querySelectorAll(".feedChoice").forEach(b=>b.addEventListener("click",()=>placeFeed(b.dataset.id)));
+ feedPicker.querySelectorAll(".feedChoice").forEach(b=>b.addEventListener("click",()=>feedPickerMode==="room"?placeRoomFeed(b.dataset.id):placeFeed(b.dataset.id)));
 }
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
@@ -2408,7 +2410,13 @@ function updateFeedAttraction(time,dt){
  const d=angleDiff(placedFeed.yaw,creatureYaw);sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
  if(Math.abs(d)<1.3){placedFeed.contactSeconds+=dt;if(animState!=="attack")setAnimation("attack",time);if(placedFeed.contactSeconds>=10)placedFeed=null}
 }
-feedButton.addEventListener("click",e=>{e.stopPropagation();openFeedPicker()});
+function placeRoomFeed(id){
+ const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");roomFeed={id,until:performance.now()+10000};roomFeedBowl.classList.add("show");
+ document.querySelectorAll(`.roomPet[data-id="${id}"]${id.startsWith("hachibee_")?',.roomPet[data-id^="hachibee_"]':''}`).forEach((d,i)=>{d.dataset.specialUntil=String(roomFeed.until);d.dataset.frame=String(i%2?12:13);d.dataset.flip=(parseFloat(d.style.left)||0)>48?"1":"0";d.style.left=(43+(i%4)*4)+"%";d.style.top=(50+Math.floor(i/4)*5)+"%"});
+ setTimeout(()=>{if(roomFeed&&roomFeed.id===id){roomFeed=null;roomFeedBowl.classList.remove("show")}},10000)
+}
+feedButton.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("hunt")});
+roomFeedBtn.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("room")});
 feedPicker.addEventListener("click",e=>e.stopPropagation());
 document.addEventListener("pointerdown",e=>{if(feedPicker.classList.contains("show")&&!feedPicker.contains(e.target)&&!feedButton.contains(e.target))feedPicker.classList.remove("show")});
 
