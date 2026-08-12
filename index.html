@@ -70,6 +70,7 @@ html,body{
 }
 
 #hpText{
+  display:none;
   color:#fff;
   font-size:13px;
   font-weight:900;
@@ -1057,10 +1058,11 @@ html,body{
 }
 
 .inventoryCard{position:relative}.inventoryCard .shopDesc{min-height:0!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.35vw,8px)!important;line-height:1.3!important}.itemCount{position:absolute;right:5px;bottom:5px;display:grid;place-items:center;min-width:25px;height:22px;padding:0 5px;border-radius:999px;background:#f3bc48;color:#35230f;box-shadow:0 2px 0 #8f621b;font:900 9px monospace}
+#timer{display:none!important}
 /* HUNT FEED */
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
-.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryStats{font-size:clamp(5px,1.15vw,7px);line-height:1.25;color:#f0bd58;white-space:normal}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
+.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
 </style>
 </head>
 
@@ -1076,7 +1078,7 @@ html,body{
 <div id="hud">
 
   <button id="huntHome" type="button" aria-label="メニューに戻る">
-    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff7df" stroke="#51322b" stroke-width="3.5" stroke-linejoin="round" d="m5 23 19-17 19 17-4 5-4-4v18H13V24l-4 4z"/><path fill="#ed8b68" stroke="#51322b" stroke-width="3" d="M19 28h11v14H19z"/><path fill="#ffd96c" stroke="#51322b" stroke-width="2.5" d="M15 18h8v8h-8z"/><path fill="#fff" d="M17 20h4v4h-4z"/><circle cx="27" cy="35" r="1.5" fill="#fff1bb"/></svg>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" stroke="#4b3427" stroke-width="3" stroke-linejoin="round" d="M7 23 24 8l17 15-4 4-3-3v17H14V24l-3 3z"/><path fill="#e98960" stroke="#4b3427" stroke-width="3" d="M20 29h8v12h-8z"/></svg>
   </button>
 
   <div id="hp">
@@ -1120,11 +1122,11 @@ html,body{
   <div id="modeSwitch">
 
     <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="10" width="38" height="29" rx="5" fill="#fff7e6" stroke="#3f3048" stroke-width="3"/><path fill="#d79bbb" stroke="#3f3048" stroke-width="2" d="m14 10 4-5h12l4 5z"/><circle cx="24" cy="25" r="10" fill="#896aa2" stroke="#3f3048" stroke-width="3"/><circle cx="24" cy="25" r="4" fill="#f8d66d"/><path d="M10 11 38 39M38 11 10 39" fill="none" stroke="#e34f5f" stroke-width="8" stroke-linecap="round"/><path d="M10 11 38 39M38 11 10 39" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff5db" stroke="#3e3049" stroke-width="3" stroke-linejoin="round" d="M5 24 24 7l19 17-5 5-4-4v17H14V25l-4 4z"/><path fill="#b58ac8" d="M15 23h7v7h-7zm7 7h7v7h-7zm7-14h7v7h-7zm0 14h5v12h-5z"/><path d="M11 11 37 37M37 11 11 37" stroke="#e34d5c" stroke-width="8" stroke-linecap="round"/><path d="M11 11 37 37M37 11 11 37" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
 
     <button id="cameraMode" aria-label="モザイク表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="10" width="38" height="29" rx="5" fill="#fff7e6" stroke="#3f3048" stroke-width="3"/><path fill="#d79bbb" stroke="#3f3048" stroke-width="2" d="m14 10 4-5h12l4 5z"/><g stroke="#3f3048" stroke-width="1"><path fill="#b78dcc" d="M14 16h7v7h-7zm7 7h7v7h-7zm7-7h7v7h-7zm-14 14h7v6h-7zm14 0h7v6h-7z"/></g><circle cx="39" cy="16" r="2" fill="#ed6f61"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff5db" stroke="#3e3049" stroke-width="3" stroke-linejoin="round" d="M5 24 24 7l19 17-5 5-4-4v17H14V25l-4 4z"/><path fill="#b58ac8" d="M15 23h7v7h-7zm7 7h7v7h-7zm7-14h7v7h-7zm0 14h5v12h-5z"/></svg>
     </button>
 
   </div>
@@ -2329,12 +2331,12 @@ function rail(title,cards){return `<section class="shopSection"><h3>${title}</h3
 function renderShop(){
  const body=document.getElementById("shopBody"); if(!body)return;
  body.innerHTML=rail("装備 / 図鑑",GEAR.map(x=>shopCard(...x)).join(""))+
- rail("エサ　ALL Đ 20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(CREATURE_TYPES.find(c=>c.id===x[0])?.name||""),20)).join(""));
+ rail("エサ　ALL Đ 20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"")),20)).join(""));
 }
 function renderItems(){
  const g=document.getElementById("itemGrid");if(!g)return;let a=[];
  GEAR.forEach(x=>{if(own(x[0]))a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${x[3]}</div><span class="itemCount">×${own(x[0])}</span></div>`)});
- FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${CREATURE_TYPES.find(c=>c.id===x[0])?.name||"キャラ"}を引き寄せる専用エサ</div><span class="itemCount">×${q}</span></div>`)});
+ FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"キャラ")}を引き寄せる専用エサ</div><span class="itemCount">×${q}</span></div>`)});
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
 const signed=v=>(v>=0?"+":"")+v;
@@ -2343,22 +2345,22 @@ const OWNED_DEX_FRAMES=[1,2,3,4,1,2,3,4,1,2,3,4,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
  cancelAnimationFrame(ownedDexAnim);
- g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryMotif">${c.motif}</div><div class="dexEntryTrait">${c.trait}</div><div class="dexEntryStats">歩行 ${signed(c.speedPct)}% ・ 体力 ${signed(c.hpPct)}%<br>ロック ${signed(c.lockPct)}%</div></article>`).join("");
+ g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryMotif">${c.motif}</div><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
  const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/170)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
 function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
-function drawMiniFrame(canvas,id,f,t){
- const c=canvas.getContext("2d");c.clearRect(0,0,128,128);c.save();c.translate(64,70);activeCtx=c;let S=3;
+function drawMiniFrame(canvas,id,f,t,flip=false){
+ const c=canvas.getContext("2d"),oldLocked=locked;c.clearRect(0,0,128,128);c.save();c.translate(64,70);if(flip)c.scale(-1,1);activeCtx=c;locked=false;let S=3;
  try{
  if(id.startsWith("hachibee_"))drawHachibeeRaster(f,t,c,90);else if(id==="kuroneko")drawKuronekoFrame(f,S,t);else if(id==="boosta")drawBoostaFrame(f,S,t);else if(id==="keseranpasaran")drawKeseranPasaranFrame(f,S,t);else if(id==="marumajiro")drawMarumajiroFrame(f,S,t);else if(id==="fukurougu")drawFukurouguFrame(f,S,t);else if(id==="usasasagi")drawUsasasagiFrame(f,S,t);else if(id==="keruberosu")drawKeruberosuFrame(f,S,t);else if(id==="kumojira")drawKumojiraFrame(f,S,t);else if(id==="okoppanda")drawOkoppandaFrame(f,S,t);else if(id==="tsunogame")drawTsunogameFrame(f,S,t);else if(id==="kurokoden")drawKurokodenFrame(f,S,t);else if(id==="tsuyugaeru")drawTsuyugaeruFrame(f,S,t);else if(id==="ririn")drawRirinFrame(f,S,t);else if(id==="sorarisaso")drawSorarisasoFrame(f,S,t);else if(id==="kokokku"){drawKokokkuFrame(f,S,t);drawKokokkuAttackSparks(f,S,t);}else if(id==="dea")drawDeaFrame(f,S,t);else if(id==="riooria")drawRiooriaFrame(f,S,t);else drawPixelFrame(f,S,t);
- }catch(e){} c.restore();
+ }catch(e){} c.restore();locked=oldLocked;activeCtx=ctx;
 }
 let roomAnim=0,roomMoveTimer=0;
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
- CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}})
- cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>drawMini(d.querySelector("canvas"),d.dataset.id,t));roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
- clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{d.style.left=(3+Math.random()*78)+"%";d.style.top=(18+Math.random()*58)+"%"}),2800);renderBox()
+ CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.dataset.frame="1";d.dataset.flip="0";d.dataset.specialUntil="0";d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}});
+ cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
+ clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"}),2200);renderBox()
 }
 function renderBox(){
  const p=document.getElementById("boxPanel"),rows=[];
@@ -3168,11 +3170,12 @@ function gameLoop(time){
         );
 
         setTimeout(()=>{
+          showHub("roomPage");
           creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;
           updateHP();
           lockText.style.display="none";
           if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
-        },900);
+        },2000);
 
         return;
       }
@@ -4422,6 +4425,8 @@ function drawCreature(
   }
 
   activeCtx = ctx;
+  const visualLocked=locked;
+  locked=false;
 
   /* Saved per-motion tilt. Base artwork is upright; angle defaults to 0°. */
   const savedSpriteAngle = getSpriteAngle(creatureType.id,animFrame);
@@ -4484,6 +4489,7 @@ function drawCreature(
 
   /* Shared DAMAGE / SLEEP overlay */
   drawSharedMotionEffect(ctx,animFrame,time,S);
+  locked=visualLocked;
 
   /*
     LOCK表示
@@ -9297,11 +9303,7 @@ function lockCreature(
   lockText.style.display =
     "block";
 
-  timer.style.display =
-    "block";
-
-  timer.textContent =
-    MAX_LOCK.toFixed(1);
+  timer.style.display = "none";
 
   cooldownText.style.display =
     "none";
