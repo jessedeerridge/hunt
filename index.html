@@ -995,7 +995,7 @@ html,body{
 .hubHead{display:none}.hubBody{padding-top:calc(58px + env(safe-area-inset-top))!important}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
 #roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(165deg,#fff 0 56%,#f3f0e9 56% 58%,#e7e2d8 58% 100%);border:8px solid #665a7c;border-radius:10px;box-shadow:inset 0 0 0 4px #c7bdd8,inset 0 0 32px rgba(72,61,94,.12),0 4px 0 #332d42}#roomStage::after{content:"";position:absolute;inset:8px;border:2px solid rgba(102,90,124,.45);border-radius:3px;pointer-events:none;z-index:2}
-#roomFeedBtn{position:absolute;right:12px;bottom:12px;z-index:4;width:48px;height:48px;padding:5px;border:2px solid #fff;border-radius:50%;background:#e8785e;box-shadow:0 4px 0 #8c3b31;color:#fff;pointer-events:auto}#roomFeedBtn svg{width:30px;height:30px;display:block;margin:auto}#roomFeedBowl{position:absolute;left:50%;top:62%;z-index:3;display:none;width:54px;height:30px;transform:translate(-50%,-50%);border:3px solid #4f3040;border-radius:8px 8px 24px 24px;background:#fff1cf;box-shadow:0 6px 0 rgba(0,0,0,.15)}#roomFeedBowl.show{display:block}#roomFeedBowl::before{content:"";position:absolute;left:5px;right:5px;top:-8px;height:13px;border:2px solid #4f3040;border-radius:50%;background:#e57c62}
+#roomFeedBtn{position:absolute;right:12px;bottom:12px;z-index:4;width:48px;height:48px;padding:5px;border:2px solid #fff;border-radius:50%;background:#e8785e;box-shadow:0 4px 0 #8c3b31;color:#fff;pointer-events:auto}#roomFeedBtn svg{width:30px;height:30px;display:block;margin:auto}#roomFeedBowl{position:absolute;touch-action:none;cursor:grab;left:50%;top:62%;z-index:3;display:none;width:54px;height:30px;transform:translate(-50%,-50%);border:3px solid #4f3040;border-radius:8px 8px 24px 24px;background:#fff1cf;box-shadow:0 6px 0 rgba(0,0,0,.15)}#roomFeedBowl.show{display:block}#roomFeedBowl::before{content:"";position:absolute;left:5px;right:5px;top:-8px;height:13px;border:2px solid #4f3040;border-radius:50%;background:#e57c62}
 #roomBoxBtn{position:absolute;right:10px;top:10px;z-index:3;border:2px solid #fff;background:#111827;color:#fff;padding:9px;font:900 11px monospace}
 .roomPet{position:absolute;width:86px;text-align:center;transition:left 2.8s linear,top 2.8s linear}
 .roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:none}
@@ -1005,7 +1005,7 @@ html,body{
 .shopRailWrap{position:relative}.shopRail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:6px}
 .shopCard{min-width:0;min-height:168px;border:2px solid #fff;background:#0b0e15;padding:8px 5px;text-align:center}.shopIcon{height:68px;display:grid;place-items:center}.shopIcon svg{width:58px;height:58px;filter:drop-shadow(0 3px 0 #000)}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 2px;font:900 9px monospace}
 .railArrow{display:none}
-#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.simpleCard{aspect-ratio:1;min-width:0;overflow:hidden;border:2px solid #fff;background:#0b0e15;padding:6px;text-align:center;font-size:clamp(7px,1.8vw,10px);line-height:1.25;white-space:nowrap}.simpleCard b,.simpleCard .shopDesc,.dexEntryName,.dexEntryTrait{display:block;min-height:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:inherit;line-height:1.25}.simpleCard .shopIcon{height:48%}.simpleCard .shopIcon svg{width:min(52px,80%);height:min(52px,80%)}.dexEntry{text-align:center}.dexEntry canvas{display:block;width:62%;height:auto;aspect-ratio:1;max-width:128px;margin:0 auto 2px;image-rendering:pixelated}.dexEntryName{color:#ffe46b}.dexEntryTrait{margin-top:3px;opacity:.8}
+#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.simpleCard{aspect-ratio:1;min-width:0;overflow:hidden;border:2px solid #fff;background:#0b0e15;padding:6px;text-align:center;font-size:clamp(7px,1.8vw,10px);line-height:1.25;white-space:nowrap}.simpleCard b,.simpleCard .shopDesc,.dexEntryName,.dexEntryTrait{display:block;min-height:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:inherit;line-height:1.25}.simpleCard .shopIcon{height:48%}.simpleCard .shopIcon svg{width:min(52px,80%);height:min(52px,80%)}.dexEntry{aspect-ratio:auto!important;min-height:clamp(150px,30vw,250px);text-align:center}.dexEntry canvas{display:block;width:62%;height:auto;aspect-ratio:1;max-width:128px;margin:0 auto 2px;image-rendering:pixelated}.dexEntryName{color:#ffe46b}.dexEntryTrait{margin-top:3px;opacity:.8}
 
 /* ===== CLEAN GAME BUTTON POLISH ===== */
 #roomBoxBtn,
@@ -1127,7 +1127,7 @@ html,body{
     </button>
 
     <button id="cameraMode" aria-label="モザイク表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff5db" stroke="#3e3049" stroke-width="3" stroke-linejoin="round" d="M5 24 24 7l19 17-5 5-4-4v17H14V25l-4 4z"/><path fill="#b58ac8" d="M15 23h7v7h-7zm7 7h7v7h-7zm7-14h7v7h-7zm0 14h5v12h-5z"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3e3049" stroke-width="1.5"><path fill="#f3d86f" d="M21 6h7v7h-7zM14 13h7v7h-7zm14 7h7v7h-7zM7 20h7v7H7zm28 7h7v7h-7zM14 27h7v7h-7zm7-7h7v7h-7zm0 14h7v8h-7zm14 7h-7v-7h7z"/><path fill="#b58ac8" d="M14 20h7v7h-7zm14-7h7v7h-7zM7 27h7v7H7zm28-7h7v7h-7zM14 34h7v7h-7zm14-7h7v7h-7z"/></g></svg>
     </button>
 
   </div>
@@ -1511,7 +1511,7 @@ resize();
    CAMERA PIXEL
 ========================================================= */
 
-const PIXEL_WIDTH = 70;
+const PIXEL_WIDTH = 63;
 
 const rawCanvas =
   document.createElement("canvas");
@@ -2357,18 +2357,21 @@ function drawMiniFrame(canvas,id,f,t,flip=false){
  }catch(e){} c.restore();locked=oldLocked;activeCtx=ctx;
 }
 let roomAnim=0,roomMoveTimer=0;
+function moveRoomPets(){
+ document.querySelectorAll(".roomPet").forEach(d=>{if(roomFeed&&performance.now()<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"})
+}
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
  CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.dataset.frame="1";d.dataset.flip="0";d.dataset.specialUntil="0";d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}});
- cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))f=12+(Math.floor(t/260)%2);else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
- clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{if(roomFeed&&performance.now()<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"}),2200);renderBox()
+ cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))f=t<roomFeed.eatStart?1+(Math.floor(t/240)%4):12+(Math.floor(t/260)%2);else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
+ clearInterval(roomMoveTimer);requestAnimationFrame(moveRoomPets);roomMoveTimer=setInterval(moveRoomPets,2200);renderBox()
 }
 function renderBox(){
  const p=document.getElementById("boxPanel"),rows=[];
  DEX_SPECIES.forEach(c=>{
   if(c.id==="hachibee_square"){
    const sq=hubData.caught.hachibee_square||0,ci=hubData.caught.hachibee_circle||0,bs=hubData.boxed.hachibee_square||0,bc=hubData.boxed.hachibee_circle||0;if(!sq&&!ci)return;
-   rows.push(`<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="hachibee_square" aria-label="ハチビー"></canvas><b>ハチビー　捕獲 ${sq+ci}（□${sq} / ○${ci}）<br>BOX ${bs+bc}（□${bs} / ○${bc}）</b><button onclick="boxChange('hachibee',1)">しまう</button><button onclick="boxChange('hachibee',-1)">出す</button></div>`);return;
+   rows.push(`<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="hachibee_square" aria-label="ハチビー"></canvas><b>ハチビー　捕獲 ${sq+ci}<br>BOX ${bs+bc}</b><button onclick="boxChange('hachibee',1)">しまう</button><button onclick="boxChange('hachibee',-1)">出す</button></div>`);return;
   }
   const n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;if(n)rows.push(`<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="${c.id}" aria-label="${c.name}"></canvas><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`)
  });
@@ -2410,11 +2413,15 @@ function updateFeedAttraction(time,dt){
  const d=angleDiff(placedFeed.yaw,creatureYaw);sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
  if(Math.abs(d)<1.3){placedFeed.contactSeconds+=dt;if(animState!=="attack")setAnimation("attack",time);if(placedFeed.contactSeconds>=10)placedFeed=null}
 }
+function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
 function placeRoomFeed(id){
- const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");roomFeed={id,until:performance.now()+10000};roomFeedBowl.classList.add("show");
- document.querySelectorAll(`.roomPet[data-id="${id}"]${id.startsWith("hachibee_")?',.roomPet[data-id^="hachibee_"]':''}`).forEach((d,i)=>{d.dataset.specialUntil=String(roomFeed.until);d.dataset.frame=String(i%2?12:13);d.dataset.flip=(parseFloat(d.style.left)||0)>48?"1":"0";d.style.left=(43+(i%4)*4)+"%";d.style.top=(50+Math.floor(i/4)*5)+"%"});
- setTimeout(()=>{if(roomFeed&&roomFeed.id===id){roomFeed=null;roomFeedBowl.classList.remove("show")}},10000)
+ const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");const now=performance.now();roomFeed={id,eatStart:now+2800,until:now+12800};roomFeedBowl.classList.add("show");attractRoomPets();
+ const expire=()=>{if(!roomFeed||roomFeed.id!==id)return;const wait=roomFeed.until-performance.now();if(wait>0){setTimeout(expire,wait);return}roomFeed=null;roomFeedBowl.classList.remove("show")};setTimeout(expire,12800)
 }
+let roomFeedDragging=false;
+roomFeedBowl.addEventListener("pointerdown",e=>{roomFeedDragging=true;roomFeedBowl.setPointerCapture(e.pointerId)});
+roomFeedBowl.addEventListener("pointermove",e=>{if(!roomFeedDragging||!roomFeed)return;const r=document.getElementById("roomStage").getBoundingClientRect();roomFeedBowl.style.left=clamp((e.clientX-r.left)/r.width*100,8,92)+"%";roomFeedBowl.style.top=clamp((e.clientY-r.top)/r.height*100,12,88)+"%";roomFeed.eatStart=performance.now()+800;roomFeed.until=roomFeed.eatStart+10000;attractRoomPets()});
+roomFeedBowl.addEventListener("pointerup",()=>roomFeedDragging=false);
 feedButton.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("hunt")});
 roomFeedBtn.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("room")});
 feedPicker.addEventListener("click",e=>e.stopPropagation());
