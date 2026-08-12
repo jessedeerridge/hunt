@@ -2270,17 +2270,29 @@ function spawnCreature(){
 
 
 /* ===== HUB SYSTEM ===== */
-const SAVEKEY="PCH360_HUB_V1";
-const DEFAULT_HUB_DATA={money:5000,caught:{blueboy:5},boxed:{},items:{}};
-let hubData=(()=>{
- try{
-  const saved=JSON.parse(localStorage.getItem(SAVEKEY)||"null");
-  if(!saved)return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
-  return Object.assign({},DEFAULT_HUB_DATA,saved,{caught:Object.assign({},DEFAULT_HUB_DATA.caught,saved.caught||{}),boxed:saved.boxed||{},items:saved.items||{}});
- }catch(e){
-  return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
- }
-})();
+const SAVEKEY="PCH360_PLAYER_SAVE"; // Stable forever: never tie player data to a code version.
+const SAVEBACKUPKEY="PCH360_PLAYER_SAVE_BACKUP";
+const LEGACY_SAVE_KEYS=["PCH360_HUB_V1"];
+const SAVE_SCHEMA_VERSION=2;
+const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:5000,caught:{blueboy:5},boxed:{},items:{}};
+function normalizeHubData(source){
+ const raw=source&&typeof source==="object"?source:{};
+ return {schemaVersion:SAVE_SCHEMA_VERSION,money:Number.isFinite(Number(raw.money))?Math.max(0,Number(raw.money)):DEFAULT_HUB_DATA.money,caught:Object.assign({},DEFAULT_HUB_DATA.caught,raw.caught||{}),boxed:Object.assign({},raw.boxed||{}),items:Object.assign({},raw.items||{})};
+}
+function readStoredHubData(){
+ const keys=[SAVEKEY,SAVEBACKUPKEY,...LEGACY_SAVE_KEYS];
+ for(const key of keys){try{const value=localStorage.getItem(key);if(value)return normalizeHubData(JSON.parse(value))}catch(e){console.warn("save read failed",key,e)}}
+ return normalizeHubData(DEFAULT_HUB_DATA);
+}
+let hubData=readStoredHubData();
+function persistHubData(){
+ const payload=JSON.stringify(normalizeHubData(hubData));
+ try{localStorage.setItem(SAVEKEY,payload);localStorage.setItem(SAVEBACKUPKEY,payload)}catch(e){console.warn("save write failed",e)}
+}
+/* Migrate old saves immediately, while retaining the old entry as an extra fallback. */
+persistHubData();
+addEventListener("pagehide",persistHubData);
+
 const FEEDS=[
  ["blueboy","しずく煮","can","しずく型の粒"],["hachibee_square","カクミツ","bag","四角い蜜菓子"],
  ["hachibee_circle","まる蜜ポン","box","軽い蜜玉"],["kuroneko","ヨナカ節","pouch","香る黒節"],
@@ -2326,7 +2338,7 @@ function shopIcon(type){
  };
  return icons[type]||icons.book;
 }
-function saveHub(){localStorage.setItem(SAVEKEY,JSON.stringify(hubData));updateHubUI()}
+function saveHub(){persistHubData();updateHubUI()}
 function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money;const dexNav=document.querySelector('.navBtn[data-page="ownedDexPage"]');if(dexNav){const unlocked=!!own("fulldex");dexNav.disabled=!unlocked;dexNav.setAttribute("aria-disabled",String(!unlocked));dexNav.title=unlocked?"図鑑を開く":"ショップでキャラ図鑑を購入すると解放"}}
 function own(k){return hubData.items[k]||0}
 let gamePopupTimer=0;
@@ -2344,8 +2356,9 @@ function shopCard(k,n,ic,d,p){const sold=!k.startsWith("feed_")&&own(k)>0;return
 function rail(title,cards){return `<section class="shopSection"><h3>${title}</h3><div class="shopRailWrap"><div class="shopRail">${cards}</div><div class="railArrow">›</div></div></section>`}
 function renderShop(){
  const body=document.getElementById("shopBody"); if(!body)return;
+ const dexOwned=own("fulldex")>0;
  body.innerHTML=rail("装備 / 図鑑",GEAR.map(x=>shopCard(...x)).join(""))+
- rail("エサ　ALL Đ 20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"")),20)).join(""));
+ rail("エサ　ALL Đ 20",FEEDS.map(x=>{const target=x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"");return shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(dexOwned?target:"？？？"),20)}).join(""));
 }
 function renderItems(){
  const g=document.getElementById("itemGrid");if(!g)return;let a=[];
