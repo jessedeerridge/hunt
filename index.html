@@ -1059,14 +1059,14 @@ html,body{
 }
 
 .inventoryCard{position:relative}.inventoryCard .shopDesc{min-height:0!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.3!important}.itemCount{position:absolute;right:5px;bottom:5px;display:grid;place-items:center;min-width:25px;height:22px;padding:0 5px;border-radius:999px;background:#f3bc48;color:#35230f;box-shadow:0 2px 0 #8f621b;font:900 9px monospace}
-#timer{display:none!important}
+#timer,#cooldown{display:none!important}
 /* HUNT FEED */
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
 .dexEntry{display:flex;flex-direction:column;justify-content:flex-start}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:0 0 auto;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
 
 /* HUNT LOADOUT */
-#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
+#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
 #huntCompanion{position:fixed;left:50%;bottom:70px;z-index:8;display:none;width:104px;height:104px;transform:translateX(-50%);transition:left .65s ease,bottom .65s ease;pointer-events:none}#huntCompanion canvas{width:104px;height:104px;image-rendering:pixelated}
 </style>
 </head>
@@ -1144,7 +1144,7 @@ html,body{
 <div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
-<div id="huntLoadout" role="dialog" aria-modal="true" aria-labelledby="loadoutTitle"><div class="loadoutBox"><h2 id="loadoutTitle">HUNT編成</h2><p>連れて行くキャラと装備を1つずつ選択</p><div class="loadoutLabel">PARTNER</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">EQUIPMENT</div><div id="gearChoices" class="loadoutGrid"></div><div class="loadoutActions"><button id="loadoutCancel" class="loadoutCancel">もどる</button><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
+<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
 <div id="huntCompanion"><canvas width="128" height="128" aria-label="同行キャラクター"></canvas></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
@@ -2417,11 +2417,11 @@ function openHuntLoadout(){
  gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">ショップで装備を購入してください</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
  loadoutStart.disabled=!(selectedPartner&&selectedGear);huntLoadout.classList.add("show")
 }
-document.getElementById("loadoutCancel").onclick=()=>huntLoadout.classList.remove("show");
 loadoutStart.onclick=()=>{huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()};
+huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
- if(creatureVisible&&!locked){const p=projectCreature(creatureYaw,creaturePitch);if(!companionEngagedAt)companionEngagedAt=time;const approaching=time-companionEngagedAt<850;if(approaching){huntCompanion.style.left=clamp(p.x-55,55,W-55)+"px";huntCompanion.style.bottom=clamp(H-p.y-60,65,H-150)+"px";frame=1+(Math.floor(time/140)%4);flip=p.x<W/2}else{frame=12+(Math.floor(time/260)%2);if(time>=companionAttackAt){hp=Math.max(1,hp-selectedPartner.attackDamage);updateHP();companionAttackAt=time+720}}}else{companionEngagedAt=0;huntCompanion.style.left="50%";huntCompanion.style.bottom="70px"}
+ if(creatureVisible&&locked){const p=projectCreature(creatureYaw,creaturePitch);if(!companionEngagedAt)companionEngagedAt=time;const approaching=time-companionEngagedAt<850;if(approaching){huntCompanion.style.left=clamp(p.x-55,55,W-55)+"px";huntCompanion.style.bottom=clamp(H-p.y-60,65,H-150)+"px";frame=1+(Math.floor(time/140)%4);flip=p.x<W/2}else{frame=12+(Math.floor(time/260)%2);if(time>=companionAttackAt){hp=Math.max(1,hp-selectedPartner.attackDamage);updateHP();companionAttackAt=time+720}}}else{companionEngagedAt=0;huntCompanion.style.left="50%";huntCompanion.style.bottom="70px"}
  drawMiniFrame(companionCanvas,selectedPartner.id,frame,time,flip)
 }
 
@@ -2430,7 +2430,8 @@ const feedButton=document.getElementById("feedButton"),feedPicker=document.getEl
 let placedFeed=null,feedPickerMode="hunt",roomFeed=null;
 function openFeedPicker(mode="hunt"){
  feedPickerMode=mode;
- const owned=FEEDS.filter(x=>own("feed_"+x[0])>0);
+ const roomIds=new Set([...document.querySelectorAll(".roomPet")].map(d=>d.dataset.id));
+ const owned=FEEDS.filter(x=>own("feed_"+x[0])>0&&(mode!=="room"||roomIds.has(x[0])||(x[0].startsWith("hachibee_")&&[...roomIds].some(id=>id.startsWith("hachibee_")))));
  feedPicker.innerHTML='<div class="feedHint">置くエサを選択</div>'+owned.map(x=>`<button class="feedChoice" data-id="${x[0]}"><span class="shopIcon">${shopIcon(x[2])}</span>${x[1]} ×${own("feed_"+x[0])}</button>`).join("")+(owned.length?"":'<div class="feedHint">購入済みのエサがありません</div>');
  feedPicker.classList.toggle("show");
  feedPicker.querySelectorAll(".feedChoice").forEach(b=>b.addEventListener("click",()=>feedPickerMode==="room"?placeRoomFeed(b.dataset.id):placeFeed(b.dataset.id)));
@@ -8010,12 +8011,12 @@ function drawKokokkuAttackSparks(frame,S,time){
 function drawDeaFrame(frame,S,time){
   const {C,q,d,xeye,P}=extraTools(S,{o:'#49382f',b:'#a87755',b2:'#d0aa84',inner:'#e8b8b0',cream:'#e7cfb0',eye:'#231b17',hoof:'#26201d',ant:'#3d2a20',ant2:'#6f4b36',fx:'#ffe36b'},.55);
   function antler(baseX,mirror=1){
-    const X=v=>baseX+v*mirror, bar=(a,b,y,c=P.ant)=>q(Math.min(X(a),X(b)),y,Math.abs(b-a)+2,2,c);
-    // Each antler grows outward from its own root; the crowns never bridge the head.
-    q(Math.min(X(-1),X(1)),-29,3,13,P.ant);bar(0,5,-39,P.ant2);q(Math.min(X(4),X(6)),-45,3,8,P.ant);
-    bar(4,10,-43,P.ant);q(Math.min(X(9),X(11)),-49,3,8,P.ant2);
-    bar(8,15,-47,P.ant2);q(Math.min(X(14),X(16)),-54,3,8,P.ant);
-    d(X(5),-46,P.ant2);d(X(11),-50,P.ant);d(X(16),-55,P.ant2);
+    const X=v=>baseX+v*mirror, h=(a,b,y,c=P.ant)=>q(Math.min(X(a),X(b)),y,Math.abs(b-a)+2,2,c);
+    // Compact branching crowns remain fully inside both game and 128px mini canvases.
+    q(Math.min(X(-1),X(1)),-29,3,11,P.ant);h(0,4,-38,P.ant2);q(Math.min(X(3),X(5)),-42,3,6,P.ant);
+    h(3,8,-40,P.ant);q(Math.min(X(7),X(9)),-45,3,6,P.ant2);
+    h(7,12,-43,P.ant2);q(Math.min(X(11),X(13)),-48,3,6,P.ant);
+    d(X(5),-43,P.ant2);d(X(9),-46,P.ant);d(X(13),-49,P.ant2);
   }
   function leg(x,y,step=0,fold=false){
     if(fold){q(x-1,y,8,3,P.o);q(x,y+1,6,2,P.b);q(x+5,y+2,5,2,P.hoof);return}
