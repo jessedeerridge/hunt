@@ -294,17 +294,6 @@ html,body{
   opacity:.86;
 }
 
-#secureStatus{
-
-  margin-top:12px;
-
-  padding:6px 10px;
-
-  border:1px solid rgba(255,255,255,.35);
-
-  font-size:11px;
-}
-
 #startButton{
 
   min-width:250px;
@@ -1073,9 +1062,9 @@ html,body{
 #start{overflow:hidden;background:radial-gradient(circle at 18% 19%,rgba(255,255,255,.9) 0 3px,transparent 4px),radial-gradient(circle at 83% 14%,rgba(255,255,255,.75) 0 2px,transparent 3px),linear-gradient(160deg,#6fd6ef 0 48%,#7ccf9b 48% 65%,#4fa876 65%);font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif}
 #start::before,#start::after{content:"";position:absolute;z-index:-1;width:190px;height:190px;border:6px solid rgba(255,250,213,.25);transform:rotate(28deg)}#start::before{left:-95px;top:-75px}#start::after{right:-105px;bottom:-95px}
 #startIcon{position:relative;width:132px;height:132px;display:grid;place-items:center;border:5px solid #fff8d8;border-radius:36px;background:linear-gradient(145deg,#dff8ff,#85d9f0);box-shadow:0 9px 0 #22577a,0 16px 26px rgba(22,57,78,.28),inset 0 4px 0 #fff;transform:rotate(-3deg)}
-#startIcon svg{width:112px;height:112px;image-rendering:pixelated;filter:drop-shadow(0 6px 0 rgba(35,70,98,.22))}#startIcon::after{content:"";position:absolute;right:-12px;top:-10px;width:28px;height:28px;background:#ffd452;border:4px solid #fff8d8;border-radius:50%;box-shadow:0 4px 0 #a96b25}
-#start h1{margin:23px 0 5px;color:#fff9d8;font:900 clamp(30px,9vw,48px) "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.08em;text-shadow:0 4px 0 #174b72,3px 7px 0 rgba(14,52,76,.22)}#start h1 span{display:inline-block;color:#ffe06c;transform:rotate(-4deg)}
-#start p{font-size:12px;line-height:1.65;font-weight:800;text-shadow:0 2px 0 rgba(28,72,92,.38)}#secureStatus{border:2px solid rgba(255,255,255,.75);border-radius:999px;background:rgba(21,88,105,.25)}
+#startIcon canvas{width:124px;height:124px;image-rendering:pixelated;filter:drop-shadow(0 6px 0 rgba(35,70,98,.22))}
+#start h1{display:flex;align-items:flex-end;justify-content:center;gap:clamp(1px,.7vw,5px);margin:23px 0 9px;font:900 clamp(27px,8vw,45px) "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:0;text-shadow:0 4px 0 #174b72,3px 7px 0 rgba(14,52,76,.22)}#start h1 span{display:inline-grid;place-items:center;color:#fff9d8;transform:translateY(var(--lift,0)) rotate(var(--turn,0));filter:drop-shadow(0 2px 0 rgba(255,255,255,.18))}#start h1 span:nth-child(3n+1){--lift:-4px;--turn:-5deg;color:#ffe06c}#start h1 span:nth-child(3n+2){--lift:2px;--turn:3deg;color:#fff9d8}#start h1 span:nth-child(3n){--lift:-1px;--turn:-2deg;color:#b9f3ff}#start h1 .titleGap{width:.28em}
+#start p{font-size:12px;line-height:1.75;font-weight:800;text-shadow:0 2px 0 rgba(28,72,92,.38)}
 #startButton{border:4px solid #fff8d8;border-radius:18px;background:linear-gradient(#ffd96a,#ffad4e);color:#573319;box-shadow:0 7px 0 #a8562d,0 12px 22px rgba(34,75,84,.32),inset 0 3px 0 rgba(255,255,255,.65);font:900 17px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.12em}#startButton:active{transform:translateY(5px);box-shadow:0 2px 0 #a8562d}
 #dexButton{display:none!important}
 #hp{display:none}#hp.revealed{display:block}
@@ -1173,50 +1162,29 @@ html,body{
 <div id="start">
 
   <div id="startIcon">
-    <svg viewBox="0 0 112 112" role="img" aria-label="ブルーボーイ">
-      <path fill="#25678f" stroke="#173c61" stroke-width="5" stroke-linejoin="round" d="M23 47 16 32l16 5c6-7 14-11 24-11s18 4 24 11l16-5-7 15c3 7 4 16 1 24-4 15-17 25-34 25S26 86 22 71c-3-8-2-17 1-24Z"/>
-      <path fill="#79cce5" d="M29 51c5-12 14-18 27-18s22 6 27 18c5 12 1 29-10 36-5 3-11 5-17 5s-12-2-17-5c-11-7-15-24-10-36Z"/>
-      <path fill="#eafaff" d="M37 58c0-8 7-14 15-14h8c8 0 15 6 15 14v14c0 9-8 16-19 16s-19-7-19-16Z"/>
-      <rect x="38" y="52" width="8" height="10" rx="3" fill="#173c61"/><rect x="66" y="52" width="8" height="10" rx="3" fill="#173c61"/>
-      <path fill="#2f6d91" stroke="#173c61" stroke-width="3" d="M50 67h12l-6 7Z"/><path fill="none" stroke="#173c61" stroke-width="3" stroke-linecap="round" d="M56 74v5m0 0-6 3m6-3 6 3"/>
-      <path fill="#fff" d="M39 53h3v3h-3zm28 0h3v3h-3z"/>
-    </svg>
+    <canvas id="startBlueboy" width="128" height="128" role="img" aria-label="ブルーボーイ"></canvas>
   </div>
 
-  <h1>
-    <span>ピクセル</span>ハント
+  <h1 aria-label="ピクセルハント">
+    <span>ピ</span><span>ク</span><span>セ</span><span>ル</span><i class="titleGap" aria-hidden="true"></i><span>ハ</span><span>ン</span><span>ト</span>
   </h1>
 
   <p>
 
-    ブルーボーイと、ふしぎな仲間を探しにいこう！
+    360°スマホを動かして<br>
+    あなたの部屋の中に隠れている<br>
+    ふしぎな ピクセル生物 を探そう！
 
     <br><br>
 
-    360°スマホを動かして
-    ブルーボーイを探します。
-
-    <br>
-
-    白い点線の四角が
-    ロック可能エリアです。
-
-    <br><br>
-
-    キャラクターを四角内に入れて
-    スマホを振るとロック。
-
-    <br>
-
-    振っている間だけ
-    ロックが続きます。
+    ピクセル生物をスマホの中にとらえて、<br>
+    スマホを振るとロック！<br>
+    ふり続けて、ピクセル生物 をハントだ！
 
   </p>
 
-  <div id="secureStatus">✓ SECURE</div>
-
   <div id="startActions">
-    <button id="startButton">ハントをはじめる</button>
+    <button id="startButton">はじめる</button>
 
     <button id="dexButton" type="button">
       ▦<br>図鑑
@@ -1416,9 +1384,6 @@ const dexTabs =
 const errorBox =
   document.getElementById("error");
 
-const secureStatus =
-  document.getElementById("secureStatus");
-
 const hud =
   document.getElementById("hud");
 
@@ -1457,20 +1422,6 @@ const cameraModeButton =
 /* =========================================================
    HTTPS
 ========================================================= */
-
-if(window.isSecureContext){
-
-  secureStatus.textContent =
-    "✓ SECURE";
-
-}else{
-
-  secureStatus.textContent =
-    "⚠ HTTPS REQUIRED";
-
-  secureStatus.style.color =
-    "#ff9999";
-}
 
 /* =========================================================
    SCREEN
@@ -2406,6 +2357,13 @@ function drawMiniFrame(canvas,id,f,t,flip=false){
  if(id.startsWith("hachibee_"))drawHachibeeRaster(f,t,c,90);else if(id==="kuroneko")drawKuronekoFrame(f,S,t);else if(id==="boosta")drawBoostaFrame(f,S,t);else if(id==="keseranpasaran")drawKeseranPasaranFrame(f,S,t);else if(id==="marumajiro")drawMarumajiroFrame(f,S,t);else if(id==="fukurougu")drawFukurouguFrame(f,S,t);else if(id==="usasasagi")drawUsasasagiFrame(f,S,t);else if(id==="keruberosu")drawKeruberosuFrame(f,S,t);else if(id==="kumojira")drawKumojiraFrame(f,S,t);else if(id==="okoppanda")drawOkoppandaFrame(f,S,t);else if(id==="tsunogame")drawTsunogameFrame(f,S,t);else if(id==="kurokoden")drawKurokodenFrame(f,S,t);else if(id==="tsuyugaeru")drawTsuyugaeruFrame(f,S,t);else if(id==="ririn")drawRirinFrame(f,S,t);else if(id==="sorarisaso")drawSorarisasoFrame(f,S,t);else if(id==="kokokku"){drawKokokkuFrame(f,S,t);drawKokokkuAttackSparks(f,S,t);}else if(id==="dea")drawDeaFrame(f,S,t);else if(id==="riooria")drawRiooriaFrame(f,S,t);else drawPixelFrame(f,S,t);
  }catch(e){} c.restore();locked=oldLocked;activeCtx=ctx;
 }
+const startBlueboy=document.getElementById("startBlueboy");
+function animateStartBlueboy(time){
+ if(start.style.display==="none")return;
+ drawMiniFrame(startBlueboy,"blueboy",1+(Math.floor(time/240)%4),time);
+ requestAnimationFrame(animateStartBlueboy);
+}
+requestAnimationFrame(animateStartBlueboy);
 let roomAnim=0,roomMoveTimer=0;
 function moveRoomPets(){
  document.querySelectorAll(".roomPet").forEach(d=>{if(roomFeed&&performance.now()<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;if(Math.random()<.32){const r=Math.random();d.dataset.frame=r<.3?8:r<.48?9:r<.74?(Math.random()<.5?12:13):(Math.random()<.5?14:15);d.dataset.specialUntil=String(performance.now()+(d.dataset.frame==="8"?1800:900));return}const old=parseFloat(d.style.left)||0,next=3+Math.random()*78;d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=(18+Math.random()*58)+"%"})
@@ -8921,7 +8879,6 @@ function exportEditedHtml(){
   resetStyle("lock");
   resetStyle("timer");
   resetStyle("cooldown");
-  resetStyle("secureStatus");
   resetStyle("error");
 
   const wrap = q("spriteCanvasWrap");
