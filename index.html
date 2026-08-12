@@ -980,7 +980,7 @@ html,body{
   left:0;top:0;
 }
 
-#moneyHud{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top));z-index:145;display:none;min-width:88px;padding:8px 14px;border:1px solid rgba(91,57,13,.18);border-radius:999px;background:rgba(255,255,255,.94);color:#35230f;box-shadow:0 4px 14px rgba(44,29,12,.14);font:900 14px "Arial Rounded MT Bold","Yu Gothic",sans-serif;text-align:center;pointer-events:none}#moneyHud .moneyMark{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:5px;border-radius:50%;background:#f3b83f;color:#fff;font-size:11px;vertical-align:middle}
+#moneyHud{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top));z-index:145;display:none;align-items:center;gap:8px;min-width:92px;padding:7px 13px 7px 8px;border:0;border-radius:999px;background:rgba(30,28,34,.88);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(8px);font:800 14px "Arial Rounded MT Bold","Yu Gothic",sans-serif;letter-spacing:.04em;pointer-events:none}#moneyHud .moneyMark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(145deg,#ffe797,#d9a62d);color:#493713;box-shadow:inset 0 1px #fff5c8;font:900 11px monospace}
 #gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
 #gamePopup.show{display:block;animation:gamePopupIn .18s ease-out both}
 @keyframes gamePopupIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -1016,11 +1016,12 @@ html,body{
   transition:transform .08s ease,box-shadow .08s ease,filter .1s ease;
 }
 #roomBoxBtn{
-  padding:9px 13px;
+  display:grid;place-items:center;width:48px;height:43px;padding:0;
   background:#eef4ff;
   color:#25324b;
   box-shadow:0 4px 0 #71809b,inset 0 2px 0 #fff;
 }
+#roomBoxBtn svg{width:30px;height:27px;display:block}
 .buyBtn{
   width:100%;
   padding:8px 4px;
@@ -1137,7 +1138,7 @@ html,body{
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
-<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
+<div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
 <div id="itemPage" class="hubPage"><div class="hubHead"><div class="hubTitle">アイテム</div></div><div class="hubBody"><div id="itemGrid"></div></div></div>
 <div id="shopPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ショップ</div></div><div class="hubBody" id="shopBody"></div></div>
 <div id="ownedDexPage" class="hubPage"><div class="hubHead"><div class="hubTitle">図鑑</div></div><div class="hubBody"><div id="ownedDexGrid"></div></div></div>
@@ -2361,8 +2362,8 @@ function renderRoom(){
 }
 function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="${c.id}" aria-label="${c.name}"></canvas><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。";p.querySelectorAll(".boxAvatar").forEach(c=>drawMiniFrame(c,c.dataset.id,1,performance.now()))}
 function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
-function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="block";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHub(id){feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
+function showHunt(){feedPicker.classList.remove("show");cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
 document.getElementById("huntNav").addEventListener("click",showHunt);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
@@ -2390,7 +2391,9 @@ function updateFeedAttraction(time,dt){
  const d=angleDiff(placedFeed.yaw,creatureYaw);sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
  if(Math.abs(d)<1.3){placedFeed.contactSeconds+=dt;if(animState!=="attack")setAnimation("attack",time);if(placedFeed.contactSeconds>=10)placedFeed=null}
 }
-feedButton.addEventListener("click",openFeedPicker);
+feedButton.addEventListener("click",e=>{e.stopPropagation();openFeedPicker()});
+feedPicker.addEventListener("click",e=>e.stopPropagation());
+document.addEventListener("pointerdown",e=>{if(feedPicker.classList.contains("show")&&!feedPicker.contains(e.target)&&!feedButton.contains(e.target))feedPicker.classList.remove("show")});
 
 startButton.addEventListener(
   "click",
@@ -2615,7 +2618,7 @@ startButton.addEventListener(
       "block";
 
     document.getElementById("bottomNav").style.display="flex";
-    document.getElementById("moneyHud").style.display="block";
+    document.getElementById("moneyHud").style.display="flex";
     showHub("roomPage");
 
     sensorWait.style.display =
@@ -7928,15 +7931,12 @@ function drawKokokkuAttackSparks(frame,S,time){
 function drawDeaFrame(frame,S,time){
   const {C,q,d,xeye,P}=extraTools(S,{o:'#49382f',b:'#a87755',b2:'#d0aa84',inner:'#e8b8b0',cream:'#e7cfb0',eye:'#231b17',hoof:'#26201d',ant:'#3d2a20',ant2:'#6f4b36',fx:'#ffe36b'},.55);
   function antler(baseX,mirror=1){
-    const X=v=>baseX+v*mirror;
-    // monumental sweeping main beam
-    q(Math.min(X(-1),X(1)),-28,3,14,P.ant);q(Math.min(X(-3),X(1)),-38,5,11,P.ant2);
-    // four long crown branches
-    q(Math.min(X(0),X(9)),-34,10,2,P.ant);q(Math.min(X(7),X(9)),-40,3,7,P.ant2);
-    q(Math.min(X(-1),X(10)),-39,12,2,P.ant2);q(Math.min(X(8),X(10)),-46,3,8,P.ant);
-    q(Math.min(X(-2),X(8)),-44,11,2,P.ant);q(Math.min(X(6),X(8)),-51,3,8,P.ant2);
-    q(Math.min(X(-3),X(5)),-49,9,2,P.ant2);q(Math.min(X(3),X(5)),-55,3,7,P.ant);
-    d(X(4),-56,P.ant2);d(X(10),-47,P.ant2);d(X(9),-41,P.ant2);
+    const X=v=>baseX+v*mirror, bar=(a,b,y,c=P.ant)=>q(Math.min(X(a),X(b)),y,Math.abs(b-a)+2,2,c);
+    // Each antler grows outward from its own root; the crowns never bridge the head.
+    q(Math.min(X(-1),X(1)),-29,3,13,P.ant);bar(0,5,-39,P.ant2);q(Math.min(X(4),X(6)),-45,3,8,P.ant);
+    bar(4,10,-43,P.ant);q(Math.min(X(9),X(11)),-49,3,8,P.ant2);
+    bar(8,15,-47,P.ant2);q(Math.min(X(14),X(16)),-54,3,8,P.ant);
+    d(X(5),-46,P.ant2);d(X(11),-50,P.ant);d(X(16),-55,P.ant2);
   }
   function leg(x,y,step=0,fold=false){
     if(fold){q(x-1,y,8,3,P.o);q(x,y+1,6,2,P.b);q(x+5,y+2,5,2,P.hoof);return}
