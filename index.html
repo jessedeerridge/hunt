@@ -1144,7 +1144,7 @@ html,body{
 <div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
-<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
+<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div id="loadoutError" style="margin-top:10px;color:#b43737;font-size:10px;text-align:center"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
 <div id="huntCompanion"><canvas width="128" height="128" aria-label="同行キャラクター"></canvas></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
@@ -2270,17 +2270,29 @@ function spawnCreature(){
 
 
 /* ===== HUB SYSTEM ===== */
-const SAVEKEY="PCH360_HUB_V1";
-const DEFAULT_HUB_DATA={money:5000,caught:{blueboy:5},boxed:{},items:{}};
-let hubData=(()=>{
- try{
-  const saved=JSON.parse(localStorage.getItem(SAVEKEY)||"null");
-  if(!saved)return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
-  return Object.assign({},DEFAULT_HUB_DATA,saved,{caught:Object.assign({},DEFAULT_HUB_DATA.caught,saved.caught||{}),boxed:saved.boxed||{},items:saved.items||{}});
- }catch(e){
-  return JSON.parse(JSON.stringify(DEFAULT_HUB_DATA));
- }
-})();
+const SAVEKEY="PCH360_PLAYER_SAVE"; // Stable forever: never tie player data to a code version.
+const SAVEBACKUPKEY="PCH360_PLAYER_SAVE_BACKUP";
+const LEGACY_SAVE_KEYS=["PCH360_HUB_V1"];
+const SAVE_SCHEMA_VERSION=2;
+const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:5000,caught:{blueboy:5},boxed:{},items:{}};
+function normalizeHubData(source){
+ const raw=source&&typeof source==="object"?source:{};
+ return {schemaVersion:SAVE_SCHEMA_VERSION,money:Number.isFinite(Number(raw.money))?Math.max(0,Number(raw.money)):DEFAULT_HUB_DATA.money,caught:Object.assign({},DEFAULT_HUB_DATA.caught,raw.caught||{}),boxed:Object.assign({},raw.boxed||{}),items:Object.assign({},raw.items||{})};
+}
+function readStoredHubData(){
+ const keys=[SAVEKEY,SAVEBACKUPKEY,...LEGACY_SAVE_KEYS];
+ for(const key of keys){try{const value=localStorage.getItem(key);if(value)return normalizeHubData(JSON.parse(value))}catch(e){console.warn("save read failed",key,e)}}
+ return normalizeHubData(DEFAULT_HUB_DATA);
+}
+let hubData=readStoredHubData();
+function persistHubData(){
+ const payload=JSON.stringify(normalizeHubData(hubData));
+ try{localStorage.setItem(SAVEKEY,payload);localStorage.setItem(SAVEBACKUPKEY,payload)}catch(e){console.warn("save write failed",e)}
+}
+/* Migrate old saves immediately, while retaining the old entry as an extra fallback. */
+persistHubData();
+addEventListener("pagehide",persistHubData);
+
 const FEEDS=[
  ["blueboy","しずく煮","can","しずく型の粒"],["hachibee_square","カクミツ","bag","四角い蜜菓子"],
  ["hachibee_circle","まる蜜ポン","box","軽い蜜玉"],["kuroneko","ヨナカ節","pouch","香る黒節"],
@@ -2326,7 +2338,7 @@ function shopIcon(type){
  };
  return icons[type]||icons.book;
 }
-function saveHub(){localStorage.setItem(SAVEKEY,JSON.stringify(hubData));updateHubUI()}
+function saveHub(){persistHubData();updateHubUI()}
 function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money;const dexNav=document.querySelector('.navBtn[data-page="ownedDexPage"]');if(dexNav){const unlocked=!!own("fulldex");dexNav.disabled=!unlocked;dexNav.setAttribute("aria-disabled",String(!unlocked));dexNav.title=unlocked?"図鑑を開く":"ショップでキャラ図鑑を購入すると解放"}}
 function own(k){return hubData.items[k]||0}
 let gamePopupTimer=0;
@@ -2344,8 +2356,9 @@ function shopCard(k,n,ic,d,p){const sold=!k.startsWith("feed_")&&own(k)>0;return
 function rail(title,cards){return `<section class="shopSection"><h3>${title}</h3><div class="shopRailWrap"><div class="shopRail">${cards}</div><div class="railArrow">›</div></div></section>`}
 function renderShop(){
  const body=document.getElementById("shopBody"); if(!body)return;
+ const dexOwned=own("fulldex")>0;
  body.innerHTML=rail("装備 / 図鑑",GEAR.map(x=>shopCard(...x)).join(""))+
- rail("エサ　ALL Đ 20",FEEDS.map(x=>shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"")),20)).join(""));
+ rail("エサ　ALL Đ 20",FEEDS.map(x=>{const target=x[0].startsWith("hachibee_")?"ハチビー":(CREATURE_TYPES.find(c=>c.id===x[0])?.name||"");return shopCard("feed_"+x[0],x[1],x[2],x[3]+"タイプ / "+(dexOwned?target:"？？？"),20)}).join(""));
 }
 function renderItems(){
  const g=document.getElementById("itemGrid");if(!g)return;let a=[];
@@ -2407,6 +2420,24 @@ document.addEventListener("pointerdown",e=>{const p=document.getElementById("box
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
+let huntAccessReady=false,huntAccessPending=null;
+async function requestHuntAccess(){
+ if(huntAccessReady)return;
+ if(huntAccessPending)return huntAccessPending;
+ huntAccessPending=(async()=>{
+  if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
+  if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。");
+  if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。");
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+  camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
+  addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
+  sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
+  spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+ })();
+ try{await huntAccessPending}finally{huntAccessPending=null}
+}
+
 /* ===== HUNT LOADOUT / PARTNER ===== */
 const huntLoadout=document.getElementById("huntLoadout"),partnerChoices=document.getElementById("partnerChoices"),gearChoices=document.getElementById("gearChoices"),loadoutStart=document.getElementById("loadoutStart"),huntCompanion=document.getElementById("huntCompanion"),companionCanvas=huntCompanion.querySelector("canvas");
 let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedAt=0;
@@ -2417,7 +2448,7 @@ function openHuntLoadout(){
  gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">ショップで装備を購入してください</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
  loadoutStart.disabled=!(selectedPartner&&selectedGear);huntLoadout.classList.add("show")
 }
-loadoutStart.onclick=()=>{huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()};
+loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=!(selectedPartner&&selectedGear)}};
 huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
@@ -2461,265 +2492,12 @@ roomFeedBtn.addEventListener("click",e=>{e.stopPropagation();openFeedPicker("roo
 feedPicker.addEventListener("click",e=>e.stopPropagation());
 document.addEventListener("pointerdown",e=>{if(feedPicker.classList.contains("show")&&!feedPicker.contains(e.target)&&!feedButton.contains(e.target))feedPicker.classList.remove("show")});
 
-startButton.addEventListener(
-  "click",
-  async()=>{
-
-  startButton.disabled =
-    true;
-
-  startButton.textContent =
-    "STARTING...";
-
-  errorBox.textContent =
-    "";
-
-  try{
-
-    if(
-      !window.isSecureContext
-    ){
-
-      throw new Error(
-        "HTTPSで開いてください。"
-      );
-    }
-
-    /*
-      =====================================================
-      ★重要
-
-      iPhoneのpermissionは
-      STARTタップから直接呼ぶ。
-      =====================================================
-    */
-
-    let orientationPromise =
-      null;
-
-    let motionPromise =
-      null;
-
-    if(
-      typeof DeviceOrientationEvent
-        !==
-        "undefined" &&
-
-      typeof DeviceOrientationEvent
-        .requestPermission
-        ===
-        "function"
-    ){
-
-      orientationPromise =
-        DeviceOrientationEvent
-          .requestPermission();
-    }
-
-    if(
-      typeof DeviceMotionEvent
-        !==
-        "undefined" &&
-
-      typeof DeviceMotionEvent
-        .requestPermission
-        ===
-        "function"
-    ){
-
-      motionPromise =
-        DeviceMotionEvent
-          .requestPermission();
-    }
-
-    if(
-      orientationPromise
-    ){
-
-      const result =
-        await orientationPromise;
-
-      if(
-        result !==
-        "granted"
-      ){
-
-        throw new Error(
-          "方向センサーが許可されませんでした。"
-        );
-      }
-    }
-
-    if(
-      motionPromise
-    ){
-
-      const result =
-        await motionPromise;
-
-      if(
-        result !==
-        "granted"
-      ){
-
-        throw new Error(
-          "モーションセンサーが許可されませんでした。"
-        );
-      }
-    }
-
-    if(
-      !navigator.mediaDevices ||
-      !navigator.mediaDevices
-        .getUserMedia
-    ){
-
-      throw new Error(
-        "カメラを使用できません。"
-      );
-    }
-
-    let stream;
-
-    try{
-
-      stream =
-        await navigator
-          .mediaDevices
-          .getUserMedia({
-
-            video:{
-
-              facingMode:{
-                ideal:
-                  "environment"
-              },
-
-              width:{
-                ideal:
-                  1920
-              },
-
-              height:{
-                ideal:
-                  1080
-              }
-            },
-
-            audio:false
-          });
-
-    }catch(e){
-
-      stream =
-        await navigator
-          .mediaDevices
-          .getUserMedia({
-
-            video:true,
-
-            audio:false
-          });
-    }
-
-    camera.srcObject =
-      stream;
-
-    camera.muted =
-      true;
-
-    camera.playsInline =
-      true;
-
-    await camera.play();
-
-    addEventListener(
-      "deviceorientation",
-      orientationHandler,
-      true
-    );
-
-    addEventListener(
-      "devicemotion",
-      motionHandler,
-      {passive:true}
-    );
-
-    creatureMaxHP = MAX_HP * (1 + creatureType.hpPct/100);
-    hp =
-      creatureMaxHP;
-
-    locked =
-      false;
-
-    lockStartedAt =
-      0;
-
-    lockEnd =
-      0;
-
-    lastShakeActivity =
-      0;
-
-    currentShakePower =
-      0;
-
-    lockCooldownUntil =
-      0;
-
-    sensorReady =
-      false;
-
-    spawnCreature();
-
-    updateHP();
-
-    setDisplayMode(
-      "pixel"
-    );
-
-    start.style.display =
-      "none";
-
-    hud.style.display =
-      "block";
-
-    document.getElementById("bottomNav").style.display="flex";
-    document.getElementById("moneyHud").style.display="flex";
-    showHub("roomPage");
-
-    sensorWait.style.display =
-      "block";
-
-    gameRunning =
-      true;
-
-    lastTime =
-      performance.now();
-
-    requestAnimationFrame(
-      cameraLoop
-    );
-
-    requestAnimationFrame(
-      gameLoop
-    );
-
-  }catch(e){
-
-    console.error(e);
-
-    startButton.disabled =
-      false;
-
-    startButton.textContent =
-      "START";
-
-    errorBox.textContent =
-      (e.name || "ERROR")+
-      "\n"+
-      (e.message || String(e));
-  }
+startButton.addEventListener("click",()=>{
+  errorBox.textContent="";
+  start.style.display="none";
+  document.getElementById("bottomNav").style.display="flex";
+  document.getElementById("moneyHud").style.display="flex";
+  showHub("roomPage");
 });
 
 /* =========================================================
