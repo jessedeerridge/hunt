@@ -1805,6 +1805,9 @@ function chooseEncounterCreature(){
  let roll=Math.random()*weighted.reduce((sum,x)=>sum+x[1],0),chosen=weighted[0][0];for(const [c,w] of weighted){roll-=w;if(roll<=0){chosen=c;break}}
  if(chosen.id==="hachibee_square")return CREATURE_TYPES.find(c=>c.id===(Math.random()<.5?"hachibee_square":"hachibee_circle"));return chosen;
 }
+const CREATURE_MOVE_ZONES={boosta:"EARTH",marumajiro:"EARTH",fukurougu:"SKY",kumojira:"SKY",tsunogame:"EARTH",sorarisaso:"EARTH"};
+function moveZoneForCreature(creature){return CREATURE_MOVE_ZONES[creature.id]||"FRONT"}
+function randomPitchForZone(zoneName){const zone=CREATURE_ZONES[zoneName];return random(zone.minPitch,zone.maxPitch)}
 
 let creatureType =
   CREATURE_TYPES[0];
@@ -1820,6 +1823,8 @@ let creaturePitch =
 
 let creatureBasePitch =
   0;
+
+let creatureMovePitch = 0;
 
 let moveDirection =
   1;
@@ -2115,24 +2120,9 @@ function spawnCreature(){
 
   creatureType = chooseEncounterCreature();
 
-  const types = [
-    "SKY",
-    "FRONT",
-    "EARTH"
-  ];
+  creatureZone = moveZoneForCreature(creatureType);
 
-  creatureZone =
-    types[
-      Math.floor(
-        Math.random()*
-        types.length
-      )
-    ];
-
-  const zone =
-    CREATURE_ZONES[
-      creatureZone
-    ];
+  creatureMovePitch = randomPitchForZone(creatureZone);
 
   creatureYaw =
     random(
@@ -2140,11 +2130,7 @@ function spawnCreature(){
       360
     );
 
-  creatureBasePitch =
-    random(
-      zone.minPitch,
-      zone.maxPitch
-    );
+  creatureBasePitch = creatureMovePitch;
 
   creaturePitch =
     creatureBasePitch;
@@ -2412,7 +2398,7 @@ function openFeedPicker(){
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
  hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),contactSeconds:0};saveHub();renderItems();feedPicker.classList.remove("show");
- creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
 }
 function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.2)";ctx.beginPath();ctx.ellipse(0,16,25,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff1cf";ctx.strokeStyle="#4f3040";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,-5);ctx.quadraticCurveTo(-18,19,0,20);ctx.quadraticCurveTo(18,19,22,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle="#e57c62";ctx.beginPath();ctx.ellipse(0,-5,22,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#ffd76a";for(let i=-12;i<=12;i+=8){ctx.beginPath();ctx.arc(i,-7+(i%3),4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function updateFeedAttraction(time,dt){
@@ -3185,7 +3171,7 @@ function gameLoop(time){
           creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;
           updateHP();
           lockText.style.display="none";
-          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
+          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
         },900);
 
         return;
@@ -3233,6 +3219,11 @@ function gameLoop(time){
         Math.abs(
           move
         );
+
+      if(placedFeed){
+        creatureBasePitch += (creatureMovePitch-creatureBasePitch)*Math.min(1,dt*2.4);
+        creaturePitch = creatureBasePitch;
+      }
 
       if(
         runTravel >=
@@ -3587,13 +3578,13 @@ function startRun(
     ★60%でWALKと逆方向
   */
 
-  if(
-    Math.random() <
-    RUN_REVERSE_CHANCE
-  ){
-
-    moveDirection *=
-      -1;
+  if(placedFeed){
+    /* Leave the bait toward this species' native SKY / FRONT / EARTH route. */
+    creatureZone=moveZoneForCreature(creatureType);
+    creatureMovePitch=randomPitchForZone(creatureZone);
+    moveDirection=Math.random()<.5?-1:1;
+  }else if(Math.random()<RUN_REVERSE_CHANCE){
+    moveDirection*=-1;
   }
 
   /*
