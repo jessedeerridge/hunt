@@ -1795,6 +1795,17 @@ const CREATURE_TYPES = [
  ["riooria","リオーリア","アシカ×獅子","水面すれすれを泳ぎ、喜ぶと背びれが透き通る。",14,20,-18]
 ].map(([id,name,motif,trait,speedPct,hpPct,lockPct])=>({id,name,motif,trait,speedPct,hpPct,lockPct}));
 
+const DEX_SPECIES=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle");
+const ENCOUNTER_TIERS=[DEX_SPECIES.slice(0,4),DEX_SPECIES.slice(4,8),DEX_SPECIES.slice(8,12),DEX_SPECIES.slice(12,16),DEX_SPECIES.slice(16,19)];
+function speciesCaught(c){return c.id==="hachibee_square"?(hubData.caught.hachibee_square||0)+(hubData.caught.hachibee_circle||0):(hubData.caught[c.id]||0)}
+function currentEncounterTier(){let tier=0;while(tier<ENCOUNTER_TIERS.length-1&&ENCOUNTER_TIERS[tier].every(c=>speciesCaught(c)>0))tier++;return tier}
+function chooseEncounterCreature(){
+ const tier=currentEncounterTier(),featured=new Set(ENCOUNTER_TIERS[tier].map(c=>c.id));
+ const weighted=DEX_SPECIES.map(c=>{const poolWeight=featured.has(c.id)?.8/ENCOUNTER_TIERS[tier].length:.2/(DEX_SPECIES.length-ENCOUNTER_TIERS[tier].length);return [c,poolWeight*(speciesCaught(c)>0?.6:1)]});
+ let roll=Math.random()*weighted.reduce((sum,x)=>sum+x[1],0),chosen=weighted[0][0];for(const [c,w] of weighted){roll-=w;if(roll<=0){chosen=c;break}}
+ if(chosen.id==="hachibee_square")return CREATURE_TYPES.find(c=>c.id===(Math.random()<.5?"hachibee_square":"hachibee_circle"));return chosen;
+}
+
 let creatureType =
   CREATURE_TYPES[0];
 
@@ -2102,13 +2113,7 @@ function spawnCreature(){
   const now =
     performance.now();
 
-  creatureType =
-    CREATURE_TYPES[
-      Math.floor(
-        Math.random() *
-        CREATURE_TYPES.length
-      )
-    ];
+  creatureType = chooseEncounterCreature();
 
   const types = [
     "SKY",
@@ -2369,8 +2374,23 @@ function renderRoom(){
  cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>drawMini(d.querySelector("canvas"),d.dataset.id,t));roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
  clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{d.style.left=(3+Math.random()*78)+"%";d.style.top=(18+Math.random()*58)+"%"}),2800);renderBox()
 }
-function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="${c.id}" aria-label="${c.name}"></canvas><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。";p.querySelectorAll(".boxAvatar").forEach(c=>drawMiniFrame(c,c.dataset.id,1,performance.now()))}
-function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
+function renderBox(){
+ const p=document.getElementById("boxPanel"),rows=[];
+ DEX_SPECIES.forEach(c=>{
+  if(c.id==="hachibee_square"){
+   const sq=hubData.caught.hachibee_square||0,ci=hubData.caught.hachibee_circle||0,bs=hubData.boxed.hachibee_square||0,bc=hubData.boxed.hachibee_circle||0;if(!sq&&!ci)return;
+   rows.push(`<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="hachibee_square" aria-label="ハチビー"></canvas><b>ハチビー　捕獲 ${sq+ci}（□${sq} / ○${ci}）<br>BOX ${bs+bc}（□${bs} / ○${bc}）</b><button onclick="boxChange('hachibee',1)">しまう</button><button onclick="boxChange('hachibee',-1)">出す</button></div>`);return;
+  }
+  const n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;if(n)rows.push(`<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="${c.id}" aria-label="${c.name}"></canvas><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`)
+ });
+ p.innerHTML=rows.join("")||"まだ捕獲したキャラはいません。";p.querySelectorAll(".boxAvatar").forEach(c=>drawMiniFrame(c,c.dataset.id,1,performance.now()))
+}
+function boxChange(id,d){
+ if(id==="hachibee"){
+  const variants=["hachibee_square","hachibee_circle"].map(v=>[v,d>0?(hubData.caught[v]||0)-(hubData.boxed[v]||0):(hubData.boxed[v]||0)]).filter(x=>x[1]>0);if(!variants.length)return;let roll=Math.random()*variants.reduce((sum,x)=>sum+x[1],0);for(const [variant,count] of variants){roll-=count;if(roll<=0){id=variant;break}}
+ }
+ hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"
+}
 function showHub(id){feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
 function showHunt(){feedPicker.classList.remove("show");cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
