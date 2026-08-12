@@ -1055,7 +1055,7 @@ html,body{
 .dexEntry{display:flex;flex-direction:column;justify-content:flex-start}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:0 0 auto;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
 
 /* HUNT LOADOUT */
-#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
+#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutLabel::after{content:"（選択なしでもOK）";margin-left:5px;color:#817487;font-size:8px}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice small{display:block;margin-top:3px;color:#786b7d;font-size:7px;line-height:1.25}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
 #huntCompanion{position:fixed;left:50%;bottom:70px;z-index:8;display:none;width:104px;height:104px;transform:translateX(-50%);transition:left .65s ease,bottom .65s ease;pointer-events:none}#huntCompanion canvas{width:104px;height:104px;image-rendering:pixelated}
 
 /* ===== PIXEL HUNT HOME ===== */
@@ -2249,7 +2249,7 @@ const SAVEKEY="PCH360_PLAYER_SAVE"; // Stable forever: never tie player data to 
 const SAVEBACKUPKEY="PCH360_PLAYER_SAVE_BACKUP";
 const LEGACY_SAVE_KEYS=["PCH360_HUB_V1"];
 const SAVE_SCHEMA_VERSION=2;
-const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:5000,caught:{blueboy:5},boxed:{},items:{}};
+const DEFAULT_HUB_DATA={schemaVersion:SAVE_SCHEMA_VERSION,money:50,caught:{},boxed:{},items:{}};
 function normalizeHubData(source){
  const raw=source&&typeof source==="object"?source:{};
  return {schemaVersion:SAVE_SCHEMA_VERSION,money:Number.isFinite(Number(raw.money))?Math.max(0,Number(raw.money)):DEFAULT_HUB_DATA.money,caught:Object.assign({},DEFAULT_HUB_DATA.caught,raw.caught||{}),boxed:Object.assign({},raw.boxed||{}),items:Object.assign({},raw.items||{})};
@@ -2286,6 +2286,9 @@ const GEAR=[
 ["electricnet","電気ネット","electric","ロック中ダメージ +20%",50],
 ["fulldex","キャラ図鑑","book","キャラ情報を解放",50]
 ];
+function equippedGearIs(id){return selectedGear?.[0]===id}
+function lockDurationSeconds(){return MAX_LOCK+(equippedGearIs("toughnet")?2:0)}
+function lockDamageMultiplier(){return equippedGearIs("electricnet")?1.2:1}
 function shopIcon(type){
  const common='viewBox="0 0 64 64" role="img" aria-hidden="true"';
  if(type.startsWith("feed:")){
@@ -2376,7 +2379,7 @@ function moveRoomPets(){
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
  CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.dataset.frame="1";d.dataset.flip="0";d.dataset.specialUntil="0";d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}});
- cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame);if(roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))f=t<roomFeed.eatStart?1+(Math.floor(t/240)%4):12+(Math.floor(t/260)%2);else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
+ cancelAnimationFrame(roomAnim);const mealFrames=[1,2,3,12,13],loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>{let f=Number(d.dataset.frame),eating=roomFeed&&t<roomFeed.until&&(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_")));if(eating){f=t<roomFeed.eatStart?1+(Math.floor(t/240)%3):mealFrames[Math.floor((t-roomFeed.eatStart)/260)%mealFrames.length];d.dataset.flip=d.dataset.feedFlip||d.dataset.flip}else if(t>Number(d.dataset.specialUntil))f=1+(Math.floor(t/240)%4);drawMiniFrame(d.querySelector("canvas"),d.dataset.id,f,t,d.dataset.flip==="1")});roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
  clearInterval(roomMoveTimer);requestAnimationFrame(moveRoomPets);roomMoveTimer=setInterval(moveRoomPets,2200);renderBox()
 }
 function renderBox(){
@@ -2412,15 +2415,22 @@ async function requestHuntAccess(){
  if(huntAccessReady)return;
  if(huntAccessPending)return huntAccessPending;
  huntAccessPending=(async()=>{
-  if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
-  if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。");
-  if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。");
-  if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
-  let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
-  camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
-  addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
-  sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
-  spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+  let stream=null;
+  try{
+   if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
+   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new Error("方向センサーが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new Error("モーションセンサーが許可されませんでした。もう一度HUNTを押して許可してください。");
+   if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
+   try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){if(e?.name!=="OverconstrainedError")throw e;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+   camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
+   addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
+   sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
+   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
+  }catch(e){
+   stream?.getTracks().forEach(track=>track.stop());camera.srcObject=null;huntAccessReady=false;
+   if(e?.name==="NotAllowedError")throw new Error("カメラが許可されませんでした。もう一度HUNTを押して許可してください。");
+   throw e;
+  }
  })();
  try{await huntAccessPending}finally{huntAccessPending=null}
 }
@@ -2429,13 +2439,13 @@ async function requestHuntAccess(){
 const huntLoadout=document.getElementById("huntLoadout"),partnerChoices=document.getElementById("partnerChoices"),gearChoices=document.getElementById("gearChoices"),loadoutStart=document.getElementById("loadoutStart"),huntCompanion=document.getElementById("huntCompanion"),companionCanvas=huntCompanion.querySelector("canvas");
 let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedAt=0;
 function openHuntLoadout(){
- const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);selectedPartner=partners.find(c=>c.id===selectedPartner?.id)||partners[0]||null;
- const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));selectedGear=gears.find(g=>g[0]===selectedGear?.[0])||gears[0]||null;
- partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("");partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
- gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">ショップで装備を購入してください</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
- loadoutStart.disabled=!(selectedPartner&&selectedGear);huntLoadout.classList.add("show")
+ const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);if(selectedPartner&&!partners.some(c=>c.id===selectedPartner.id))selectedPartner=null;
+ const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));if(selectedGear&&!gears.some(g=>g[0]===selectedGear[0]))selectedGear=null;
+ partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">パートナーなしで出発できます</div>';partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=selectedPartner?.id===b.dataset.id?null:DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
+ gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}<small>${g[3]}</small></button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">装備なしで出発できます</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=selectedGear?.[0]===b.dataset.id?null:gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
+ loadoutStart.disabled=false;huntLoadout.classList.add("show")
 }
-loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=!(selectedPartner&&selectedGear)}};
+loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=false}};
 huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
@@ -2465,7 +2475,7 @@ function updateFeedAttraction(time,dt){
  const d=angleDiff(placedFeed.yaw,creatureYaw);sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
  if(Math.abs(d)<1.3){placedFeed.contactSeconds+=dt;if(animState!=="attack")setAnimation("attack",time);if(placedFeed.contactSeconds>=10)placedFeed=null}
 }
-function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
+function attractRoomPets(){if(!roomFeed)return;const left=parseFloat(roomFeedBowl.style.left)||50,top=parseFloat(roomFeedBowl.style.top)||62;document.querySelectorAll(".roomPet").forEach((d,i)=>{if(!(d.dataset.id===roomFeed.id||(roomFeed.id.startsWith("hachibee_")&&d.dataset.id.startsWith("hachibee_"))))return;const old=parseFloat(d.style.left)||0,next=clamp(left-8+(i%4)*4,3,80);d.dataset.flip=next<old?"1":"0";d.dataset.feedFlip=next>left?"1":"0";d.style.left=next+"%";d.style.top=clamp(top-13+Math.floor(i/4)*5,12,76)+"%"})}
 function placeRoomFeed(id){
  const key="feed_"+id;if(!own(key))return;hubData.items[key]--;saveHub();renderItems();feedPicker.classList.remove("show");const now=performance.now();roomFeed={id,eatStart:now+3200,until:now+13200};roomFeedBowl.classList.add("show");attractRoomPets();
  const expire=()=>{if(!roomFeed||roomFeed.id!==id)return;const wait=roomFeed.until-performance.now();if(wait>0){setTimeout(expire,wait);return}roomFeed=null;roomFeedBowl.classList.remove("show")};setTimeout(expire,13200)
@@ -2944,7 +2954,7 @@ function gameLoop(time){
     }else{
 
       hp -=
-        DAMAGE_PER_SECOND*(selectedGear?.[0]==="electricnet"?1.2:1)*
+        DAMAGE_PER_SECOND*lockDamageMultiplier()*
         dt;
 
       hp =
@@ -9081,7 +9091,7 @@ function lockCreature(
 
   lockEnd =
     now+
-    (MAX_LOCK+(selectedGear?.[0]==="toughnet"?2:0))*
+    lockDurationSeconds()*
     (1+creatureType.lockPct/100)*
     1000;
 
@@ -9116,8 +9126,11 @@ function lockCreature(
     now
   );
 
-  lockText.textContent =
-    "⚡ LOCK!";
+  lockText.textContent = equippedGearIs("electricnet")
+    ? "⚡ POWER LOCK!"
+    : equippedGearIs("toughnet")
+      ? "★ TOUGH LOCK +2s!"
+      : "⚡ LOCK!";
 
   lockText.style.display =
     "block";
