@@ -4614,7 +4614,12 @@ function rasterizeHachibee30(frame,time){
   else if(frame===12){ bee({dx:1,expr:"attack",wingPose:1,sting:2}); d(1,13,P.fx2); d(2,16,P.fx); d(4,12,P.fx); }
   else if(frame===13){ bee({dx:2,expr:"attack",wingPose:0,sting:3,ant:1}); d(0,12,P.fx2); d(1,18,P.fx); d(4,11,P.fx); }
   else if(frame===14){
-    bee({dy:-1,expr:"cute",wingPose:1});
+    bee({dy:-1,expr:"happy",wingPose:1});
+    heart(2,3,false); smallStar(27,7);
+  }
+  else if(frame===15){
+    bee({dy:1,expr:"happy",wingPose:2});
+    heart(23,1,true); smallStar(3,9);
   }
   else {
     bee({expr:"cute",wingPose:0});
@@ -6741,7 +6746,13 @@ function drawKeruberosuFrame(frame,S,time){
   else if(frame===10||frame===11)dog('hurt',frame===10?1:2,0,false)
   else if(frame===12){activeCtx.translate(0,-C);dog('n',1,1,true);q(22,-10,7,2,P.fx)}
   else if(frame===13){activeCtx.translate(0,-2*C);dog('n',2,2,true);q(24,-13,8,2,P.fx)}
-  else if(frame>=14){activeCtx.translate(C,-2*C);dog('n',2,frame===14?1:2,true);q(23,-11,7,2,P.fx)}
+  else if(frame>=14){
+    /* SPECIAL is a three-headed game of follow-the-leader, not an attack. */
+    activeCtx.translate((frame===14?-1:1)*C,-C);
+    activeCtx.rotate((frame===14?-4:4)*Math.PI/180);
+    dog('n',frame===14?1:2,0,false);
+    drawPlayfulMarks(S,frame===14?'note':'heart',18,-20);
+  }
   else dog('n',(frame-1)%3,0,false);
 }
 
@@ -6769,7 +6780,14 @@ function drawKumojiraFrame(frame,S,time){
   }
   if(frame===8){activeCtx.translate(0,3*C);activeCtx.scale(1.02,.92);whale("sleep")}
   else if(frame===10||frame===11)whale("hurt");
-  else if(frame>=12){activeCtx.translate(2*C,-2*C);whale("n",3);q(-28,7,7,2,P.fx)}
+  else if(frame===12||frame===13){activeCtx.translate(2*C,-2*C);whale("n",3);q(-28,7,7,2,P.fx)}
+  else if(frame>=14){
+    /* A buoyant cloud-hop keeps SPECIAL visually separate from the charge. */
+    activeCtx.translate(0,(frame===14?-4:-1)*C);
+    activeCtx.rotate((frame===14?-3:3)*Math.PI/180);
+    whale("n",frame===14?1:-1);
+    drawPlayfulMarks(S,frame===14?'star':'heart',-25,-15);
+  }
   else whale("n",frame%3-1);
 }
 
@@ -6786,7 +6804,13 @@ function drawOkoppandaFrame(frame,S,time){
     if(roar){d(-1,6,P.p);d(1,6,P.p)}
     q(-8,8,16,1,P.o);q(-11,9,22,4,P.o);q(-12,13,24,7,P.o);q(-10,20,20,4,P.o);q(-6,9,12,2,P.w);q(-9,11,18,7,P.w);q(-8,18,16,4,P.w);jag(-12,12,-1);jag(-13,16,-1);jag(12,12,1);jag(13,16,1);q(-14,10-step,5,8,P.o);q(9,10+step,5,8,P.o);q(-8,21,7,4,P.o);q(1,21,7,4,P.o);d(-15,17-step,P.fang);d(-13,18-step,P.fang);d(14,17+step,P.fang);d(12,18+step,P.fang);d(-7,25,P.fang);d(-5,25,P.fang);d(4,25,P.fang);d(6,25,P.fang);if(roar){q(-19,-8,5,2,P.fx);q(15,-9,6,2,P.fx);q(-21,-2,4,2,P.fx);q(18,-3,4,2,P.fx)}
   }
-  if(frame===8){activeCtx.translate(0,3*C);panda('sleep',0,0)}else if(frame===10||frame===11)panda('hurt',frame%2,0);else if(frame===14||frame===15){activeCtx.translate(0,-(frame===15?2:1)*C);panda('angry',frame===14?-1:1,1)}else if(frame>=12){activeCtx.translate(C,-C);panda('angry',2,0);q(16,-8,6,2,P.fx);q(17,-3,5,2,P.fx)}else panda('angry',frame%4<2?-1:1,0);
+  if(frame===8){activeCtx.translate(0,3*C);panda('sleep',0,0)}else if(frame===10||frame===11)panda('hurt',frame%2,0);else if(frame===14||frame===15){
+    /* The grumpy panda secretly plays peek-a-boo: no roar or hit sparks. */
+    activeCtx.translate((frame===14?-1:1)*C,-(frame===15?2:1)*C);
+    activeCtx.rotate((frame===14?-5:5)*Math.PI/180);
+    panda('angry',frame===14?-1:1,0);
+    drawPlayfulMarks(S,frame===14?'note':'heart',15,-12);
+  }else if(frame>=12){activeCtx.translate(C,-C);panda('angry',2,0);q(16,-8,6,2,P.fx);q(17,-3,5,2,P.fx)}else panda('angry',frame%4<2?-1:1,0);
 }
 
 function bodyBase(
@@ -6824,6 +6848,22 @@ function extraTools(S,pal,scale=.72){
   return {C,q,d,xeye,P:pal};
 }
 
+/* Small, shared accents used only by SPECIAL 1/2.
+   Keeping these effects rounded and friendly makes the intent readable at a
+   glance, without recycling the straight impact streaks used by ATTACK. */
+function drawPlayfulMarks(S,kind,x,y){
+  const C=Math.max(2,Math.round(S*.68));
+  const q=(dx,dy,w,h,color)=>{activeCtx.fillStyle=color;activeCtx.fillRect((x+dx)*C,(y+dy)*C,w*C,h*C)};
+  const pink='#ff91ad',gold='#ffe376',white='#fff7dc';
+  if(kind==='heart'){
+    q(0,0,2,2,pink);q(3,0,2,2,pink);q(-1,1,7,3,pink);q(0,4,5,2,pink);q(1,6,3,1,pink);q(0,1,1,1,white);
+  }else if(kind==='note'){
+    q(3,0,2,7,gold);q(4,0,5,2,gold);q(7,2,2,7,gold);q(0,6,4,3,gold);q(5,8,4,3,gold);q(4,0,1,1,white);
+  }else{
+    q(3,0,1,7,gold);q(0,3,7,1,gold);q(1,1,5,5,gold);q(3,2,1,3,white);
+  }
+}
+
 function drawTsunogameFrame(frame,S,time){
   const {C,q,d,xeye,P}=extraTools(S,{o:'#263b32',sh:'#527a55',sh2:'#315e3b',skin:'#829a62',bel:'#c5d399',eye:'#151915',cl:'#e4dfb8',horn:'#66502e',horn2:'#3f321f',fx:'#ffe36b'},.70);
   function foot(x,y,dir=1,step=0){
@@ -6855,7 +6895,10 @@ function drawTsunogameFrame(frame,S,time){
     q(-24,1,4,3,P.o);q(-24,2,3,1,P.skin);
     if(atk){q(21,-5,5,2,P.fx);q(22,1,4,2,P.fx)}
   }
-  if(frame===6){activeCtx.scale(-1,1);turtle()}else if(frame===8){activeCtx.translate(0,3*C);turtle('sleep')}else if(frame===10||frame===11){activeCtx.translate((frame===10?-1:1)*C,0);turtle('hurt')}else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,0);turtle('n',frame===12?-1:1,1)}else if(frame>=14){activeCtx.rotate((frame===14?-6:6)*Math.PI/180);turtle('n',1,1)}else turtle('n',frame%2?1:-1);
+  if(frame===6){activeCtx.scale(-1,1);turtle()}else if(frame===8){activeCtx.translate(0,3*C);turtle('sleep')}else if(frame===10||frame===11){activeCtx.translate((frame===10?-1:1)*C,0);turtle('hurt')}else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,0);turtle('n',frame===12?-1:1,1)}else if(frame>=14){
+    activeCtx.translate(0,(frame===14?-2:1)*C);activeCtx.rotate((frame===14?-7:7)*Math.PI/180);turtle('n',frame===14?-1:1,0);
+    drawPlayfulMarks(S,frame===14?'heart':'note',-27,-17);
+  }else turtle('n',frame%2?1:-1);
 }
 
 function drawKurokodenFrame(frame,S,time){
@@ -6877,7 +6920,10 @@ function drawKurokodenFrame(frame,S,time){
     q(-10,14+pose,10,2,P.o);q(2,14-pose,10,2,P.o);d(-10,16+pose,P.tooth);d(-7,16+pose,P.tooth);d(9,16-pose,P.tooth);d(12,16-pose,P.tooth);
     if(atk){q(17,-8,6,2,P.fx);q(18,-2,5,2,P.fx)}
   }
-  if(frame===6){activeCtx.scale(-1,1);croc()}else if(frame===8){activeCtx.translate(0,4*C);activeCtx.scale(1.04,.92);croc('sleep')}else if(frame===10||frame===11)croc('hurt',frame===10?1:-1);else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,-C);croc('n',frame===12?-2:2,1)}else if(frame>=14){activeCtx.translate(0,-2*C);croc('n',frame===14?-2:2,1)}else croc('n',frame%2?1:-1);
+  if(frame===6){activeCtx.scale(-1,1);croc()}else if(frame===8){activeCtx.translate(0,4*C);activeCtx.scale(1.04,.92);croc('sleep')}else if(frame===10||frame===11)croc('hurt',frame===10?1:-1);else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,-C);croc('n',frame===12?-2:2,1)}else if(frame>=14){
+    activeCtx.translate((frame===14?-1:1)*C,-2*C);activeCtx.rotate((frame===14?-5:5)*Math.PI/180);croc('n',frame===14?-2:2,0);
+    drawPlayfulMarks(S,frame===14?'note':'heart',18,-22);
+  }else croc('n',frame%2?1:-1);
 }
 
 function drawTsuyugaeruFrame(frame,S,time){
@@ -6904,8 +6950,8 @@ function drawTsuyugaeruFrame(frame,S,time){
   else if(frame===10||frame===11){orb();body('hurt',frame===10?1:-1)}
   else if(frame===12){orb(5,12,1.12);body('n',0,1);q(11,4,4,2,P.fx)}
   else if(frame===13){orb(11,11,1.38);body('n',0,2);q(17,3,5,2,P.fx)}
-  else if(frame===14){orb(15,10,1.58);body('n',0,2);q(20,2,5,2,P.fx)}
-  else if(frame===15){orb(19,9,1.82);body('n',0,3);q(24,1,6,2,P.fx)}
+  else if(frame===14){orb(-5,9,.84);activeCtx.translate(-2*C,-3*C);body('n',1,0);drawPlayfulMarks(S,'star',11,-25)}
+  else if(frame===15){orb(6,10,.92);activeCtx.translate(2*C,-C);body('n',-1,0);drawPlayfulMarks(S,'heart',12,-24)}
   else{orb();body('n',frame%2?1:-1)}
 }
 
@@ -6935,7 +6981,7 @@ function drawRirinFrame(frame,S,time){
   else if(frame===8){activeCtx.translate(-2*C,5*C);giraffe('sleep',0,0,true)}
   else if(frame===10||frame===11)giraffe('hurt',frame===10?2:-2);
   else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,0);giraffe('n',frame===12?3:-3,1)}
-  else if(frame>=14)giraffe('n',frame===14?4:-4,1);else giraffe('n',frame%2?2:-2);
+  else if(frame>=14){activeCtx.rotate((frame===14?-4:4)*Math.PI/180);giraffe('n',frame===14?2:-2,0);drawPlayfulMarks(S,frame===14?'note':'heart',20,-35)}else giraffe('n',frame%2?2:-2);
 }
 
 function drawSorarisasoFrame(frame,S,time){
@@ -7358,17 +7404,18 @@ function drawSorarisasoFrame(frame,S,time){
 
   }else if(frame>=14){
 
-    // SPECIAL
+    // SPECIAL: claws wave in alternating rhythm; there are no impact flashes.
     activeCtx.rotate(
-      (frame===14 ? -3 : 3)
+      (frame===14 ? -5 : 5)
       *Math.PI/180
     );
 
     scorp(
       'n',
-      1,
-      1
+      frame===14 ? -2 : 2,
+      0
     );
+    drawPlayfulMarks(S,frame===14?'note':'heart',20,-29);
 
   }else{
 
@@ -7704,13 +7751,16 @@ function drawKokokkuFrame(frame,S,time){
 
   else if(frame>=14){
 
-    activeCtx.translate(0,-3*C);
+    /* SPECIAL is a jaunty wing dance rather than the red ATTACK pose. */
+    activeCtx.translate((frame===14?-2:2)*C,-3*C);
+    activeCtx.rotate((frame===14?-4:4)*Math.PI/180);
 
     chicken(
       'n',
       frame===14 ? 0 : 1,
-      1
+      0
     );
+    drawPlayfulMarks(S,frame===14?'note':'heart',17,-25);
 
   }
 
@@ -7871,7 +7921,7 @@ function drawDeaFrame(frame,S,time){
   else if(frame===8){activeCtx.translate(0,5*C);deer('sleep',0,0,true)}
   else if(frame===10||frame===11)deer('hurt',frame===10?1:-1);
   else if(frame===12||frame===13){activeCtx.translate((frame===12?2:4)*C,-C);deer('n',frame===12?-2:2,1)}
-  else if(frame>=14){activeCtx.translate(0,-2*C);deer('n',frame===14?2:-2,1)}else deer('n',frame%2?1:-1);
+  else if(frame>=14){activeCtx.translate(0,(frame===14?-3:-1)*C);activeCtx.rotate((frame===14?-4:4)*Math.PI/180);deer('n',frame===14?1:-1,0);drawPlayfulMarks(S,frame===14?'star':'heart',25,-45)}else deer('n',frame%2?1:-1);
 }
 
 function drawRiooriaFrame(frame,S,time){
@@ -7897,7 +7947,7 @@ function drawRiooriaFrame(frame,S,time){
   else if(frame===8){activeCtx.translate(0,3*C);lion('sleep')}
   else if(frame===10||frame===11)lion('hurt',frame===10?1:-1);
   else if(frame===12||frame===13){activeCtx.translate((frame===12?3:5)*C,-C);lion('n',frame===12?-2:2,1)}
-  else if(frame>=14){activeCtx.translate((frame===14?1:3)*C,-2*C);lion('n',frame===14?2:-2,1)}else lion('n',frame%2?1:-1);
+  else if(frame>=14){activeCtx.translate((frame===14?-1:1)*C,-3*C);activeCtx.rotate((frame===14?-4:4)*Math.PI/180);lion('n',frame===14?1:-1,0);drawPlayfulMarks(S,frame===14?'note':'heart',24,-27)}else lion('n',frame%2?1:-1);
 }
 
 function faceNormal(
