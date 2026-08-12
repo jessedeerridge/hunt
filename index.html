@@ -993,7 +993,7 @@ html,body{
 .hubPage{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;background:#10131d;color:#fff;pointer-events:auto;padding-bottom:84px}
 .hubHead{display:none}.hubBody{padding-top:calc(58px + env(safe-area-inset-top))!important}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
-#roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(165deg,#fff 0 56%,#f3f0e9 56% 58%,#e7e2d8 58% 100%);border:2px solid #d8d3c9;box-shadow:inset 0 0 32px rgba(100,88,69,.08)}
+#roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(165deg,#fff 0 56%,#f3f0e9 56% 58%,#e7e2d8 58% 100%);border:8px solid #765a3b;border-radius:10px;box-shadow:inset 0 0 0 4px #d8bb86,inset 0 0 32px rgba(100,88,69,.12),0 4px 0 #3f2b1b}#roomStage::after{content:"";position:absolute;inset:8px;border:2px solid rgba(118,90,59,.42);border-radius:3px;pointer-events:none;z-index:2}
 #roomBoxBtn{position:absolute;right:10px;top:10px;z-index:3;border:2px solid #fff;background:#111827;color:#fff;padding:9px;font:900 11px monospace}
 .roomPet{position:absolute;width:86px;text-align:center;transition:left 2.8s linear,top 2.8s linear}
 .roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:none}
@@ -1003,7 +1003,7 @@ html,body{
 .shopRailWrap{position:relative}.shopRail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:6px}
 .shopCard{min-width:0;min-height:168px;border:2px solid #fff;background:#0b0e15;padding:8px 5px;text-align:center}.shopIcon{height:68px;display:grid;place-items:center}.shopIcon svg{width:58px;height:58px;filter:drop-shadow(0 3px 0 #000)}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 2px;font:900 9px monospace}
 .railArrow{display:none}
-#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.dexEntry{min-height:205px;text-align:left}.dexEntry canvas{display:block;width:128px;height:128px;max-width:100%;margin:auto;image-rendering:pixelated}.dexEntryName{font-size:13px;color:#ffe46b}.dexEntryTrait{margin-top:5px;font-size:9px;line-height:1.55;opacity:.8}.simpleCard{border:2px solid #fff;background:#0b0e15;padding:10px;text-align:center;font-size:10px}
+#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.simpleCard{aspect-ratio:1;min-width:0;overflow:hidden;border:2px solid #fff;background:#0b0e15;padding:6px;text-align:center;font-size:clamp(7px,1.8vw,10px);line-height:1.25;white-space:nowrap}.simpleCard b,.simpleCard .shopDesc,.dexEntryName,.dexEntryTrait{display:block;min-height:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:inherit;line-height:1.25}.simpleCard .shopIcon{height:48%}.simpleCard .shopIcon svg{width:min(52px,80%);height:min(52px,80%)}.dexEntry{text-align:center}.dexEntry canvas{display:block;width:62%;height:auto;aspect-ratio:1;max-width:128px;margin:0 auto 2px;image-rendering:pixelated}.dexEntryName{color:#ffe46b}.dexEntryTrait{margin-top:3px;opacity:.8}
 
 /* ===== CLEAN GAME BUTTON POLISH ===== */
 #roomBoxBtn,
@@ -1028,7 +1028,7 @@ html,body{
   color:#4a2c00;
   box-shadow:0 4px 0 #a96816,inset 0 2px 0 rgba(255,255,255,.8);
 }
-@media(max-width:520px){.shopCard{padding:6px 3px}.simpleCard{padding:6px 3px;font-size:8px}.shopIcon svg{width:48px;height:48px}.shopDesc{min-height:38px}.buyBtn{font-size:8px}.hubBody{padding:9px}}
+@media(max-width:520px){.shopCard{padding:6px 3px}.simpleCard{padding:5px 3px}.shopIcon svg{width:48px;height:48px}.shopDesc{min-height:38px}.buyBtn{font-size:8px}.hubBody{padding:9px}}
 .boxRow button{
   padding:7px 9px;
   background:#eef4ff;
@@ -1199,8 +1199,7 @@ html,body{
 
   <div id="dexTabs">
     <button class="active" data-creature="blueboy">ブルーボーイ</button>
-    <button data-creature="hachibee_square" class="">ハチビー（square）</button>
-    <button data-creature="hachibee_circle" class="">ハチビー（circle）</button>
+    <button data-creature="hachibee_square" class="">ハチビー</button>
     <button data-creature="kuroneko" class="">クロネーコ</button>
     <button data-creature="boosta" class="">ブースタ</button>
     <button data-creature="keseranpasaran" class="">ケセランパサラン</button>
@@ -1763,7 +1762,7 @@ let sensorReady =
 
 const CREATURE_TYPES = [
   ["blueboy","ブルーボーイ","雨上がりの石畳を好む。丸い音を聞くと小さく跳ねる。"],
-  ["hachibee_square","ハチビー・スクエア","角ばった羽音で飛ぶ。几帳面だが帰り道をよく忘れる。"],
+  ["hachibee_square","ハチビー","角ばった羽音で飛ぶ。几帳面だが帰り道をよく忘れる。"],
   ["hachibee_circle","ハチビー・サークル","花より光るネジに集まる。気分で飛行ルートが丸くなる。"],
   ["kuroneko","クロネーコ","暗がりで輪郭だけが先に動く。褒めるとしっぽがほどける。"],
   ["boosta","ブースタ","背中に熱をため、驚くと三歩ぶんだけ急加速する。"],
@@ -2332,7 +2331,7 @@ const OWNED_DEX_FRAMES=[1,2,3,4,1,2,3,4,1,2,3,4,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
  cancelAnimationFrame(ownedDexAnim);
- g.innerHTML=CREATURE_TYPES.map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
+ g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
  const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/170)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
 function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
