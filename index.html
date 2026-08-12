@@ -1144,7 +1144,7 @@ html,body{
 <div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
-<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div id="loadoutError" style="margin-top:10px;color:#b43737;font-size:10px;text-align:center"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
+<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div id="partnerLabel" class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div id="gearLabel" class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div id="loadoutError" style="margin-top:10px;color:#b43737;font-size:10px;text-align:center"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
 <div id="huntCompanion"><canvas width="128" height="128" aria-label="同行キャラクター"></canvas></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
@@ -2402,7 +2402,7 @@ function boxChange(id,d){
 function showHub(id){huntCompanion.style.display="none";feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
 function showHunt(){feedPicker.classList.remove("show");hideCreatureHP();setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block";showFirstHuntGuide()}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
-document.getElementById("huntNav").addEventListener("click",openHuntLoadout);
+document.getElementById("huntNav").addEventListener("click",handleHuntNav);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
 document.getElementById("roomBoxBtn").addEventListener("click",e=>{e.stopPropagation();let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
 document.getElementById("boxPanel").addEventListener("click",e=>e.stopPropagation());
@@ -2410,7 +2410,7 @@ document.addEventListener("pointerdown",e=>{const p=document.getElementById("box
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
-let huntAccessReady=false,huntAccessPending=null,huntPermissionDenied=false;
+let huntAccessReady=false,huntAccessPending=null;
 function hasLiveHuntCamera(){return camera.srcObject?.getVideoTracks().some(track=>track.readyState==="live")===true}
 async function requestHuntAccess(){
  if(huntAccessReady&&hasLiveHuntCamera())return;
@@ -2420,19 +2420,17 @@ async function requestHuntAccess(){
   let stream=null;
   try{
    if(!window.isSecureContext)throw new Error("HTTPSで開いてください。");
-   if(huntPermissionDenied&&!window.confirm("HUNTにはカメラとセンサーの許可が必要です。\nもう一度、許可を試しますか？"))throw new Error("許可するまで、HUNTを押すたびに確認します。");
-   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted"){huntPermissionDenied=true;throw new Error("方向センサーが許可されませんでした。もう一度HUNTを押して許可してください。")}
-   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted"){huntPermissionDenied=true;throw new Error("モーションセンサーが許可されませんでした。もう一度HUNTを押して許可してください。")}
+   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&await DeviceOrientationEvent.requestPermission()!=="granted")throw new DOMException("","NotAllowedError");
+   if(typeof DeviceMotionEvent!=="undefined"&&typeof DeviceMotionEvent.requestPermission==="function"&&await DeviceMotionEvent.requestPermission()!=="granted")throw new DOMException("","NotAllowedError");
    if(!navigator.mediaDevices?.getUserMedia)throw new Error("カメラを使用できません。");
    try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}catch(e){if(e?.name!=="OverconstrainedError")throw e;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
    camera.srcObject=stream;camera.muted=true;camera.playsInline=true;await camera.play();
    addEventListener("deviceorientation",orientationHandler,true);addEventListener("devicemotion",motionHandler,{passive:true});
    sensorReady=false;locked=false;lockStartedAt=0;lockEnd=0;lockCooldownUntil=0;currentShakePower=0;lastShakeActivity=0;
    stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{huntAccessReady=false},{once:true}));
-   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;huntPermissionDenied=false;
+   spawnCreature();updateHP();gameRunning=true;lastTime=performance.now();requestAnimationFrame(cameraLoop);requestAnimationFrame(gameLoop);huntAccessReady=true;
   }catch(e){
    stream?.getTracks().forEach(track=>track.stop());camera.srcObject=null;huntAccessReady=false;
-   if(e?.name==="NotAllowedError"){huntPermissionDenied=true;throw new Error("カメラが許可されませんでした。もう一度HUNTを押して許可してください。ブラウザでブロック済みの場合は、サイト設定からカメラを許可してください。")}
    throw e;
   }
  })();
@@ -2442,14 +2440,25 @@ async function requestHuntAccess(){
 /* ===== HUNT LOADOUT / PARTNER ===== */
 const huntLoadout=document.getElementById("huntLoadout"),partnerChoices=document.getElementById("partnerChoices"),gearChoices=document.getElementById("gearChoices"),loadoutStart=document.getElementById("loadoutStart"),huntCompanion=document.getElementById("huntCompanion"),companionCanvas=huntCompanion.querySelector("canvas");
 let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedAt=0;
+function availableHuntPartners(){return DEX_SPECIES.filter(c=>speciesCaught(c)>0)}
+function availableHuntGear(){return GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]))}
+async function beginHunt(){
+ try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt();return true}catch(e){console.error(e);return false}
+}
+async function handleHuntNav(){
+ if(!availableHuntPartners().length&&!availableHuntGear().length){selectedPartner=null;selectedGear=null;await beginHunt();return}
+ openHuntLoadout();
+}
 function openHuntLoadout(){
- const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);if(selectedPartner&&!partners.some(c=>c.id===selectedPartner.id))selectedPartner=null;
- const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));if(selectedGear&&!gears.some(g=>g[0]===selectedGear[0]))selectedGear=null;
+ const partners=availableHuntPartners();if(selectedPartner&&!partners.some(c=>c.id===selectedPartner.id))selectedPartner=null;
+ const gears=availableHuntGear();if(selectedGear&&!gears.some(g=>g[0]===selectedGear[0]))selectedGear=null;
+ document.getElementById("partnerLabel").style.display=partners.length?"block":"none";partnerChoices.style.display=partners.length?"grid":"none";
+ document.getElementById("gearLabel").style.display=gears.length?"block":"none";gearChoices.style.display=gears.length?"grid":"none";
  partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("");partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=selectedPartner?.id===b.dataset.id?null:DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
  gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}<small>${g[3]}</small></button>`).join("");gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=selectedGear?.[0]===b.dataset.id?null:gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
  loadoutStart.disabled=false;huntLoadout.classList.add("show")
 }
-loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=false}};
+loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";await beginHunt();loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=false};
 huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
