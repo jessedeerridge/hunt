@@ -1060,7 +1060,7 @@ html,body{
 /* HUNT FEED */
 #feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
 /* Square cards keep complete dex copy visible. */
-.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
+.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryStats{font-size:clamp(5px,1.15vw,7px);line-height:1.25;color:#f0bd58;white-space:normal}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
 </style>
 </head>
 
@@ -1087,7 +1087,7 @@ html,body{
 
       <span id="hpNumber">100</span>
 
-      / 100
+      / <span id="hpMaxNumber">100</span>
 
     </div>
 
@@ -1400,6 +1400,8 @@ const hpNumber =
 
 const hpInner =
   document.getElementById("hpInner");
+
+const hpMaxNumber = document.getElementById("hpMaxNumber");
 
 const lockText =
   document.getElementById("lock");
@@ -1771,27 +1773,27 @@ let sensorReady =
 ========================================================= */
 
 const CREATURE_TYPES = [
-  ["blueboy","ブルーボーイ","雨上がりの石畳を好む。丸い音を聞くと小さく跳ねる。"],
-  ["hachibee_square","ハチビー","角ばった羽音で飛ぶ。几帳面だが帰り道をよく忘れる。"],
-  ["hachibee_circle","ハチビー・サークル","花より光るネジに集まる。気分で飛行ルートが丸くなる。"],
-  ["kuroneko","クロネーコ","暗がりで輪郭だけが先に動く。褒めるとしっぽがほどける。"],
-  ["boosta","ブースタ","背中に熱をため、驚くと三歩ぶんだけ急加速する。"],
-  ["keseranpasaran","ケセランパサラン","風のすき間で眠る綿毛。見失った頃に肩へ戻ってくる。"],
-  ["marumajiro","マルマジロ","坂を見ると丸まりたくなる。止まり方はまだ練習中。"],
-  ["fukurougu","フクロウグ","夜更けの物音を集める。首をかしげるほど記憶が鮮明になる。"],
-  ["usasasagi","ウサササギ","長い耳で遠くの天気を測る。足跡を一つだけ残さない。"],
-  ["keruberosu","ケルベロス","三つの気配を持つが、眠るタイミングだけはいつも同じ。"],
-  ["kumojira","クモジラ","糸のような雲を渡る。雨粒を七つまで背中に載せられる。"],
-  ["okoppanda","オコッパンダ","怒った顔のまま機嫌がいい。竹に似た棒を集めている。"],
-  ["tsunogame","ツノガメ","角で風向きを読む。急ぐほど動きがゆっくりに見える。"],
-  ["kurokoden","クロコデン","水辺の影を縫って歩く。歯ではなく尾で挨拶をする。"],
-  ["tsuyugaeru","ツユガエル","朝露を帽子にためる。晴れの日だけ小声で歌う。"],
-  ["ririn","リリン","鈴に似た声を持つ。静かな場所ほどにぎやかに跳ねる。"],
-  ["sorarisaso","ソラリサソ","空の境目を横歩きする。星明かりで尾の色が変わる。"],
-  ["kokokku","コーコック","夜明けを少し早く知らせる。丸いものを巣へ運びたがる。"],
-  ["dea","デーアー","森の入口で足音を数える。枝角に小さな風を飼っている。"],
-  ["riooria","リオーリア","水面すれすれを泳ぐ光。うれしいと背びれが透き通る。"]
-].map(([id,name,trait])=>({id,name,trait}));
+ ["blueboy","ブルーボーイ","カワウソ×雨粒","雨上がりの石畳を好み、丸い音で小さく跳ねる。",0,0,0],
+ ["hachibee_square","ハチビー","ミツバチ×積み木","角ばった羽音で飛ぶ。几帳面だが帰り道をよく忘れる。",5,0,0],
+ ["hachibee_circle","ハチビー・サークル","ミツバチ×飴玉","花より光るネジに集まり、丸い軌道で飛ぶ。",5,0,0],
+ ["kuroneko","クロネーコ","黒猫×影","暗がりでは輪郭だけが先に動く。褒めると尾がほどける。",5,10,0],
+ ["boosta","ブースタ","イタチ×ロケット","背中に熱をため、驚くと三歩だけ急加速する。",5,10,-10],
+ ["keseranpasaran","ケセランパサラン","綿毛×アンゴラ兎","風のすき間で眠り、見失った頃に肩へ戻る。",0,0,-5],
+ ["marumajiro","マルマジロ","アルマジロ×車輪","坂を見ると丸まりたくなる。止まり方はまだ練習中。",-8,20,10],
+ ["fukurougu","フクロウグ","フクロウ×砂時計","夜更けの物音を集め、首をかしげて記憶する。",-5,5,12],
+ ["usasasagi","ウサササギ","野ウサギ×カササギ","長い耳で遠くの天気を測り、足跡を一つ隠す。",15,-5,-8],
+ ["keruberosu","ケルベロス","山犬×三つ首の幻獣","三つの気配を持つが、眠る時だけは息が合う。",8,25,-15],
+ ["kumojira","クモジラ","クモ×クジラ","糸のような雲を渡り、雨粒を背中に載せる。",-3,15,5],
+ ["okoppanda","オコッパンダ","レッサーパンダ×雷雲","怒った顔のまま機嫌がよく、細い棒を集める。",6,12,-5],
+ ["tsunogame","ツノガメ","リクガメ×カブトムシ","角で風向きを読む。急ぐほどゆっくりに見える。",-15,30,18],
+ ["kurokoden","クロコデン","ワニ×黒電話","水辺の影を縫って歩き、尾の振動で挨拶する。",4,22,-10],
+ ["tsuyugaeru","ツユガエル","アマガエル×朝露","朝露を帽子にため、晴れの日だけ小声で歌う。",10,-8,5],
+ ["ririn","リリン","リス×鈴","鈴に似た声を持ち、静かな場所ほどよく跳ねる。",18,-10,-12],
+ ["sorarisaso","ソラリサソ","サソリ×渡り鳥","空の境目を横歩きし、星明かりで尾色が変わる。",12,8,-10],
+ ["kokokku","コーコック","ニワトリ×目覚まし時計","夜明けを少し早く知らせ、丸い物を巣へ運ぶ。",7,5,0],
+ ["dea","デーアー","シカ×森の精霊","森の入口で足音を数え、枝角に小さな風を飼う。",10,18,-12],
+ ["riooria","リオーリア","アシカ×獅子","水面すれすれを泳ぎ、喜ぶと背びれが透き通る。",14,20,-18]
+].map(([id,name,motif,trait,speedPct,hpPct,lockPct])=>({id,name,motif,trait,speedPct,hpPct,lockPct}));
 
 let creatureType =
   CREATURE_TYPES[0];
@@ -1917,8 +1919,10 @@ let lockCooldownUntil =
 let gameRunning =
   false;
 
+let creatureMaxHP = MAX_HP;
+
 let hp =
-  MAX_HP;
+  creatureMaxHP;
 
 let lastTime =
   0;
@@ -2149,7 +2153,11 @@ function spawnCreature(){
     random(
       WALK_SPEED_MIN,
       WALK_SPEED_MAX
-    );
+    ) * (1 + creatureType.speedPct/100);
+
+  creatureMaxHP = MAX_HP * (1 + creatureType.hpPct/100);
+  hp = creatureMaxHP;
+  updateHP();
 
   runningAway =
     false;
@@ -2338,12 +2346,13 @@ function renderItems(){
  FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard inventoryCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><div class="shopDesc">効果：${CREATURE_TYPES.find(c=>c.id===x[0])?.name||"キャラ"}を引き寄せる専用エサ</div><span class="itemCount">×${q}</span></div>`)});
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
+const signed=v=>(v>=0?"+":"")+v;
 let ownedDexAnim=0;
 const OWNED_DEX_FRAMES=[1,2,3,4,1,2,3,4,1,2,3,4,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
  cancelAnimationFrame(ownedDexAnim);
- g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
+ g.innerHTML=CREATURE_TYPES.filter(c=>c.id!=="hachibee_circle").map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryMotif">${c.motif}</div><div class="dexEntryTrait">${c.trait}</div><div class="dexEntryStats">歩行 ${signed(c.speedPct)}% ・ 体力 ${signed(c.hpPct)}%<br>ロック ${signed(c.lockPct)}%</div></article>`).join("");
  const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/170)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
 function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
@@ -2383,7 +2392,7 @@ function openFeedPicker(){
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
  hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),contactSeconds:0};saveHub();renderItems();feedPicker.classList.remove("show");
- creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
 }
 function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.2)";ctx.beginPath();ctx.ellipse(0,16,25,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff1cf";ctx.strokeStyle="#4f3040";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,-5);ctx.quadraticCurveTo(-18,19,0,20);ctx.quadraticCurveTo(18,19,22,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle="#e57c62";ctx.beginPath();ctx.ellipse(0,-5,22,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#ffd76a";for(let i=-12;i<=12;i+=8){ctx.beginPath();ctx.arc(i,-7+(i%3),4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function updateFeedAttraction(time,dt){
@@ -2579,8 +2588,9 @@ startButton.addEventListener(
       {passive:true}
     );
 
+    creatureMaxHP = MAX_HP * (1 + creatureType.hpPct/100);
     hp =
-      MAX_HP;
+      creatureMaxHP;
 
     locked =
       false;
@@ -3152,10 +3162,10 @@ function gameLoop(time){
         );
 
         setTimeout(()=>{
-          hp=MAX_HP;
+          creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;
           updateHP();
           lockText.style.display="none";
-          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
+          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
         },900);
 
         return;
@@ -9236,6 +9246,7 @@ function lockCreature(
   lockEnd =
     now+
     MAX_LOCK*
+    (1+creatureType.lockPct/100)*
     1000;
 
   /*
@@ -9364,10 +9375,12 @@ function updateHP(){
       hp
     );
 
+  hpMaxNumber.textContent = Math.ceil(creatureMaxHP);
+
   hpInner.style.width =
     (
       hp/
-      MAX_HP*
+      creatureMaxHP*
       100
     )+
     "%";
