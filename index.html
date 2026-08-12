@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 
-<title>PIXEL CAMERA HUNT 360 — DEX 2 INTEGRATED</title>
+<title>ピクセルハント</title>
 
 <style>
 
@@ -1068,6 +1068,17 @@ html,body{
 /* HUNT LOADOUT */
 #huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
 #huntCompanion{position:fixed;left:50%;bottom:70px;z-index:8;display:none;width:104px;height:104px;transform:translateX(-50%);transition:left .65s ease,bottom .65s ease;pointer-events:none}#huntCompanion canvas{width:104px;height:104px;image-rendering:pixelated}
+
+/* ===== PIXEL HUNT HOME ===== */
+#start{overflow:hidden;background:radial-gradient(circle at 18% 19%,rgba(255,255,255,.9) 0 3px,transparent 4px),radial-gradient(circle at 83% 14%,rgba(255,255,255,.75) 0 2px,transparent 3px),linear-gradient(160deg,#6fd6ef 0 48%,#7ccf9b 48% 65%,#4fa876 65%);font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif}
+#start::before,#start::after{content:"";position:absolute;z-index:-1;width:190px;height:190px;border:6px solid rgba(255,250,213,.25);transform:rotate(28deg)}#start::before{left:-95px;top:-75px}#start::after{right:-105px;bottom:-95px}
+#startIcon{position:relative;width:132px;height:132px;display:grid;place-items:center;border:5px solid #fff8d8;border-radius:36px;background:linear-gradient(145deg,#dff8ff,#85d9f0);box-shadow:0 9px 0 #22577a,0 16px 26px rgba(22,57,78,.28),inset 0 4px 0 #fff;transform:rotate(-3deg)}
+#startIcon svg{width:112px;height:112px;image-rendering:pixelated;filter:drop-shadow(0 6px 0 rgba(35,70,98,.22))}#startIcon::after{content:"";position:absolute;right:-12px;top:-10px;width:28px;height:28px;background:#ffd452;border:4px solid #fff8d8;border-radius:50%;box-shadow:0 4px 0 #a96b25}
+#start h1{margin:23px 0 5px;color:#fff9d8;font:900 clamp(30px,9vw,48px) "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.08em;text-shadow:0 4px 0 #174b72,3px 7px 0 rgba(14,52,76,.22)}#start h1 span{display:inline-block;color:#ffe06c;transform:rotate(-4deg)}
+#start p{font-size:12px;line-height:1.65;font-weight:800;text-shadow:0 2px 0 rgba(28,72,92,.38)}#secureStatus{border:2px solid rgba(255,255,255,.75);border-radius:999px;background:rgba(21,88,105,.25)}
+#startButton{border:4px solid #fff8d8;border-radius:18px;background:linear-gradient(#ffd96a,#ffad4e);color:#573319;box-shadow:0 7px 0 #a8562d,0 12px 22px rgba(34,75,84,.32),inset 0 3px 0 rgba(255,255,255,.65);font:900 17px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.12em}#startButton:active{transform:translateY(5px);box-shadow:0 2px 0 #a8562d}
+#dexButton{display:none!important}
+#hp{display:none}#hp.revealed{display:block}
 </style>
 </head>
 
@@ -1162,16 +1173,23 @@ html,body{
 <div id="start">
 
   <div id="startIcon">
-    👾
+    <svg viewBox="0 0 112 112" role="img" aria-label="ブルーボーイ">
+      <path fill="#25678f" stroke="#173c61" stroke-width="5" stroke-linejoin="round" d="M23 47 16 32l16 5c6-7 14-11 24-11s18 4 24 11l16-5-7 15c3 7 4 16 1 24-4 15-17 25-34 25S26 86 22 71c-3-8-2-17 1-24Z"/>
+      <path fill="#79cce5" d="M29 51c5-12 14-18 27-18s22 6 27 18c5 12 1 29-10 36-5 3-11 5-17 5s-12-2-17-5c-11-7-15-24-10-36Z"/>
+      <path fill="#eafaff" d="M37 58c0-8 7-14 15-14h8c8 0 15 6 15 14v14c0 9-8 16-19 16s-19-7-19-16Z"/>
+      <rect x="38" y="52" width="8" height="10" rx="3" fill="#173c61"/><rect x="66" y="52" width="8" height="10" rx="3" fill="#173c61"/>
+      <path fill="#2f6d91" stroke="#173c61" stroke-width="3" d="M50 67h12l-6 7Z"/><path fill="none" stroke="#173c61" stroke-width="3" stroke-linecap="round" d="M56 74v5m0 0-6 3m6-3 6 3"/>
+      <path fill="#fff" d="M39 53h3v3h-3zm28 0h3v3h-3z"/>
+    </svg>
   </div>
 
   <h1>
-    PIXEL CAMERA HUNT 360
+    <span>ピクセル</span>ハント
   </h1>
 
   <p>
 
-    STARTをタップしてください。
+    ブルーボーイと、ふしぎな仲間を探しにいこう！
 
     <br><br>
 
@@ -1198,7 +1216,7 @@ html,body{
   <div id="secureStatus">✓ SECURE</div>
 
   <div id="startActions">
-    <button id="startButton">START</button>
+    <button id="startButton">ハントをはじめる</button>
 
     <button id="dexButton" type="button">
       ▦<br>図鑑
@@ -1406,6 +1424,9 @@ const hud =
 
 const hpNumber =
   document.getElementById("hpNumber");
+
+const hpDisplay =
+  document.getElementById("hp");
 
 const hpInner =
   document.getElementById("hpInner");
@@ -1952,6 +1973,8 @@ let creatureMaxHP = MAX_HP;
 let hp =
   creatureMaxHP;
 
+let creatureHPFound = false;
+
 let lastTime =
   0;
 
@@ -2164,6 +2187,7 @@ function spawnCreature(){
 
   creatureMaxHP = MAX_HP * (1 + creatureType.hpPct/100);
   hp = creatureMaxHP;
+  hideCreatureHP();
   updateHP();
 
   runningAway =
@@ -2410,7 +2434,7 @@ function boxChange(id,d){
  hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"
 }
 function showHub(id){huntCompanion.style.display="none";feedPicker.classList.remove("show");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="flex";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
-function showHunt(){feedPicker.classList.remove("show");setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
+function showHunt(){feedPicker.classList.remove("show");hideCreatureHP();setHuntFacing();creatureYaw=randomHuntYaw();cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
 document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
 document.getElementById("huntNav").addEventListener("click",openHuntLoadout);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
@@ -2470,7 +2494,7 @@ function openFeedPicker(mode="hunt"){
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
  hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),contactSeconds:0};saveHub();renderItems();feedPicker.classList.remove("show");
- creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;hideCreatureHP();updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
 }
 function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.2)";ctx.beginPath();ctx.ellipse(0,16,25,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff1cf";ctx.strokeStyle="#4f3040";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,-5);ctx.quadraticCurveTo(-18,19,0,20);ctx.quadraticCurveTo(18,19,22,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle="#e57c62";ctx.beginPath();ctx.ellipse(0,-5,22,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#ffd76a";for(let i=-12;i<=12;i+=8){ctx.beginPath();ctx.arc(i,-7+(i%3),4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function updateFeedAttraction(time,dt){
@@ -3240,6 +3264,8 @@ function gameLoop(time){
 
       !runningAway
     ){
+
+      revealCreatureHP();
 
       lastDetectedTime =
         time;
@@ -9211,6 +9237,16 @@ function releaseLock(
 /* =========================================================
    HP
 ========================================================= */
+
+function hideCreatureHP(){
+  creatureHPFound = false;
+  hpDisplay.classList.remove("revealed");
+}
+
+function revealCreatureHP(){
+  creatureHPFound = true;
+  hpDisplay.classList.add("revealed");
+}
 
 function updateHP(){
 
