@@ -218,10 +218,10 @@ html,body{
   background:transparent;
 }
 #modeSwitch button:not(.active){display:none}
-#modeSwitch svg{display:block;width:42px;height:42px;margin:auto;filter:drop-shadow(0 2px 0 #06172c)}
+#modeSwitch svg{display:block;width:46px;height:46px;margin:auto;filter:drop-shadow(0 2px 0 #06172c)}
 
-#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:0;border:3px solid #fff;border-radius:50%;background:#1764b5;color:#fff;box-shadow:0 5px 0 #0b3768,0 8px 14px rgba(0,0,0,.45);pointer-events:auto}
-#huntHome svg{display:block;width:36px;height:36px;margin:auto;filter:drop-shadow(0 2px 0 #0b3768)}
+#huntHome{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:0;border:3px solid #fff;border-radius:50%;background:#f2a84b;color:#fff;box-shadow:0 5px 0 #8a4c16,0 8px 14px rgba(0,0,0,.45);pointer-events:auto}
+#huntHome svg{display:block;width:40px;height:40px;margin:auto;filter:drop-shadow(0 2px 0 #8a4c16)}
 
 /* DEBUG */
 
@@ -980,7 +980,7 @@ html,body{
   left:0;top:0;
 }
 
-#moneyHud{position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:145;display:none;padding:8px 11px;border:2px solid #fff;background:#111827;color:#ffe46b;font:900 14px monospace;pointer-events:none}
+#moneyHud{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top));z-index:145;display:none;min-width:88px;padding:8px 14px;border:1px solid rgba(91,57,13,.18);border-radius:999px;background:rgba(255,255,255,.94);color:#35230f;box-shadow:0 4px 14px rgba(44,29,12,.14);font:900 14px "Arial Rounded MT Bold","Yu Gothic",sans-serif;text-align:center;pointer-events:none}#moneyHud .moneyMark{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:5px;border-radius:50%;background:#f3b83f;color:#fff;font-size:11px;vertical-align:middle}
 #gamePopup{position:fixed;left:50%;top:50%;z-index:300;display:none;min-width:min(78vw,320px);max-width:88vw;padding:18px 22px;border:3px solid #d9efff;border-radius:18px;background:linear-gradient(#173d69,#0b2442);color:#fff;box-shadow:0 7px 0 #06172c,0 14px 28px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.25);transform:translate(-50%,-50%);text-align:center;font:900 14px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;pointer-events:none}
 #gamePopup.show{display:block;animation:gamePopupIn .18s ease-out both}
 @keyframes gamePopupIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -991,9 +991,9 @@ html,body{
 .modeConfirmActions button{padding:12px;border:2px solid #d9efff;border-radius:12px;background:#77bdff;color:#08294b;box-shadow:0 4px 0 #164f82;font:900 14px "Yu Gothic",sans-serif}
 .modeConfirmActions button:last-child{background:#e9f4ff;color:#26384d}
 .hubPage{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;background:#10131d;color:#fff;pointer-events:auto;padding-bottom:84px}
-.hubHead{height:62px;display:flex;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid rgba(255,255,255,.16);background:#171b28;font:900 18px "Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.04em}
+.hubHead{display:none}.hubBody{padding-top:calc(58px + env(safe-area-inset-top))!important}
 .hubTitle{flex:1}.hubBody{flex:1;min-height:0;overflow:auto;padding:12px}
-#roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(#24324a 0 66%,#30492f 66%);border:2px solid #fff}
+#roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(165deg,#fff 0 56%,#f3f0e9 56% 58%,#e7e2d8 58% 100%);border:2px solid #d8d3c9;box-shadow:inset 0 0 32px rgba(100,88,69,.08)}
 #roomBoxBtn{position:absolute;right:10px;top:10px;z-index:3;border:2px solid #fff;background:#111827;color:#fff;padding:9px;font:900 11px monospace}
 .roomPet{position:absolute;width:86px;text-align:center;transition:left 2.8s linear,top 2.8s linear}
 .roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:none}
@@ -1069,7 +1069,7 @@ html,body{
 <div id="hud">
 
   <button id="huntHome" type="button" aria-label="メニューに戻る">
-    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" stroke="#082e55" stroke-width="2" stroke-linejoin="round" d="M6 23 24 7l18 16-4 4-3-3v17H13V24l-3 3z"/><path fill="#2f91df" stroke="#082e55" stroke-width="2" d="M20 29h8v12h-8z"/></svg>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff8e9" stroke="#5b3517" stroke-width="3" stroke-linejoin="round" d="M5 23 24 6l19 17-5 5-3-3v17H13V25l-3 3z"/><path fill="#e87845" stroke="#5b3517" stroke-width="3" d="M20 29h9v13h-9z"/><rect x="15" y="20" width="7" height="7" rx="1" fill="#ffd765" stroke="#5b3517" stroke-width="2"/></svg>
   </button>
 
   <div id="hp">
@@ -1111,11 +1111,11 @@ html,body{
   <div id="modeSwitch">
 
     <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#071b31" stroke-width="1"><path fill="#d8f1ff" d="M5 22h6v-6h6v-6h6V4h6v6h6v6h6v6h4v6h-5v16H9V28H5z"/><path fill="#65b8f2" d="M11 22h6v6h-6zm12-12h6v6h-6zm12 12h6v6h-6zM17 28h6v6h-6zm12 0h6v6h-6zM11 34h6v6h-6zm12 0h6v10h-6zm12 0h5v6h-5z"/></g><path d="m31 8 13 13M44 8 31 21" fill="none" stroke="#ff4055" stroke-width="5" stroke-linecap="round"/><path d="m31 8 13 13M44 8 31 21" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#30223f" stroke-width="2"><path fill="#f4eafa" d="M5 10h38v32H5z"/><path fill="#b99bd5" d="M8 13h8v8H8zm8 8h8v8h-8zm8-8h8v8h-8zm8 8h8v8h-8zM8 29h8v10H8zm16 0h8v10h-8zm8-16h8v8h-8z"/></g><path d="M13 13 35 35M35 13 13 35" fill="none" stroke="#e63e52" stroke-width="9" stroke-linecap="round"/><path d="M13 13 35 35M35 13 13 35" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
 
     <button id="cameraMode" aria-label="モザイク表示に切り替える">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#071b31" stroke-width="1"><path fill="#d8f1ff" d="M5 22h6v-6h6v-6h6V4h6v6h6v6h6v6h4v6h-5v16H9V28H5z"/><path fill="#65b8f2" d="M11 22h6v6h-6zm12-12h6v6h-6zm12 12h6v6h-6zM17 28h6v6h-6zm12 0h6v6h-6zM11 34h6v6h-6zm12 0h6v10h-6zm12 0h5v6h-5z"/></g></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="6" width="38" height="36" rx="3" fill="#f4eafa" stroke="#30223f" stroke-width="2"/><g fill="#a983c8"><path d="M8 9h8v8H8zm8 8h8v8h-8zm8-8h8v8h-8zm8 8h8v8h-8zM8 25h8v8H8zm16 0h8v8h-8zm8 8h8v6h-8zM16 33h8v6h-8z"/></g></svg>
     </button>
 
   </div>
@@ -1125,7 +1125,7 @@ html,body{
 </div>
 
 
-<div id="moneyHud"><span aria-label="通貨単位">Đ</span> <span id="moneyValue">0</span></div>
+<div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomBoxBtn">▣ BOX</button><div id="boxPanel"></div></div></div></div>
@@ -2328,12 +2328,12 @@ function renderItems(){
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
 let ownedDexAnim=0;
-const OWNED_DEX_FRAMES=[1,2,3,12,13];
+const OWNED_DEX_FRAMES=[1,2,3,4,1,2,3,4,1,2,3,4,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
  cancelAnimationFrame(ownedDexAnim);
  g.innerHTML=CREATURE_TYPES.map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
- const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/650)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
+ const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/170)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
 function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
 function drawMiniFrame(canvas,id,f,t){
