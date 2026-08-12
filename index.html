@@ -1144,7 +1144,7 @@ html,body{
 <div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
-<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div id="partnerLabel" class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div id="gearLabel" class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div id="loadoutError" role="alert" aria-live="assertive" style="margin-top:10px;color:#b43737;font-size:10px;line-height:1.6;text-align:center;white-space:pre-line"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
+<div id="huntLoadout" role="dialog" aria-modal="true" aria-label="ハント編成"><div class="loadoutBox"><div id="partnerLabel" class="loadoutLabel">パートナー</div><div id="partnerChoices" class="loadoutGrid"></div><div id="gearLabel" class="loadoutLabel">装備</div><div id="gearChoices" class="loadoutGrid"></div><div class="loadoutActions"><button id="loadoutStart" class="loadoutStart">この編成でHUNT!</button></div></div></div>
 <div id="huntCompanion"><canvas width="128" height="128" aria-label="同行キャラクター"></canvas></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
 <div id="roomPage" class="hubPage"><div class="hubHead"><div class="hubTitle">ケージ</div></div><div class="hubBody"><div id="roomStage"><button id="roomFeedBtn" type="button" aria-label="ケージにエサを置く"><svg viewBox="0 0 48 48"><path fill="#fff8e8" stroke="#512d35" stroke-width="3" d="M10 12 16 6h20l4 6-4 31H12z"/><path fill="#ef8d73" d="M13 18h24l-3 22H15z"/><path fill="#ffd86c" d="M17 25h14v10H17z"/></svg></button><div id="roomFeedBowl" aria-hidden="true"></div><button id="roomBoxBtn" type="button" aria-label="ボックスを開く"><svg viewBox="0 0 36 32" aria-hidden="true"><path fill="#f5c45c" stroke="#44344f" stroke-width="2.5" stroke-linejoin="round" d="m4 10 5-6h18l5 6v18H4z"/><path fill="#fff4d4" stroke="#44344f" stroke-width="2.5" d="M3 10h30v7H3z"/><path fill="#d77c69" stroke="#44344f" stroke-width="2" d="M13 17h10v7H13z"/><path stroke="#fff" stroke-width="2" d="M11 7h14"/></svg></button><div id="boxPanel"></div></div></div></div>
@@ -2412,13 +2412,9 @@ updateHubUI();renderShop();renderItems();renderOwnedDex();
 
 let huntAccessReady=false,huntAccessPending=null;
 function hasLiveHuntCamera(){return camera.srcObject?.getVideoTracks().some(track=>track.readyState==="live")===true}
-function huntAccessErrorMessage(error){
- if(error?.name==="SensorPermissionError")return "モーションセンサーが許可されていません。\nブラウザの設定からモーションと方向へのアクセスを許可し、もう一度押してください。";
- const denied=error?.name==="NotAllowedError"||error?.name==="PermissionDeniedError";
- if(denied)return "カメラが許可されていません。\nブラウザのアドレスバー横の設定からカメラを「許可」に変更し、この画面に戻ってもう一度押してください。";
- if(error?.name==="NotFoundError"||error?.name==="DevicesNotFoundError")return "利用できるカメラが見つかりません。カメラを接続して、もう一度お試しください。";
- if(error?.name==="NotReadableError"||error?.name==="TrackStartError")return "カメラをほかのアプリが使用中です。ほかのアプリを閉じて、もう一度お試しください。";
- return error?.message||"カメラを開始できませんでした。もう一度お試しください。";
+function resetHuntAccess(){
+ camera.srcObject?.getTracks().forEach(track=>track.stop());
+ camera.srcObject=null;huntAccessReady=false;huntAccessPending=null;
 }
 async function requestHuntCamera(){
  try{return await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}
@@ -2464,7 +2460,7 @@ let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedA
 function availableHuntPartners(){return DEX_SPECIES.filter(c=>speciesCaught(c)>0)}
 function availableHuntGear(){return GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]))}
 async function beginHunt(){
- try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt();return true}catch(e){console.error(e);document.getElementById("loadoutError").textContent=huntAccessErrorMessage(e);huntLoadout.classList.add("show");return false}
+ try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt();return true}catch(e){console.error(e);huntLoadout.classList.add("show");return false}
 }
 async function handleHuntNav(){
  if(!availableHuntPartners().length&&!availableHuntGear().length){selectedPartner=null;selectedGear=null}
@@ -2477,9 +2473,9 @@ function openHuntLoadout(){
  document.getElementById("gearLabel").style.display=gears.length?"block":"none";gearChoices.style.display=gears.length?"grid":"none";
  partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("");partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=selectedPartner?.id===b.dataset.id?null:DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
  gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}<small>${g[3]}</small></button>`).join("");gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=selectedGear?.[0]===b.dataset.id?null:gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
- loadoutStart.disabled=false;loadoutStart.textContent="この編成でHUNT!";huntLoadout.classList.add("show")
+ loadoutStart.disabled=false;huntLoadout.classList.add("show")
 }
-loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";const started=await beginHunt();loadoutStart.textContent=started?"この編成でHUNT!":"もう一度カメラを許可する";loadoutStart.disabled=false};
+loadoutStart.onclick=async()=>{resetHuntAccess();loadoutStart.disabled=true;await beginHunt();loadoutStart.disabled=false};
 huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
