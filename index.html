@@ -67,6 +67,16 @@ html,body{
   left:50%;
   transform:translateX(-50%);
   width:min(82vw,390px);
+  opacity:0;
+  visibility:hidden;
+  transform:translateX(-50%) translateY(-8px);
+  transition:opacity .22s ease,transform .22s ease,visibility .22s;
+}
+
+#hp.found{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) translateY(0);
 }
 
 #hpText{
@@ -265,20 +275,65 @@ html,body{
 
   padding:25px;
 
-  background:#161925;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 28%,rgba(93,185,255,.24),transparent 26%),
+    linear-gradient(155deg,#071426 0%,#102f55 52%,#081523 100%);
 
   color:#fff;
 
   text-align:center;
 }
 
-#startIcon{
-  font-size:64px;
+#start::before,
+#start::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
 }
 
+#start::before{
+  inset:0;
+  opacity:.16;
+  background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);
+  background-size:24px 24px;
+  mask-image:linear-gradient(to bottom,#000,transparent 72%);
+}
+
+#start::after{
+  width:360px;
+  height:360px;
+  top:8%;
+  left:50%;
+  transform:translateX(-50%);
+  border:1px solid rgba(131,211,255,.22);
+  border-radius:50%;
+  box-shadow:0 0 80px rgba(45,154,255,.2),inset 0 0 55px rgba(45,154,255,.12);
+}
+
+#startIcon{
+  position:relative;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  width:132px;
+  height:132px;
+  border:1px solid rgba(188,230,255,.5);
+  border-radius:32px;
+  background:linear-gradient(145deg,rgba(35,112,181,.6),rgba(4,20,38,.82));
+  box-shadow:0 18px 50px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.25),0 0 0 8px rgba(102,188,255,.06);
+  backdrop-filter:blur(8px);
+}
+
+#startIcon canvas{width:116px;height:116px;image-rendering:pixelated;filter:drop-shadow(0 8px 8px rgba(0,0,0,.4))}
+
 #start h1{
-  margin:8px 0 10px;
-  font-size:25px;
+  position:relative;
+  z-index:1;
+  margin:22px 0 8px;
+  font-size:clamp(22px,6vw,30px);
+  letter-spacing:.08em;
+  text-shadow:0 3px 18px rgba(72,174,255,.55);
 }
 
 #start p{
@@ -292,6 +347,8 @@ html,body{
   line-height:1.7;
 
   opacity:.86;
+  position:relative;
+  z-index:1;
 }
 
 #secureStatus{
@@ -300,7 +357,10 @@ html,body{
 
   padding:6px 10px;
 
-  border:1px solid rgba(255,255,255,.35);
+  border:1px solid rgba(142,211,255,.48);
+  border-radius:999px;
+  background:rgba(5,22,41,.58);
+  color:#9cddff;
 
   font-size:11px;
 }
@@ -313,13 +373,11 @@ html,body{
 
   padding:17px 25px;
 
-  border:3px solid #fff;
-
-  background:#fff;
-
-  color:#111;
-
-  box-shadow:6px 6px #000;
+  border:2px solid #c9ebff;
+  border-radius:16px;
+  background:linear-gradient(180deg,#79caff,#3999ec);
+  color:#06233f;
+  box-shadow:0 7px 0 #14588f,0 14px 28px rgba(0,0,0,.32),inset 0 2px rgba(255,255,255,.62);
 
   font:900 16px monospace;
 }
@@ -359,6 +417,8 @@ html,body{
   justify-content:center;
   gap:10px;
   margin-top:18px;
+  position:relative;
+  z-index:1;
 }
 
 #startActions #startButton{
@@ -366,6 +426,7 @@ html,body{
 }
 
 #dexButton{
+  display:none;
   min-width:72px;
   padding:12px 14px;
   border:3px solid #fff;
@@ -1162,7 +1223,7 @@ html,body{
 <div id="start">
 
   <div id="startIcon">
-    👾
+    <canvas id="startBlueboy" width="128" height="128" aria-label="ブルーボーイ"></canvas>
   </div>
 
   <h1>
@@ -1406,6 +1467,9 @@ const hud =
 
 const hpNumber =
   document.getElementById("hpNumber");
+
+const hpHud =
+  document.getElementById("hp");
 
 const hpInner =
   document.getElementById("hpInner");
@@ -2138,6 +2202,8 @@ function spawnCreature(){
   const now =
     performance.now();
 
+  encounterFound = false;
+
   creatureType = chooseEncounterCreature();
 
   creatureZone = moveZoneForCreature(creatureType);
@@ -2419,6 +2485,7 @@ document.getElementById("boxPanel").addEventListener("click",e=>e.stopPropagatio
 document.addEventListener("pointerdown",e=>{const p=document.getElementById("boxPanel"),b=document.getElementById("roomBoxBtn");if(p.style.display==="block"&&!p.contains(e.target)&&!b.contains(e.target))p.style.display="none"});
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
+drawMiniFrame(document.getElementById("startBlueboy"),"blueboy",1,performance.now());
 
 let huntAccessReady=false,huntAccessPending=null;
 async function requestHuntAccess(){
@@ -2459,6 +2526,7 @@ function updateHuntCompanion(time){
 /* ===== PLACED FEED ===== */
 const feedButton=document.getElementById("feedButton"),feedPicker=document.getElementById("feedPicker"),roomFeedBtn=document.getElementById("roomFeedBtn"),roomFeedBowl=document.getElementById("roomFeedBowl");
 let placedFeed=null,feedPickerMode="hunt",roomFeed=null;
+let encounterFound=false;
 function openFeedPicker(mode="hunt"){
  feedPickerMode=mode;
  const roomIds=new Set([...document.querySelectorAll(".roomPet")].map(d=>d.dataset.id));
@@ -2470,7 +2538,7 @@ function openFeedPicker(mode="hunt"){
 function placeFeed(id){
  const key="feed_"+id;if(!own(key))return;
  hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),contactSeconds:0};saveHub();renderItems();feedPicker.classList.remove("show");
- creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureZone=moveZoneForCreature(creatureType);creatureMovePitch=randomPitchForZone(creatureZone);walkSpeed=random(WALK_SPEED_MIN,WALK_SPEED_MAX)*(1+creatureType.speedPct/100);creatureMaxHP=MAX_HP*(1+creatureType.hpPct/100);hp=creatureMaxHP;encounterFound=false;updateHP();creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));keepCreatureInHuntFront();creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
 }
 function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.2)";ctx.beginPath();ctx.ellipse(0,16,25,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff1cf";ctx.strokeStyle="#4f3040";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,-5);ctx.quadraticCurveTo(-18,19,0,20);ctx.quadraticCurveTo(18,19,22,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle="#e57c62";ctx.beginPath();ctx.ellipse(0,-5,22,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#ffd76a";for(let i=-12;i<=12;i+=8){ctx.beginPath();ctx.arc(i,-7+(i%3),4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function updateFeedAttraction(time,dt){
@@ -3226,6 +3294,11 @@ function gameLoop(time){
 
       Math.abs(dy) <
         VFOV/2;
+
+    if(creatureVisible && !encounterFound){
+      encounterFound = true;
+      updateHP();
+    }
 
     /*
       ★画面に入った
@@ -9213,6 +9286,8 @@ function releaseLock(
 ========================================================= */
 
 function updateHP(){
+
+  hpHud.classList.toggle("found",encounterFound);
 
   hpNumber.textContent =
     Math.ceil(
