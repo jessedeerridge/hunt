@@ -1054,6 +1054,11 @@ html,body{
 .simpleCard{
   font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
 }
+
+/* HUNT FEED */
+#feedButton{position:absolute;right:calc(82px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:58px;height:58px;padding:5px;border:3px solid #fff;border-radius:50%;background:#e86f50;box-shadow:0 5px 0 #8c3827,0 8px 14px rgba(0,0,0,.4);pointer-events:auto;color:#fff;font:900 10px "Yu Gothic",sans-serif}#feedButton svg{display:block;width:34px;height:34px;margin:auto}#feedPicker{position:fixed;right:12px;bottom:96px;z-index:320;display:none;width:min(92vw,360px);max-height:52vh;overflow:auto;padding:12px;border:3px solid #6f4329;border-radius:18px;background:#fffaf0;box-shadow:0 9px 0 #432819,0 18px 30px rgba(0,0,0,.4);pointer-events:auto}#feedPicker.show{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.feedChoice{min-width:0;aspect-ratio:1;border:1px solid #d2b48a;border-radius:12px;background:#fff;color:#3b281c;font:700 8px "Yu Gothic",sans-serif;overflow:hidden}.feedChoice .shopIcon{height:65%}.feedChoice .shopIcon svg{width:46px;height:46px}.feedChoice:disabled{opacity:.4}.feedHint{grid-column:1/-1;text-align:center;color:#72543d;font:700 10px "Yu Gothic",sans-serif}
+/* Square cards keep complete dex copy visible. */
+.dexEntry{display:flex;flex-direction:column}.dexEntryName{flex:0 0 auto}.dexEntryTrait{flex:1;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(6px,1.45vw,9px)!important;line-height:1.35!important}
 </style>
 </head>
 
@@ -1108,6 +1113,8 @@ html,body{
     SENSOR...
   </div>
 
+  <button id="feedButton" type="button" aria-label="エサを置く"><svg viewBox="0 0 48 48"><path fill="#fff2c8" stroke="#5b3021" stroke-width="3" d="M12 9h24l5 33H7z"/><path fill="#ed9b42" d="M10 18h28l3 24H7z"/><circle cx="24" cy="30" r="7" fill="#e65c4d"/><path stroke="#fff" stroke-width="2" d="M20 30h8m-4-4v8"/></svg><span>エサ</span></button>
+
   <div id="modeSwitch">
 
     <button id="pixelMode" class="active" aria-label="通常カメラ表示に切り替える">
@@ -1125,6 +1132,7 @@ html,body{
 </div>
 
 
+<div id="feedPicker" role="dialog" aria-label="置くエサを選ぶ"></div>
 <div id="moneyHud"><span class="moneyMark" aria-label="通貨単位">Đ</span><span id="moneyValue">0</span></div>
 <div id="gamePopup" role="status" aria-live="polite"></div>
 <div id="modeConfirm" role="dialog" aria-modal="true" aria-labelledby="modeConfirmText"><div class="modeConfirmBox"><div id="modeConfirmText">カメラのモザイクをやめますか？</div><div class="modeConfirmActions"><button id="modeConfirmYes" type="button">はい</button><button id="modeConfirmNo" type="button">いいえ</button></div></div></div>
@@ -2291,11 +2299,11 @@ function shopIcon(type){
   }; return `<svg ${common}>${shapes[shape]}</svg>`;
  }
  const icons={
-  detector:`<svg ${common}><path fill="#17253b" stroke="#d7edff" stroke-width="3" d="M12 28h40v25H12z"/><path fill="#4caaff" d="M17 33h16v12H17z"/><path fill="none" stroke="#8bd1ff" stroke-width="3" d="M38 42a8 8 0 0 1 8-8m-8 2a2 2 0 0 1 2-2"/><circle cx="43" cy="45" r="4" fill="#ff5d6c"/><path stroke="#d7edff" stroke-width="4" d="m30 28 8-15m-2 1 8 5"/><path fill="#58718e" d="M8 51h48v6H8z"/></svg>`,
-  net:`<svg ${common}><rect x="8" y="7" width="47" height="45" rx="3" fill="#173b64" stroke="#d9efff" stroke-width="4"/><path fill="none" stroke="#74bfff" stroke-width="2" d="M19 9v41M31 9v41M43 9v41M10 18h43M10 29h43M10 40h43"/><path fill="#315a81" stroke="#d9efff" stroke-width="3" stroke-linejoin="round" d="m42 52 6-3 11 10-5 5z"/></svg>`,
-  electric:`<svg ${common}><rect x="8" y="7" width="47" height="45" rx="3" fill="#143c67" stroke="#bce4ff" stroke-width="4"/><path fill="none" stroke="#68c9ff" stroke-width="2" d="M19 9v41M31 9v41M43 9v41M10 18h43M10 29h43M10 40h43"/><path fill="#ffe75b" stroke="#6b5200" stroke-width="2" d="M35 5 23 30h9l-4 22 15-29h-9z"/></svg>`,
-  book:`<svg ${common}><path fill="#1b72c9" stroke="#d9efff" stroke-width="3" d="M9 10h39a7 7 0 0 1 7 7v38H16a7 7 0 0 1-7-7z"/><path fill="#0a3768" d="M15 13h5v38h-5z"/><path fill="#e8f6ff" d="M25 19h23v5H25zm0 10h18v4H25zm0 8h22v4H25z"/><circle cx="45" cy="48" r="4" fill="#74c6ff"/></svg>`,
-  can:`<svg ${common}><ellipse cx="32" cy="13" rx="18" ry="7" fill="#d9efff" stroke="#315a81" stroke-width="3"/><path fill="#4c9ee8" stroke="#d9efff" stroke-width="3" d="M14 13v38c0 8 36 8 36 0V13c0 8-36 8-36 0Z"/><path fill="#173b64" d="M18 29h28v18H18z"/><path fill="#8fd4ff" d="m27 44 1-9 5 3 5-5 1 11z"/><path fill="none" stroke="#315a81" stroke-width="3" d="M26 11c1-4 11-4 12 0"/></svg>`
+  detector:`<svg ${common}><path fill="#f2d7a0" stroke="#493525" stroke-width="3" stroke-linejoin="round" d="M10 25h44v31H10z"/><rect x="15" y="31" width="22" height="17" rx="2" fill="#352f38"/><path fill="none" stroke="#6ee0a0" stroke-width="2" d="M19 43c4-10 10-10 14 0"/><circle cx="43" cy="38" r="5" fill="#e85d52" stroke="#493525" stroke-width="2"/><circle cx="47" cy="49" r="3" fill="#f5b940"/><path stroke="#493525" stroke-width="4" stroke-linecap="round" d="m31 25 8-15m-1 1 10 5"/><path stroke="#fff5dc" stroke-width="2" d="M14 28h36"/></svg>`,
+  net:`<svg ${common}><ellipse cx="27" cy="25" rx="20" ry="18" fill="#f5ead0" stroke="#513d2b" stroke-width="4"/><path fill="none" stroke="#c08b54" stroke-width="2" d="M12 15 41 34M8 24l28 18M20 8l25 18M11 35l28-25M21 42l25-28"/><path fill="#d56e4c" stroke="#513d2b" stroke-width="3" stroke-linejoin="round" d="m38 37 7-6 15 24-8 6z"/><path stroke="#ffd58a" stroke-width="3" d="m46 40 8 13"/></svg>`,
+  electric:`<svg ${common}><ellipse cx="27" cy="25" rx="20" ry="18" fill="#372d47" stroke="#f5d667" stroke-width="4"/><path fill="none" stroke="#c997e8" stroke-width="2" d="M12 15 41 34M8 24l28 18M20 8l25 18M11 35l28-25M21 42l25-28"/><path fill="#645076" stroke="#2d2038" stroke-width="3" d="m38 37 7-6 15 24-8 6z"/><path fill="#fff06a" stroke="#704b00" stroke-width="2" d="M29 5 18 27h8l-3 17 14-25h-9z"/></svg>`,
+  book:`<svg ${common}><path fill="#a784cf" stroke="#3e2c52" stroke-width="3" stroke-linejoin="round" d="M8 9h21c4 0 6 2 6 6 0-4 2-6 6-6h15v43H41c-4 0-6 2-6 6 0-4-2-6-6-6H8z"/><path fill="#fff2c7" d="M12 13h17c3 0 4 2 4 5v33c-1-2-3-3-6-3H12zm27 5c0-3 1-5 4-5h9v35h-8c-2 0-4 1-5 3z"/><path stroke="#9b7544" stroke-width="2" d="M16 22h12m-12 7h12m15-7h6m-6 7h6"/><path stroke="#3e2c52" stroke-width="3" d="M35 14v43"/><circle cx="47" cy="40" r="3" fill="#e96c66"/></svg>`,
+  can:`<svg ${common}><ellipse cx="32" cy="12" rx="18" ry="7" fill="#fff1c9" stroke="#493525" stroke-width="3"/><path fill="#e66c55" stroke="#493525" stroke-width="3" d="M14 12v40c0 8 36 8 36 0V12c0 8-36 8-36 0Z"/><path fill="#ffd66b" d="M18 27h28v20H18z"/><path fill="#6ca867" d="m23 43 5-11 5 6 7-9 2 14z"/><path fill="none" stroke="#493525" stroke-width="3" d="M25 10c1-5 12-5 14 0"/></svg>`
  };
  return icons[type]||icons.book;
 }
@@ -2359,6 +2367,27 @@ document.getElementById("roomBoxBtn").addEventListener("click",()=>{let p=docume
 function onCapturedHub(id){hubData.caught[id]=(hubData.caught[id]||0)+1;hubData.money+=10;saveHub()}
 updateHubUI();renderShop();renderItems();renderOwnedDex();
 
+/* ===== PLACED FEED ===== */
+const feedButton=document.getElementById("feedButton"),feedPicker=document.getElementById("feedPicker");
+let placedFeed=null,feedContactCooldown=0;
+function openFeedPicker(){
+ const owned=FEEDS.filter(x=>own("feed_"+x[0])>0);
+ feedPicker.innerHTML='<div class="feedHint">置くエサを選択</div>'+owned.map(x=>`<button class="feedChoice" data-id="${x[0]}"><span class="shopIcon">${shopIcon(x[2])}</span>${x[1]} ×${own("feed_"+x[0])}</button>`).join("")+(owned.length?"":'<div class="feedHint">購入済みのエサがありません</div>');
+ feedPicker.classList.toggle("show");
+ feedPicker.querySelectorAll(".feedChoice").forEach(b=>b.addEventListener("click",()=>placeFeed(b.dataset.id)));
+}
+function placeFeed(id){
+ const key="feed_"+id;if(!own(key))return;
+ hubData.items[key]--;placedFeed={id,yaw:cameraYaw,pitch:clamp(cameraPitch,-25,15),touches:0};saveHub();renderItems();feedPicker.classList.remove("show");
+ creatureType=CREATURE_TYPES.find(c=>c.id===id)||CREATURE_TYPES[0];creatureYaw=normalize360(placedFeed.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=placedFeed.pitch;creaturePitch=placedFeed.pitch;runningAway=false;sleeping=false;detected=false;setAnimation("move",performance.now());showGamePopup("エサを置きました");
+}
+function drawPlacedFeed(){if(!placedFeed)return;const p=projectCreature(placedFeed.yaw,placedFeed.pitch);if(!p.visible)return;ctx.save();ctx.translate(p.x,p.y+40);ctx.fillStyle="rgba(0,0,0,.22)";ctx.beginPath();ctx.ellipse(0,17,22,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#f2a84b";ctx.strokeStyle="#542f22";ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(-16,-17,32,34,5);ctx.fill();ctx.stroke();ctx.fillStyle="#fff0b8";ctx.fillRect(-12,-12,24,7);ctx.fillStyle="#e55b4d";ctx.beginPath();ctx.arc(0,6,6,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff";ctx.font="900 9px monospace";ctx.textAlign="center";ctx.fillText((3-placedFeed.touches)+"/3",0,30);ctx.restore()}
+function updateFeedAttraction(time,dt){
+ if(!placedFeed||locked)return;
+ const d=angleDiff(placedFeed.yaw,creatureYaw);runningAway=false;sleeping=false;moveDirection=d<0?-1:1;creatureYaw=normalize360(creatureYaw+clamp(d,-1,1)*Math.min(Math.abs(d),22*dt));creatureBasePitch+=(placedFeed.pitch-creatureBasePitch)*Math.min(1,dt*2);
+ if(Math.abs(d)<1.3&&time>feedContactCooldown){placedFeed.touches++;feedContactCooldown=time+2200;setAnimation("attack",time);if(placedFeed.touches>=3){placedFeed=null;showGamePopup("エサがなくなりました") }else{creatureYaw=normalize360(creatureYaw+(Math.random()<.5?-1:1)*12)}}
+}
+feedButton.addEventListener("click",openFeedPicker);
 
 startButton.addEventListener(
   "click",
@@ -3120,7 +3149,7 @@ function gameLoop(time){
           hp=MAX_HP;
           updateHP();
           lockText.style.display="none";
-          spawnCreature();
+          if(placedFeed){const food=placedFeed;spawnCreature();creatureType=CREATURE_TYPES.find(c=>c.id===food.id)||creatureType;creatureYaw=normalize360(food.yaw+random(35,70)*(Math.random()<.5?-1:1));creatureBasePitch=food.pitch;creaturePitch=food.pitch}else spawnCreature();
         },900);
 
         return;
@@ -3134,6 +3163,8 @@ function gameLoop(time){
         ).toFixed(1);
     }
   }
+
+  updateFeedAttraction(time,dt);
 
   /* =====================================================
      MOVEMENT
@@ -3282,7 +3313,7 @@ function gameLoop(time){
       /* WALK */
 
       if(
-        !sleeping
+        !sleeping && !placedFeed
       ){
 
         const move =
@@ -3411,6 +3442,8 @@ function gameLoop(time){
       !locked &&
 
       !runningAway &&
+
+      !placedFeed &&
 
       time-
       detectedAt >=
@@ -4015,6 +4048,8 @@ function renderGame(
   drawLockArea(
     time
   );
+
+  drawPlacedFeed();
 
   /*
     CREATURE
