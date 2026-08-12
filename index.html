@@ -806,6 +806,8 @@ html,body{
     inset 0 -2px 0 rgba(103,120,153,.16);
 }
 
+.navBtn:disabled{background:#626975;color:#aeb3bb;filter:grayscale(1);cursor:not-allowed;box-shadow:0 7px 0 #363b44,0 9px 0 #111827,0 11px 14px rgba(0,0,0,.38);opacity:.78}.navBtn:disabled::after{opacity:.25}
+
 .navBtn.active{
   background:#8dcbff;
   color:#082c55;
@@ -994,14 +996,14 @@ html,body{
 #roomStage{position:relative;min-height:100%;overflow:hidden;background:linear-gradient(#24324a 0 66%,#30492f 66%);border:2px solid #fff}
 #roomBoxBtn{position:absolute;right:10px;top:10px;z-index:3;border:2px solid #fff;background:#111827;color:#fff;padding:9px;font:900 11px monospace}
 .roomPet{position:absolute;width:86px;text-align:center;transition:left 2.8s linear,top 2.8s linear}
-.roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:block;font-size:9px;text-shadow:2px 2px #000}
+.roomPet canvas{width:72px;height:72px;image-rendering:pixelated}.roomPet b{display:none}
 #boxPanel{position:absolute;inset:54px 8px 8px;z-index:5;display:none;overflow:auto;padding:10px;background:rgba(10,12,18,.96);border:2px solid #fff}
-.boxRow{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid #555;font-size:11px}.boxRow b{flex:1}.boxRow button{border:1px solid #fff;background:#fff;color:#111;padding:6px;font:900 10px monospace}
+.boxRow{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid #555;font-size:11px}.boxAvatar{width:52px;height:52px;flex:0 0 52px;image-rendering:pixelated}.boxRow b{flex:1}.boxRow button{border:1px solid #fff;background:#fff;color:#111;padding:6px;font:900 10px monospace}
 .shopSection{margin-bottom:18px}.shopSection h3{margin:4px 0 8px;font-size:13px}
 .shopRailWrap{position:relative}.shopRail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding-bottom:6px}
 .shopCard{min-width:0;min-height:168px;border:2px solid #fff;background:#0b0e15;padding:8px 5px;text-align:center}.shopIcon{height:68px;display:grid;place-items:center}.shopIcon svg{width:58px;height:58px;filter:drop-shadow(0 3px 0 #000)}.shopName{font:900 10px monospace;min-height:25px}.shopDesc{font-size:8px;opacity:.72;min-height:30px}.buyBtn{width:100%;border:0;background:#fff;color:#111;padding:7px 2px;font:900 9px monospace}
 .railArrow{display:none}
-#itemGrid,#ownedDexGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simpleCard{border:2px solid #fff;background:#0b0e15;padding:10px;text-align:center;font-size:10px}
+#itemGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#ownedDexGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dexEntry{min-height:205px;text-align:left}.dexEntry canvas{display:block;width:128px;height:128px;max-width:100%;margin:auto;image-rendering:pixelated}.dexEntryName{font-size:13px;color:#ffe46b}.dexEntryTrait{margin-top:5px;font-size:9px;line-height:1.55;opacity:.8}.dexEntryMotion{text-align:center;font-size:9px;color:#8fd4ff}.simpleCard{border:2px solid #fff;background:#0b0e15;padding:10px;text-align:center;font-size:10px}
 
 /* ===== CLEAN GAME BUTTON POLISH ===== */
 #roomBoxBtn,
@@ -1758,8 +1760,27 @@ let sensorReady =
 ========================================================= */
 
 const CREATURE_TYPES = [
-  { id:"blueboy", name:"ブルーボーイ" }
-];
+  ["blueboy","ブルーボーイ","雨上がりの石畳を好む。丸い音を聞くと小さく跳ねる。"],
+  ["hachibee_square","ハチビー・スクエア","角ばった羽音で飛ぶ。几帳面だが帰り道をよく忘れる。"],
+  ["hachibee_circle","ハチビー・サークル","花より光るネジに集まる。気分で飛行ルートが丸くなる。"],
+  ["kuroneko","クロネーコ","暗がりで輪郭だけが先に動く。褒めるとしっぽがほどける。"],
+  ["boosta","ブースタ","背中に熱をため、驚くと三歩ぶんだけ急加速する。"],
+  ["keseranpasaran","ケセランパサラン","風のすき間で眠る綿毛。見失った頃に肩へ戻ってくる。"],
+  ["marumajiro","マルマジロ","坂を見ると丸まりたくなる。止まり方はまだ練習中。"],
+  ["fukurougu","フクロウグ","夜更けの物音を集める。首をかしげるほど記憶が鮮明になる。"],
+  ["usasasagi","ウサササギ","長い耳で遠くの天気を測る。足跡を一つだけ残さない。"],
+  ["keruberosu","ケルベロス","三つの気配を持つが、眠るタイミングだけはいつも同じ。"],
+  ["kumojira","クモジラ","糸のような雲を渡る。雨粒を七つまで背中に載せられる。"],
+  ["okoppanda","オコッパンダ","怒った顔のまま機嫌がいい。竹に似た棒を集めている。"],
+  ["tsunogame","ツノガメ","角で風向きを読む。急ぐほど動きがゆっくりに見える。"],
+  ["kurokoden","クロコデン","水辺の影を縫って歩く。歯ではなく尾で挨拶をする。"],
+  ["tsuyugaeru","ツユガエル","朝露を帽子にためる。晴れの日だけ小声で歌う。"],
+  ["ririn","リリン","鈴に似た声を持つ。静かな場所ほどにぎやかに跳ねる。"],
+  ["sorarisaso","ソラリサソ","空の境目を横歩きする。星明かりで尾の色が変わる。"],
+  ["kokokku","コーコック","夜明けを少し早く知らせる。丸いものを巣へ運びたがる。"],
+  ["dea","デーアー","森の入口で足音を数える。枝角に小さな風を飼っている。"],
+  ["riooria","リオーリア","水面すれすれを泳ぐ光。うれしいと背びれが透き通る。"]
+].map(([id,name,trait])=>({id,name,trait}));
 
 let creatureType =
   CREATURE_TYPES[0];
@@ -2235,8 +2256,17 @@ let hubData=(()=>{
  }
 })();
 const FEEDS=[
-["blueboy","ブルプル缶","can","缶詰"]
-];
+ ["blueboy","しずく煮","can","しずく型の粒"],["hachibee_square","カクミツ","bag","四角い蜜菓子"],
+ ["hachibee_circle","まる蜜ポン","box","軽い蜜玉"],["kuroneko","ヨナカ節","pouch","香る黒節"],
+ ["boosta","ホカホカ芯","tube","温かな芯"],["keseranpasaran","フワコナ","jar","浮かぶ粉"],
+ ["marumajiro","コロ根キューブ","box","硬い根粒"],["fukurougu","月見チップ","bag","薄い月形"],
+ ["usasasagi","ミミナガ草","bundle","細長い若草"],["keruberosu","ミツワミート","can","三つ輪の肉"],
+ ["kumojira","クモワタゼリー","pouch","糸引くゼリー"],["okoppanda","シマササ箱","box","しま模様の茎"],
+ ["tsunogame","ツノツブ","jar","尖った穀粒"],["kurokoden","ヌマコロ缶","can","水気のある団子"],
+ ["tsuyugaeru","アサツユ袋","bag","露色の豆"],["ririn","リンリン糖","tube","音の鳴る糖片"],
+ ["sorarisaso","ホシスナ包み","pouch","星色の砂菓子"],["kokokku","アサマル箱","box","朝焼けの丸粒"],
+ ["dea","コエダ束","bundle","香ばしい小枝"],["riooria","ミナモ瓶","jar","きらめく水菓子"]
+].map((x,i)=>[x[0],x[1],`feed:${x[2]}:${i}`,x[3]]);
 const GEAR=[
 ["detector","探知機","detector","存在する方向を8方向で表示",50],
 ["toughnet","頑丈ネット","net","ロック時間 +2秒",50],
@@ -2245,6 +2275,20 @@ const GEAR=[
 ];
 function shopIcon(type){
  const common='viewBox="0 0 64 64" role="img" aria-hidden="true"';
+ if(type.startsWith("feed:")){
+  const [,shape,indexText]=type.split(":"); const i=Number(indexText);
+  const color=`hsl(${(i*47)%360} 68% 59%)`, accent=`hsl(${(i*47+128)%360} 62% 48%)`;
+  const mark=`<circle cx="32" cy="34" r="7" fill="${accent}"/><path d="M28 34h8M32 30v8" stroke="#fff" stroke-width="2"/>`;
+  const shapes={
+   can:`<ellipse cx="32" cy="12" rx="17" ry="6" fill="#fff1c9" stroke="#432f3b" stroke-width="3"/><path fill="${color}" stroke="#432f3b" stroke-width="3" d="M15 12v39c0 7 34 7 34 0V12c0 7-34 7-34 0Z"/>${mark}`,
+   bag:`<path fill="${color}" stroke="#432f3b" stroke-width="3" stroke-linejoin="round" d="m18 8 28 2-2 10 6 36H12l6-36z"/><path stroke="#fff1c9" stroke-width="4" d="M18 20h28"/>${mark}`,
+   box:`<path fill="${color}" stroke="#432f3b" stroke-width="3" d="M10 18h44v36H10z"/><path fill="${accent}" stroke="#432f3b" stroke-width="3" d="m10 18 10-9h35l-1 9z"/>${mark}`,
+   pouch:`<path fill="${color}" stroke="#432f3b" stroke-width="3" d="M17 11h30l-3 10c8 11 8 27 3 36H14c-5-9-5-25 3-36z"/><path stroke="#fff1c9" stroke-width="3" d="M18 20h28"/>${mark}`,
+   tube:`<path fill="${color}" stroke="#432f3b" stroke-width="3" d="m22 9 24 5-10 42-24-5z"/><path fill="${accent}" stroke="#432f3b" stroke-width="3" d="m19 51 18 4-2 7-18-4z"/>${mark}`,
+   jar:`<path fill="${color}" stroke="#432f3b" stroke-width="3" d="M16 18h32v34c0 7-32 7-32 0z"/><path fill="#fff1c9" stroke="#432f3b" stroke-width="3" d="M14 9h36v10H14z"/>${mark}`,
+   bundle:`<path stroke="${color}" stroke-width="8" stroke-linecap="round" d="M20 10 38 55M31 8l5 48M43 12 30 56"/><path fill="${accent}" stroke="#432f3b" stroke-width="2" d="M14 32h35v10H14z"/>`
+  }; return `<svg ${common}>${shapes[shape]}</svg>`;
+ }
  const icons={
   detector:`<svg ${common}><path fill="#17253b" stroke="#d7edff" stroke-width="3" d="M12 28h40v25H12z"/><path fill="#4caaff" d="M17 33h16v12H17z"/><path fill="none" stroke="#8bd1ff" stroke-width="3" d="M38 42a8 8 0 0 1 8-8m-8 2a2 2 0 0 1 2-2"/><circle cx="43" cy="45" r="4" fill="#ff5d6c"/><path stroke="#d7edff" stroke-width="4" d="m30 28 8-15m-2 1 8 5"/><path fill="#58718e" d="M8 51h48v6H8z"/></svg>`,
   net:`<svg ${common}><rect x="8" y="7" width="47" height="45" rx="3" fill="#173b64" stroke="#d9efff" stroke-width="4"/><path fill="none" stroke="#74bfff" stroke-width="2" d="M19 9v41M31 9v41M43 9v41M10 18h43M10 29h43M10 40h43"/><path fill="#315a81" stroke="#d9efff" stroke-width="3" stroke-linejoin="round" d="m42 52 6-3 11 10-5 5z"/></svg>`,
@@ -2255,7 +2299,7 @@ function shopIcon(type){
  return icons[type]||icons.book;
 }
 function saveHub(){localStorage.setItem(SAVEKEY,JSON.stringify(hubData));updateHubUI()}
-function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money}
+function updateHubUI(){const m=document.getElementById("moneyValue");if(m)m.textContent=hubData.money;const dexNav=document.querySelector('.navBtn[data-page="ownedDexPage"]');if(dexNav){const unlocked=!!own("fulldex");dexNav.disabled=!unlocked;dexNav.setAttribute("aria-disabled",String(!unlocked));dexNav.title=unlocked?"図鑑を開く":"ショップでキャラ図鑑を購入すると解放"}}
 function own(k){return hubData.items[k]||0}
 let gamePopupTimer=0;
 function showGamePopup(message){
@@ -2281,12 +2325,17 @@ function renderItems(){
  FEEDS.forEach(x=>{let q=own("feed_"+x[0]);if(q)a.push(`<div class="simpleCard"><div class="shopIcon">${shopIcon(x[2])}</div><b>${x[1]}</b><br>× ${q}</div>`)});
  g.innerHTML=a.join("")||'<div style="opacity:.6">アイテムはまだありません。</div>';
 }
+let ownedDexAnim=0;
+const OWNED_DEX_FRAMES=[1,2,3,12,13];
 function renderOwnedDex(){
  const g=document.getElementById("ownedDexGrid");if(!g)return;
- g.innerHTML=CREATURE_TYPES.map(c=>{let n=hubData.caught[c.id]||0;let open=n>0||own("fulldex");return `<div class="simpleCard"><div style="font-size:26px">${open?"◆":"?"}</div><b>${open?c.name:"？？？？"}</b><br>${n?"捕獲 ×"+n:"未捕獲"}</div>`}).join("");
+ cancelAnimationFrame(ownedDexAnim);
+ g.innerHTML=CREATURE_TYPES.map(c=>`<article class="simpleCard dexEntry"><canvas width="128" height="128" data-id="${c.id}"></canvas><div class="dexEntryMotion">WALK 1</div><b class="dexEntryName">${c.name}</b><div class="dexEntryTrait">${c.trait}</div></article>`).join("");
+ const animate=t=>{if(document.getElementById("ownedDexPage").style.display!=="flex")return;const step=Math.floor(t/650)%OWNED_DEX_FRAMES.length,frame=OWNED_DEX_FRAMES[step];g.querySelectorAll("canvas").forEach(canvas=>drawMiniFrame(canvas,canvas.dataset.id,frame,t));g.querySelectorAll(".dexEntryMotion").forEach(x=>x.textContent=DEX_MOTIONS[frame]);ownedDexAnim=requestAnimationFrame(animate)};ownedDexAnim=requestAnimationFrame(animate);
 }
-function drawMini(canvas,id,t){
- const c=canvas.getContext("2d");c.clearRect(0,0,128,128);c.save();c.translate(64,70);activeCtx=c;let f=1+(Math.floor(t/260)%4),S=3;
+function drawMini(canvas,id,t){drawMiniFrame(canvas,id,1+(Math.floor(t/260)%4),t)}
+function drawMiniFrame(canvas,id,f,t){
+ const c=canvas.getContext("2d");c.clearRect(0,0,128,128);c.save();c.translate(64,70);activeCtx=c;let S=3;
  try{
  if(id.startsWith("hachibee_"))drawHachibeeRaster(f,t,c,90);else if(id==="kuroneko")drawKuronekoFrame(f,S,t);else if(id==="boosta")drawBoostaFrame(f,S,t);else if(id==="keseranpasaran")drawKeseranPasaranFrame(f,S,t);else if(id==="marumajiro")drawMarumajiroFrame(f,S,t);else if(id==="fukurougu")drawFukurouguFrame(f,S,t);else if(id==="usasasagi")drawUsasasagiFrame(f,S,t);else if(id==="keruberosu")drawKeruberosuFrame(f,S,t);else if(id==="kumojira")drawKumojiraFrame(f,S,t);else if(id==="okoppanda")drawOkoppandaFrame(f,S,t);else if(id==="tsunogame")drawTsunogameFrame(f,S,t);else if(id==="kurokoden")drawKurokodenFrame(f,S,t);else if(id==="tsuyugaeru")drawTsuyugaeruFrame(f,S,t);else if(id==="ririn")drawRirinFrame(f,S,t);else if(id==="sorarisaso")drawSorarisasoFrame(f,S,t);else if(id==="kokokku"){drawKokokkuFrame(f,S,t);drawKokokkuAttackSparks(f,S,t);}else if(id==="dea")drawDeaFrame(f,S,t);else if(id==="riooria")drawRiooriaFrame(f,S,t);else drawPixelFrame(f,S,t);
  }catch(e){} c.restore();
@@ -2294,15 +2343,15 @@ function drawMini(canvas,id,t){
 let roomAnim=0,roomMoveTimer=0;
 function renderRoom(){
  const st=document.getElementById("roomStage");if(!st)return;st.querySelectorAll(".roomPet").forEach(e=>e.remove());
- CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128"></canvas><b>${c.name}</b>`;st.appendChild(d)}})
+ CREATURE_TYPES.forEach(c=>{let n=Math.max(0,(hubData.caught[c.id]||0)-(hubData.boxed[c.id]||0));for(let i=0;i<n;i++){let d=document.createElement("div");d.className="roomPet";d.dataset.id=c.id;d.style.left=(5+Math.random()*75)+"%";d.style.top=(18+Math.random()*58)+"%";d.innerHTML=`<canvas width="128" height="128" aria-label="${c.name}"></canvas>`;st.appendChild(d)}})
  cancelAnimationFrame(roomAnim);const loop=t=>{document.querySelectorAll(".roomPet").forEach(d=>drawMini(d.querySelector("canvas"),d.dataset.id,t));roomAnim=requestAnimationFrame(loop)};roomAnim=requestAnimationFrame(loop);
  clearInterval(roomMoveTimer);roomMoveTimer=setInterval(()=>document.querySelectorAll(".roomPet").forEach(d=>{d.style.left=(3+Math.random()*78)+"%";d.style.top=(18+Math.random()*58)+"%"}),2800);renderBox()
 }
-function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。"}
+function renderBox(){const p=document.getElementById("boxPanel");p.innerHTML=CREATURE_TYPES.filter(c=>hubData.caught[c.id]).map(c=>{let n=hubData.caught[c.id]||0,b=hubData.boxed[c.id]||0;return `<div class="boxRow"><canvas class="boxAvatar" width="128" height="128" data-id="${c.id}" aria-label="${c.name}"></canvas><b>${c.name}　捕獲 ${n} / BOX ${b}</b><button onclick="boxChange('${c.id}',1)">しまう</button><button onclick="boxChange('${c.id}',-1)">出す</button></div>`}).join("")||"まだ捕獲したキャラはいません。";p.querySelectorAll(".boxAvatar").forEach(c=>drawMiniFrame(c,c.dataset.id,1,performance.now()))}
 function boxChange(id,d){hubData.boxed[id]=Math.max(0,Math.min(hubData.caught[id]||0,(hubData.boxed[id]||0)+d));saveHub();renderRoom();document.getElementById("boxPanel").style.display="block"}
 function showHub(id){document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");hud.style.display="none";document.getElementById("bottomNav").style.display="flex";document.getElementById("moneyHud").style.display="block";document.getElementById(id).style.display="flex";document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="roomPage")renderRoom();if(id==="shopPage")renderShop();if(id==="itemPage")renderItems();if(id==="ownedDexPage")renderOwnedDex()}
 function showHunt(){cameraModeConfirmedThisHunt=false;document.getElementById("modeConfirm").classList.remove("show");setDisplayMode("pixel");document.querySelectorAll(".hubPage").forEach(x=>x.style.display="none");document.querySelectorAll(".navBtn").forEach(b=>b.classList.remove("active"));document.getElementById("bottomNav").style.display="none";document.getElementById("moneyHud").style.display="none";hud.style.display="block"}
-document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>showHub(b.dataset.page)));
+document.querySelectorAll(".navBtn").forEach(b=>b.addEventListener("click",()=>{if(!b.disabled)showHub(b.dataset.page)}));
 document.getElementById("huntNav").addEventListener("click",showHunt);
 document.getElementById("huntHome").addEventListener("click",()=>showHub("roomPage"));
 document.getElementById("roomBoxBtn").addEventListener("click",()=>{let p=document.getElementById("boxPanel");p.style.display=p.style.display==="block"?"none":"block";renderBox()});
