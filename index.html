@@ -1055,7 +1055,7 @@ html,body{
 .dexEntry{display:flex;flex-direction:column;justify-content:flex-start}.dexEntryName{flex:0 0 auto}.dexEntryMotif{font-size:clamp(6px,1.35vw,8px);color:#bfc6d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dexEntryTrait{flex:0 0 auto;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;font-size:clamp(8px,1.8vw,11px)!important;line-height:1.35!important}
 
 /* HUNT LOADOUT */
-#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
+#huntLoadout{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(16,13,23,.78);backdrop-filter:blur(8px);pointer-events:auto}#huntLoadout.show{display:flex}.loadoutBox{width:min(92vw,460px);max-height:82vh;overflow:auto;padding:18px;border:2px solid #fff1d1;border-radius:22px;background:linear-gradient(155deg,#fffaf0,#eee5f6);color:#32283b;box-shadow:0 10px 0 #493b57,0 22px 50px rgba(0,0,0,.45);font-family:"Arial Rounded MT Bold","Yu Gothic",sans-serif}.loadoutBox h2{margin:0 0 5px;font-size:18px}.loadoutBox p{margin:0 0 14px;font-size:10px;color:#75677e}.loadoutLabel{margin:12px 0 7px;font-size:11px;font-weight:900}.loadoutLabel::after{content:"（選択なしでもOK）";margin-left:5px;color:#817487;font-size:8px}.loadoutGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.loadoutChoice{min-width:0;min-height:72px;padding:5px;border:2px solid transparent;border-radius:13px;background:#fff;color:#44364d;font:800 8px "Yu Gothic",sans-serif;box-shadow:0 3px 8px rgba(53,39,64,.12)}.loadoutChoice canvas{display:block;width:48px;height:48px;margin:auto;image-rendering:pixelated}.loadoutChoice .shopIcon{height:48px}.loadoutChoice .shopIcon svg{width:44px;height:44px}.loadoutChoice small{display:block;margin-top:3px;color:#786b7d;font-size:7px;line-height:1.25}.loadoutChoice.selected{border-color:#e2785d;background:#fff1d8;box-shadow:0 0 0 2px #ffd26d inset}.loadoutActions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.loadoutActions button{height:44px;border:0;border-radius:13px;font:900 12px "Yu Gothic",sans-serif}.loadoutCancel{background:#d8d1dc;color:#554b5c}.loadoutStart{background:#e8785e;color:#fff;box-shadow:0 4px 0 #923e32}.loadoutStart:disabled{filter:grayscale(1);opacity:.5}
 #huntCompanion{position:fixed;left:50%;bottom:70px;z-index:8;display:none;width:104px;height:104px;transform:translateX(-50%);transition:left .65s ease,bottom .65s ease;pointer-events:none}#huntCompanion canvas{width:104px;height:104px;image-rendering:pixelated}
 
 /* ===== PIXEL HUNT HOME ===== */
@@ -2286,6 +2286,9 @@ const GEAR=[
 ["electricnet","電気ネット","electric","ロック中ダメージ +20%",50],
 ["fulldex","キャラ図鑑","book","キャラ情報を解放",50]
 ];
+function equippedGearIs(id){return selectedGear?.[0]===id}
+function lockDurationSeconds(){return MAX_LOCK+(equippedGearIs("toughnet")?2:0)}
+function lockDamageMultiplier(){return equippedGearIs("electricnet")?1.2:1}
 function shopIcon(type){
  const common='viewBox="0 0 64 64" role="img" aria-hidden="true"';
  if(type.startsWith("feed:")){
@@ -2429,13 +2432,13 @@ async function requestHuntAccess(){
 const huntLoadout=document.getElementById("huntLoadout"),partnerChoices=document.getElementById("partnerChoices"),gearChoices=document.getElementById("gearChoices"),loadoutStart=document.getElementById("loadoutStart"),huntCompanion=document.getElementById("huntCompanion"),companionCanvas=huntCompanion.querySelector("canvas");
 let selectedPartner=null,selectedGear=null,companionAttackAt=0,companionEngagedAt=0;
 function openHuntLoadout(){
- const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);selectedPartner=partners.find(c=>c.id===selectedPartner?.id)||partners[0]||null;
- const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));selectedGear=gears.find(g=>g[0]===selectedGear?.[0])||gears[0]||null;
- partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("");partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
- gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">ショップで装備を購入してください</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
- loadoutStart.disabled=!(selectedPartner&&selectedGear);huntLoadout.classList.add("show")
+ const partners=DEX_SPECIES.filter(c=>speciesCaught(c)>0);if(selectedPartner&&!partners.some(c=>c.id===selectedPartner.id))selectedPartner=null;
+ const gears=GEAR.filter(g=>g[0]!=="fulldex"&&own(g[0]));if(selectedGear&&!gears.some(g=>g[0]===selectedGear[0]))selectedGear=null;
+ partnerChoices.innerHTML=partners.map(c=>`<button class="loadoutChoice ${selectedPartner?.id===c.id?'selected':''}" data-id="${c.id}"><canvas width="128" height="128"></canvas>${c.name}</button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">パートナーなしで出発できます</div>';partnerChoices.querySelectorAll("button").forEach(b=>{drawMiniFrame(b.querySelector("canvas"),b.dataset.id,1,performance.now());b.onclick=()=>{selectedPartner=selectedPartner?.id===b.dataset.id?null:DEX_SPECIES.find(c=>c.id===b.dataset.id);openHuntLoadout()}});
+ gearChoices.innerHTML=gears.map(g=>`<button class="loadoutChoice ${selectedGear?.[0]===g[0]?'selected':''}" data-id="${g[0]}"><span class="shopIcon">${shopIcon(g[2])}</span>${g[1]}<small>${g[3]}</small></button>`).join("")||'<div style="grid-column:1/-1;font-size:10px">装備なしで出発できます</div>';gearChoices.querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedGear=selectedGear?.[0]===b.dataset.id?null:gears.find(g=>g[0]===b.dataset.id);openHuntLoadout()});
+ loadoutStart.disabled=false;huntLoadout.classList.add("show")
 }
-loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display="block";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=!(selectedPartner&&selectedGear)}};
+loadoutStart.onclick=async()=>{document.getElementById("loadoutError").textContent="";loadoutStart.disabled=true;loadoutStart.textContent="カメラを準備中…";try{await requestHuntAccess();huntLoadout.classList.remove("show");companionEngagedAt=0;huntCompanion.style.display=selectedPartner?"block":"none";showHunt()}catch(e){console.error(e);document.getElementById("loadoutError").textContent=e.message||"カメラを許可してください"}finally{loadoutStart.textContent="この編成でHUNT!";loadoutStart.disabled=false}};
 huntLoadout.addEventListener("pointerdown",e=>{if(e.target===huntLoadout)huntLoadout.classList.remove("show")});
 function updateHuntCompanion(time){
  if(!selectedPartner||hud.style.display==="none"){huntCompanion.style.display="none";return}huntCompanion.style.display="block";let frame=1+(Math.floor(time/230)%4),flip=false;
@@ -2944,7 +2947,7 @@ function gameLoop(time){
     }else{
 
       hp -=
-        DAMAGE_PER_SECOND*(selectedGear?.[0]==="electricnet"?1.2:1)*
+        DAMAGE_PER_SECOND*lockDamageMultiplier()*
         dt;
 
       hp =
@@ -9081,7 +9084,7 @@ function lockCreature(
 
   lockEnd =
     now+
-    (MAX_LOCK+(selectedGear?.[0]==="toughnet"?2:0))*
+    lockDurationSeconds()*
     (1+creatureType.lockPct/100)*
     1000;
 
@@ -9116,8 +9119,11 @@ function lockCreature(
     now
   );
 
-  lockText.textContent =
-    "⚡ LOCK!";
+  lockText.textContent = equippedGearIs("electricnet")
+    ? "⚡ POWER LOCK!"
+    : equippedGearIs("toughnet")
+      ? "★ TOUGH LOCK +2s!"
+      : "⚡ LOCK!";
 
   lockText.style.display =
     "block";
