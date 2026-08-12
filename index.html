@@ -7925,29 +7925,84 @@ function drawDeaFrame(frame,S,time){
 }
 
 function drawRiooriaFrame(frame,S,time){
-  const {C,q,d,xeye,P}=extraTools(S,{o:'#30233c',body:'#b96c32',body2:'#e3a05c',mane:'#4269cc',mane2:'#7656d8',mane3:'#58c1e0',mane4:'#a1e1f3',eye:'#1c1713',nose:'#211813',cream:'#f1ca8c',claw:'#f7e3b8',fx:'#ffe36b'},.68);
-  function tuft(x,y,dir=1,c=P.mane){d(x,y,c);d(x+dir,y+1,P.mane2);d(x+2*dir,y+2,P.mane3);d(x+dir,y+3,P.mane4)}
-  function lion(kind='n',step=0,atk=0){
-    // larger torso
-    q(-16,0,27,2,P.o);q(-18,2,32,9,P.o);q(-16,11,27,6,P.o);q(-14,1,23,2,P.body2);q(-17,3,30,7,P.body);q(-15,10,25,5,P.body2);
-    // enormous wild mane wrapping head/chest/shoulder
-    q(-12,-21,18,4,P.mane2);q(-17,-18,27,6,P.mane);q(-20,-12,34,8,P.mane3);q(-21,-4,35,10,P.mane2);q(-18,6,30,9,P.mane);q(-13,14,22,5,P.mane4);
-    q(-10,-19,16,3,P.mane4);q(-15,-16,23,5,P.mane2);q(-18,-10,30,7,P.mane);q(-19,-3,31,8,P.mane3);q(-16,6,27,7,P.mane2);q(-12,12,20,4,P.mane4);
-    [[-16,-18,-1],[-20,-12,-1],[-22,-5,-1],[-21,3,-1],[-18,10,-1],[-12,15,-1],[7,-19,1],[12,-14,1],[15,-8,1],[16,-1,1],[14,6,1]].forEach(([x,y,dir],i)=>tuft(x,y,dir,[P.mane,P.mane2,P.mane3,P.mane4][i%4]));
-    // big lion head
-    q(2,-15,15,2,P.o);q(0,-13,20,8,P.o);q(2,-5,20,7,P.o);q(4,-14,11,2,P.body2);q(2,-12,17,6,P.body2);q(4,-4,17,5,P.cream);
-    q(2,-19,6,6,P.o);q(3,-18,4,4,P.body);q(13,-18,6,6,P.o);q(14,-17,4,4,P.body);q(18,-8,7,5,P.o);q(19,-7,6,3,P.cream);q(23,-6,3,2,P.nose);
-    if(kind==='hurt')xeye(10,-10,P.eye);else if(kind==='sleep')q(9,-10,4,1,P.eye);else{q(9,-11,3,2,P.eye);d(10,-11,P.claw)}
-    q(17,-2,6,2,P.o);q(18,-1,5,1,P.nose);
-    [[-12,13+step],[-5,14-step],[5,13-step],[10,12+step]].forEach(([x,y])=>{q(x,y,6,9,P.o);q(x+1,y,5,8,P.body);q(x-2,y+8,9,3,P.o);q(x-1,y+8,7,2,P.body2);d(x,y+10,P.claw);d(x+4,y+10,P.claw)});
-    q(-18,6,7,2,P.o);q(-24,2,7,2,P.o);q(-29,-3,6,2,P.o);q(-33,-8,7,7,P.mane2);q(-34,-10,6,6,P.mane3);q(-31,-6,6,6,P.mane4);
-    if(atk){q(25,-10,8,2,P.fx);q(-35,-11,7,2,P.fx)}
+  const {C,q,d,xeye,P}=extraTools(S,{
+    ink:'#282033',deep:'#343b8f',mane:'#4667c7',mane2:'#6b65d8',
+    maneHi:'#67c5df',maneGlow:'#b5ebf2',body:'#b96731',body2:'#e49a53',
+    cream:'#f2ce91',eye:'#211a1b',nose:'#302025',inner:'#dc817d',
+    claw:'#fff0c7',shadow:'#7d3e29',fx:'#ffe477'
+  },.62);
+
+  const mirror=fn=>{activeCtx.save();activeCtx.scale(-1,1);fn();activeCtx.restore()};
+  function sparkle(x,y){q(x,y-3,2,8,P.fx);q(x-3,y,8,2,P.fx);d(x,y,P.claw)}
+  function leg(x,y,step=0,front=false,fold=false){
+    if(fold){q(x-1,y,9,3,P.ink);q(x,y,7,2,P.body);q(x+5,y+2,6,2,P.ink);q(x+6,y+2,4,1,P.body2);return}
+    q(x,y+step,6,3,P.ink);q(x+1,y+step,4,10,P.body);
+    q(x,y+8+step,6,4,P.ink);q(x+1,y+8+step,5,2,P.body2);
+    q(x+(front?1:-1),y+11+step,8,3,P.ink);q(x+(front?2:0),y+11+step,6,2,P.cream);
+    d(x+(front?7:0),y+13+step,P.claw);
   }
-  if(frame===6){activeCtx.scale(-1,1);lion()}
-  else if(frame===8){activeCtx.translate(0,3*C);lion('sleep')}
-  else if(frame===10||frame===11)lion('hurt',frame===10?1:-1);
-  else if(frame===12||frame===13){activeCtx.translate((frame===12?3:5)*C,-C);lion('n',frame===12?-2:2,1)}
-  else if(frame>=14){activeCtx.translate((frame===14?-1:1)*C,-3*C);activeCtx.rotate((frame===14?-4:4)*Math.PI/180);lion('n',frame===14?1:-1,0);drawPlayfulMarks(S,frame===14?'note':'heart',24,-27)}else lion('n',frame%2?1:-1);
+  function tail(swish=0){
+    const y=swish<0?0:swish>0?7:4;
+    const mid=swish<0?4:swish>0?8:6;
+    q(-22,7,7,4,P.ink);q(-27,mid,7,4,P.ink);q(-31,y,6,5,P.ink);
+    q(-21,8,6,2,P.body);q(-26,mid+2,6,2,P.body2);
+    q(-35,y-3,7,9,P.ink);q(-34,y-2,5,7,P.mane2);q(-36,y,3,4,P.maneHi);d(-33,y-2,P.maneGlow);
+  }
+  function mane(ruff=0){
+    /* A single stepped silhouette with clean internal colour clusters. */
+    q(-13,-22,15,3,P.ink);q(-18,-19,24,4,P.ink);q(-21,-15,31,7,P.ink);
+    q(-23,-8,35,13,P.ink);q(-21,5,31,10,P.ink);q(-16,15,21,5,P.ink);
+    q(-11,-21,12,3,P.mane2);q(-16,-18,20,4,P.mane);q(-19,-14,26,6,P.deep);
+    q(-21,-7,30,11,P.mane2);q(-19,4,27,9,P.mane);q(-14,13,17,5,P.deep);
+    q(-14,-16,12,5,P.maneHi);q(-18,-8,10,7,P.mane);q(-16,1,11,8,P.maneHi);
+    q(-10,9,12,6,P.mane2);q(0,-12,8,8,P.maneHi);q(2,-4,8,8,P.mane);
+    q(-10,-19,7,2,P.maneGlow);q(-17,-6,5,2,P.maneGlow);q(-14,3,4,2,P.maneGlow);q(-7,11,5,2,P.maneHi);
+    if(ruff){q(-24,-13,4,5,P.maneHi);q(-25,3,5,4,P.mane2);q(6,7,5,5,P.maneGlow)}
+  }
+  function face(kind='normal',look=0,open=false){
+    /* Forward-facing features remain on the right side of the side-view body. */
+    q(1,-17,13,3,P.ink);q(-1,-14,19,9,P.ink);q(1,-5,21,8,P.ink);
+    q(3,-16,10,2,P.body2);q(1,-13,16,7,P.body2);q(3,-5,17,6,P.cream);
+    q(0,-20,7,6,P.ink);q(1,-19,5,4,P.body);q(11,-20,7,6,P.ink);q(12,-19,5,4,P.body);d(2,-18,P.inner);d(15,-18,P.inner);
+    q(18,-7,8,6,P.ink);q(19,-6,6,4,P.cream);q(23,-6,4,3,P.nose);d(25,-5,P.claw);
+    if(kind==='hurt')xeye(10,-10,P.eye);
+    else if(kind==='sleep')q(8,-10,5,1,P.eye);
+    else if(kind==='notice'){q(8,-12,5,5,P.claw);q(10+look,-11,2,3,P.eye)}
+    else{q(8,-12,5,4,P.eye);q(9+look,-11,2,2,P.claw)}
+    if(open){q(15,-2,8,6,P.ink);q(16,-1,6,4,P.inner);d(17,-1,P.claw);d(21,-1,P.claw)}
+    else{q(16,-1,6,2,P.ink);q(17,-1,4,1,P.nose)}
+  }
+  function body(pose={}){
+    const step=pose.step||0;
+    tail(pose.tail||0);
+    q(-18,0,29,3,P.ink);q(-20,3,34,10,P.ink);q(-17,13,28,6,P.ink);
+    q(-16,1,25,3,P.body2);q(-18,4,30,8,P.body);q(-15,12,24,5,P.body2);
+    q(-14,3,12,2,P.cream);q(-15,6,7,4,P.shadow);q(5,5,7,7,P.body2);
+    if(pose.fold){leg(-13,14,0,false,true);leg(-3,15,0,true,true)}
+    else{leg(-14,15,step,false);leg(-7,15,-step,false);leg(2,14,-step,true);leg(8,13,step,true)}
+    mane(pose.ruff||0);face(pose.kind||'normal',pose.look||0,pose.open||false);
+  }
+  function front(){
+    /* TURN 2 is purpose-built front art instead of a mirrored side sprite. */
+    q(-13,-18,26,4,P.ink);q(-18,-14,36,20,P.ink);q(-15,6,30,10,P.ink);
+    q(-11,-16,22,4,P.mane2);q(-16,-12,32,9,P.mane);q(-16,-3,32,8,P.mane2);q(-13,5,26,8,P.deep);
+    q(-9,-11,18,3,P.ink);q(-11,-8,22,13,P.ink);q(-9,-9,18,12,P.body2);q(-7,1,14,5,P.cream);
+    q(-10,-14,6,5,P.ink);q(4,-14,6,5,P.ink);q(-9,-13,4,3,P.body);q(5,-13,4,3,P.body);
+    q(-6,-6,4,4,P.eye);q(2,-6,4,4,P.eye);d(-5,-5,P.claw);d(3,-5,P.claw);q(-2,-1,5,3,P.nose);q(-3,3,7,2,P.ink);
+    q(-13,14,9,8,P.ink);q(-11,14,6,7,P.body);q(4,14,9,8,P.ink);q(5,14,6,7,P.body);
+  }
+
+  if(frame>=1&&frame<=4){activeCtx.translate(0,(frame%2?-1:0)*C);body({step:[-1,1,2,-2][frame-1],tail:frame<3?-1:1})}
+  else if(frame===5){body({look:-1,tail:-1})}
+  else if(frame===6){front()}
+  else if(frame===7){mirror(()=>body({look:1,tail:1}))}
+  else if(frame===8){activeCtx.translate(-2*C,5*C);body({kind:'sleep',fold:true,tail:-1})}
+  else if(frame===9){activeCtx.translate(0,-2*C);body({kind:'notice',ruff:1,tail:1});q(27,-21,2,8,P.fx);q(27,-11,2,2,P.fx)}
+  else if(frame===10||frame===11){activeCtx.translate((frame===10?-2:2)*C,C);body({kind:'hurt',step:frame===10?2:-2,ruff:1,tail:frame===10?-1:1})}
+  else if(frame===12){activeCtx.translate(2*C,-C);body({step:-3,ruff:1,open:true,tail:1});q(27,-8,7,2,P.fx);q(25,-13,5,2,P.fx)}
+  else if(frame===13){activeCtx.translate(5*C,-2*C);body({step:3,ruff:1,open:true,tail:-1});q(28,-5,9,2,P.fx);q(25,1,6,2,P.fx)}
+  else if(frame===14){activeCtx.translate(-C,-3*C);activeCtx.rotate(-4*Math.PI/180);body({step:1,tail:-1});sparkle(25,-24);drawPlayfulMarks(S,'note',-27,-25)}
+  else{activeCtx.translate(C,-2*C);activeCtx.rotate(4*Math.PI/180);body({step:-1,tail:1});sparkle(-27,-19);drawPlayfulMarks(S,'heart',24,-25)}
 }
 
 function faceNormal(
